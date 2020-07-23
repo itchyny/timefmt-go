@@ -83,6 +83,11 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(day))
+			case 'e':
+				if day < 10 && padZero {
+					buf.WriteRune(' ')
+				}
+				buf.WriteString(fmt.Sprint(day))
 			case 'j':
 				yday := t.YearDay()
 				if yday < 100 && padZero {

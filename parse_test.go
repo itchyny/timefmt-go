@@ -106,6 +106,11 @@ var parseTestCases = []struct {
 		t:      time.Date(2009, time.September, 9, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "2020 02  9",
+		format: "%Y %m %e",
+		t:      time.Date(2020, time.February, 9, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "Jan",
 		format: "%b",
 		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
