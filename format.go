@@ -147,6 +147,9 @@ func Format(t time.Time, format string) (s string, err error) {
 			case 'T', 'X':
 				padZero = true
 				pending = "H:M:S"
+			case 'c':
+				padZero = true
+				pending = "a b e H:M:S Y"
 			case 'f':
 				buf.WriteString(fmt.Sprintf("%06d", t.Nanosecond()/1000))
 			case 't':

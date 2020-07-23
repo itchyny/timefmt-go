@@ -136,6 +136,8 @@ func Parse(source, format string) (t time.Time, err error) {
 				pending = "I:M:S p"
 			case 'T', 'X':
 				pending = "H:M:S"
+			case 'c':
+				pending = "a b e H:M:S Y"
 			case 'f':
 				var msec int
 				if msec, diff, err = parseNumber(source[j:], 6, 'f'); err != nil {
