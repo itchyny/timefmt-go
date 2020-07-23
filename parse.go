@@ -63,7 +63,7 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
-			case 'b':
+			case 'b', 'h':
 				if month, diff, err = lookup(source[j:], shortMonthNames, 'b'); err != nil {
 					return
 				}

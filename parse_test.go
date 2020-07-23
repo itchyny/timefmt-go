@@ -141,6 +141,11 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.September, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "Sep",
+		format: "%h",
+		t:      time.Date(1900, time.September, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "100",
 		format: "%j",
 		t:      time.Date(1900, time.April, 10, 0, 0, 0, 0, time.UTC),

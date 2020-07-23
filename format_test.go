@@ -85,6 +85,11 @@ var formatTestCases = []struct {
 		expected: "Sep",
 	},
 	{
+		format:   "%h",
+		t:        time.Date(2020, time.September, 1, 0, 0, 0, 0, time.UTC),
+		expected: "Sep",
+	},
+	{
 		format:   "%A %a %w",
 		t:        time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 		expected: "Wednesday Wed 3",

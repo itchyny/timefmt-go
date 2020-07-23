@@ -78,7 +78,7 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteString(fmt.Sprint(int(month)))
 			case 'B':
 				buf.WriteString(longMonthNames[month-1])
-			case 'b':
+			case 'b', 'h':
 				buf.WriteString(shortMonthNames[month-1])
 			case 'A':
 				buf.WriteString(longWeekNames[t.Weekday()])
