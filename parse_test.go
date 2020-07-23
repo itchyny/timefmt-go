@@ -91,6 +91,11 @@ var parseTestCases = []struct {
 		parseErr: errors.New("cannot parse %d"),
 	},
 	{
+		source: "2020-09-08 07:06:05",
+		format: "%Y-%m-%d %H:%M:%S",
+		t:      time.Date(2020, time.September, 8, 7, 6, 5, 0, time.UTC),
+	},
+	{
 		format:   "%E",
 		parseErr: errors.New(`unexpected format: "%E"`),
 	},

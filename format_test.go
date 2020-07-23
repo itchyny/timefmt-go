@@ -51,6 +51,11 @@ var formatTestCases = []struct {
 		t:      time.Date(2020, time.October, 9, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "2020-09-08 07:06:05",
+		format: "%Y-%m-%d %H:%M:%S",
+		t:      time.Date(2020, time.September, 8, 7, 6, 5, 4, time.UTC),
+	},
+	{
 		format:    "%E",
 		formatErr: errors.New(`unexpected format: "%E"`),
 	},

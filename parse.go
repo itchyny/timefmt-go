@@ -77,6 +77,33 @@ func Parse(source, format string) (t time.Time, err error) {
 					err = errors.New("cannot parse %d")
 					return
 				}
+			case 'H':
+				if j+2 > l {
+					err = errors.New("cannot parse %H")
+					return
+				}
+				if hour, err = strconv.Atoi(string(source[j : j+2])); err != nil {
+					return
+				}
+				j += 2
+			case 'M':
+				if j+2 > l {
+					err = errors.New("cannot parse %M")
+					return
+				}
+				if min, err = strconv.Atoi(string(source[j : j+2])); err != nil {
+					return
+				}
+				j += 2
+			case 'S':
+				if j+2 > l {
+					err = errors.New("cannot parse %S")
+					return
+				}
+				if sec, err = strconv.Atoi(string(source[j : j+2])); err != nil {
+					return
+				}
+				j += 2
 			default:
 				err = fmt.Errorf("unexpected format: %q", format[i-1:i+1])
 				return

@@ -19,6 +19,7 @@ func (err *formatError) Error() string {
 // Format time to string using the format.
 func Format(t time.Time, format string) (s string, err error) {
 	year, month, day := t.Date()
+	hour, min, sec := t.Clock()
 	defer func() {
 		if err != nil {
 			err = &formatError{t, format, err}
@@ -51,6 +52,21 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(day))
+			case 'H':
+				if hour < 10 {
+					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(hour))
+			case 'M':
+				if min < 10 {
+					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(min))
+			case 'S':
+				if sec < 10 {
+					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(sec))
 			default:
 				return "", fmt.Errorf("unexpected format: %q", format[i-1:i+1])
 			}
