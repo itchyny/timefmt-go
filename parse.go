@@ -53,7 +53,7 @@ func Parse(source, format string) (t time.Time, err error) {
 					year += 1900
 				}
 			case 'C':
-				if century, diff, err = parseNumber(source[j:], 2, 'y'); err != nil {
+				if century, diff, err = parseNumber(source[j:], 2, 'C'); err != nil {
 					return
 				}
 				j += diff
@@ -68,7 +68,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 				j += diff
 			case 'b', 'h':
-				if month, diff, err = lookup(source[j:], shortMonthNames, 'b'); err != nil {
+				if month, diff, err = lookup(source[j:], shortMonthNames, b); err != nil {
 					return
 				}
 				j += diff
@@ -94,21 +94,18 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j++
-			case 'd':
-				if day, diff, err = parseNumber(source[j:], 2, 'd'); err != nil {
-					return
-				}
-				j += diff
 			case 'e':
 				if j < l && source[j] == ' ' {
 					j++
 				}
-				if day, diff, err = parseNumber(source[j:], 2, 'e'); err != nil {
+				fallthrough
+			case 'd':
+				if day, diff, err = parseNumber(source[j:], 2, b); err != nil {
 					return
 				}
 				j += diff
 			case 'j':
-				if yday, diff, err = parseNumber(source[j:], 3, 'd'); err != nil {
+				if yday, diff, err = parseNumber(source[j:], 3, 'j'); err != nil {
 					return
 				}
 				j += diff
@@ -118,21 +115,13 @@ func Parse(source, format string) (t time.Time, err error) {
 				pending = "Y-m-d"
 			case 'v':
 				pending = "e-b-Y"
-			case 'H':
-				if hour, diff, err = parseNumber(source[j:], 2, 'H'); err != nil {
-					return
-				}
-				j += diff
 			case 'k':
 				if j < l && source[j] == ' ' {
 					j++
 				}
-				if hour, diff, err = parseNumber(source[j:], 2, 'k'); err != nil {
-					return
-				}
-				j += diff
-			case 'I':
-				if hour, diff, err = parseNumber(source[j:], 2, 'I'); err != nil {
+				fallthrough
+			case 'H':
+				if hour, diff, err = parseNumber(source[j:], 2, b); err != nil {
 					return
 				}
 				j += diff
@@ -140,7 +129,9 @@ func Parse(source, format string) (t time.Time, err error) {
 				if j < l && source[j] == ' ' {
 					j++
 				}
-				if hour, diff, err = parseNumber(source[j:], 2, 'l'); err != nil {
+				fallthrough
+			case 'I':
+				if hour, diff, err = parseNumber(source[j:], 2, b); err != nil {
 					return
 				}
 				j += diff

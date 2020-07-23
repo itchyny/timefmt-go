@@ -92,14 +92,14 @@ func Format(t time.Time, format string) (s string, err error) {
 					w = 7
 				}
 				buf.WriteString(fmt.Sprint(w))
-			case 'd':
-				if day < 10 && padZero {
-					buf.WriteRune('0')
-				}
-				buf.WriteString(fmt.Sprint(day))
 			case 'e':
 				if day < 10 && padZero {
 					buf.WriteRune(' ')
+				}
+				buf.WriteString(fmt.Sprint(day))
+			case 'd':
+				if day < 10 && padZero {
+					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(day))
 			case 'j':
@@ -120,25 +120,16 @@ func Format(t time.Time, format string) (s string, err error) {
 			case 'v':
 				padZero = true
 				pending = "e-b-Y"
-			case 'H':
-				if hour < 10 && padZero {
-					buf.WriteRune('0')
-				}
-				buf.WriteString(fmt.Sprint(hour))
 			case 'k':
 				if hour < 10 && padZero {
 					buf.WriteRune(' ')
 				}
 				buf.WriteString(fmt.Sprint(hour))
-			case 'I':
-				h := hour
-				if h > 12 {
-					h -= 12
-				}
-				if h < 10 && padZero {
+			case 'H':
+				if hour < 10 && padZero {
 					buf.WriteRune('0')
 				}
-				buf.WriteString(fmt.Sprint(h))
+				buf.WriteString(fmt.Sprint(hour))
 			case 'l':
 				h := hour
 				if h > 12 {
@@ -146,6 +137,15 @@ func Format(t time.Time, format string) (s string, err error) {
 				}
 				if h < 10 && padZero {
 					buf.WriteRune(' ')
+				}
+				buf.WriteString(fmt.Sprint(h))
+			case 'I':
+				h := hour
+				if h > 12 {
+					h -= 12
+				}
+				if h < 10 && padZero {
+					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(h))
 			case 'p':
