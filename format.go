@@ -83,6 +83,8 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(sec))
+			case 'f':
+				buf.WriteString(fmt.Sprintf("%06d", t.Nanosecond()/1000))
 			default:
 				return "", fmt.Errorf("unexpected format: %q", format[i-1:i+1])
 			}

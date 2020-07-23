@@ -161,6 +161,16 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.September, 8, 7, 6, 5, 0, time.UTC),
 	},
 	{
+		source: "1:2:3.45",
+		format: "%H:%M:%S.%f",
+		t:      time.Date(0, time.January, 1, 1, 2, 3, 450000000, time.UTC),
+	},
+	{
+		source: "1213145678912",
+		format: "%H%M%S%f%d",
+		t:      time.Date(0, time.January, 2, 12, 13, 14, 567891000, time.UTC),
+	},
+	{
 		format:   "%E",
 		parseErr: errors.New(`unexpected format: "%E"`),
 	},

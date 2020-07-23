@@ -106,6 +106,17 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 'f':
+				var msec int
+				if msec, diff, err = parseNumber(source[j:], 6, 'f'); err != nil {
+					return
+				}
+				j += diff
+				nsec = msec * 1000
+				for diff < 6 {
+					nsec *= 10
+					diff++
+				}
 			default:
 				err = fmt.Errorf("unexpected format: %q", format[i-1:i+1])
 				return
