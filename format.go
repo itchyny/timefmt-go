@@ -172,6 +172,16 @@ func Format(t time.Time, format string) (s string, err error) {
 				pending = "a b e H:M:S Y"
 			case 'f':
 				buf.WriteString(fmt.Sprintf("%06d", t.Nanosecond()/1000))
+			case 'z':
+				_, offset := t.Zone()
+				if offset < 0 {
+					buf.WriteRune('-')
+					offset = -offset
+				} else {
+					buf.WriteRune('+')
+				}
+				offset /= 60
+				buf.WriteString(fmt.Sprintf("%02d%02d", offset/60, offset%60))
 			case 't':
 				buf.WriteRune('\t')
 			case 'n':

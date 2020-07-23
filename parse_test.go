@@ -281,6 +281,26 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.February, 9, 23, 14, 15, 0, time.UTC),
 	},
 	{
+		source: "2020-07-24 23:14:15 +0000",
+		format: "%F %T %z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.UTC),
+	},
+	{
+		source: "2020-07-24 23:14:15 -0800",
+		format: "%F %T %z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", -8*60*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 +0900",
+		format: "%F %T %z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", 9*60*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 +0530",
+		format: "%F %T %z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60)),
+	},
+	{
 		source: "01%02\t03\n450000",
 		format: "%H%%%M%t%S%n%f",
 		t:      time.Date(1900, time.January, 1, 1, 2, 3, 450000000, time.UTC),

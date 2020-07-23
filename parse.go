@@ -170,6 +170,33 @@ func Parse(source, format string) (t time.Time, err error) {
 					nsec *= 10
 					diff++
 				}
+			case 'z':
+				if j+5 > l {
+					err = parseFormatError(b)
+					return
+				}
+				var offset int
+				switch source[j] {
+				case '+':
+					fallthrough
+				case '-':
+					var hour, min int
+					if hour, err = strconv.Atoi(source[j+1 : j+3]); err != nil {
+						return
+					}
+					if min, err = strconv.Atoi(source[j+3 : j+5]); err != nil {
+						return
+					}
+					offset = (hour*60 + min) * 60
+					if source[j] == '-' {
+						offset = -offset
+					}
+				default:
+					err = parseFormatError(b)
+					return
+				}
+				loc = time.FixedZone("", offset)
+				j += 5
 			case 't':
 				if j >= l || source[j] != '\t' {
 					err = fmt.Errorf("expected %q", '\t')

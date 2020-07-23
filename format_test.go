@@ -200,6 +200,26 @@ var formatTestCases = []struct {
 		expected: "Sun Feb  9 23:14:15 2020",
 	},
 	{
+		format:   "%F %T %z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.UTC),
+		expected: "2020-07-24 23:14:15 +0000",
+	},
+	{
+		format:   "%F %T %z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC-8", -8*60*60)),
+		expected: "2020-07-24 23:14:15 -0800",
+	},
+	{
+		format:   "%F %T %z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC+9", 9*60*60)),
+		expected: "2020-07-24 23:14:15 +0900",
+	},
+	{
+		format:   "%F %T %z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC+05:30", (5*60+30)*60)),
+		expected: "2020-07-24 23:14:15 +0530",
+	},
+	{
 		format:   "%H%%%M%t%S%n%f",
 		t:        time.Date(2020, time.January, 1, 1, 2, 3, 450000000, time.UTC),
 		expected: "01%02\t03\n450000",
