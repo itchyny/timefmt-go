@@ -216,6 +216,11 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.January, 1, 23, 14, 15, 0, time.UTC),
 	},
 	{
+		source: "01%02\t03\n450000",
+		format: "%H%%%M%t%S%n%f",
+		t:      time.Date(1900, time.January, 1, 1, 2, 3, 450000000, time.UTC),
+	},
+	{
 		source:   "pp",
 		format:   "%p",
 		parseErr: errors.New("cannot parse %p"),

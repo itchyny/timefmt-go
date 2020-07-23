@@ -1,7 +1,6 @@
 package timefmt_test
 
 import (
-	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -151,16 +150,17 @@ var formatTestCases = []struct {
 		expected: "1:2:3 PM",
 	},
 	{
-		format:    "%E",
-		formatErr: errors.New(`unexpected format: "%E"`),
+		format:   "%H%%%M%t%S%n%f",
+		t:        time.Date(2020, time.January, 1, 1, 2, 3, 450000000, time.UTC),
+		expected: "01%02\t03\n450000",
+	},
+	{
+		format:   "%!%.%[%]%|%+%-",
+		expected: "!.[]|+-",
 	},
 	{
 		format:   "%",
 		expected: "%",
-	},
-	{
-		format:   "%-",
-		expected: "-",
 	},
 }
 

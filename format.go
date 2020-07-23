@@ -124,8 +124,12 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteString(fmt.Sprint(sec))
 			case 'f':
 				buf.WriteString(fmt.Sprintf("%06d", t.Nanosecond()/1000))
+			case 't':
+				buf.WriteRune('\t')
+			case 'n':
+				buf.WriteRune('\n')
 			default:
-				return "", fmt.Errorf("unexpected format: %q", format[i-1:i+1])
+				buf.WriteByte(b)
 			}
 		} else {
 			buf.WriteByte(b)

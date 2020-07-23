@@ -125,11 +125,29 @@ func Parse(source, format string) (t time.Time, err error) {
 					nsec *= 10
 					diff++
 				}
+			case 't':
+				if j >= l || source[j] != '\t' {
+					err = fmt.Errorf("expected %q", '\t')
+					return
+				}
+				j++
+			case 'n':
+				if j >= l || source[j] != '\n' {
+					err = fmt.Errorf("expected %q", '\n')
+					return
+				}
+				j++
+			case '%':
+				if j >= l || source[j] != b {
+					err = fmt.Errorf("expected %q", b)
+					return
+				}
+				j++
 			default:
 				err = fmt.Errorf("unexpected format: %q", format[i-1:i+1])
 				return
 			}
-		} else if j >= len(source) || b != source[j] {
+		} else if j >= len(source) || source[j] != b {
 			err = fmt.Errorf("expected %q", b)
 			return
 		} else {
