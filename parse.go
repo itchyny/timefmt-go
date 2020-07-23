@@ -48,28 +48,22 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 				j += diff
 			case 'B':
-				if month, diff = lookup(source[j:], longMonthNames); month == 0 {
-					err = errors.New("cannot parse %B")
+				if month, diff, err = lookup(source[j:], longMonthNames, 'B'); err != nil {
 					return
 				}
 				j += diff
 			case 'b':
-				if month, diff = lookup(source[j:], shortMonthNames); month == 0 {
-					err = errors.New("cannot parse %b")
+				if month, diff, err = lookup(source[j:], shortMonthNames, 'b'); err != nil {
 					return
 				}
 				j += diff
 			case 'A':
-				var week int
-				if week, diff = lookup(source[j:], longWeekNames); week == 0 {
-					err = errors.New("cannot parse %A")
+				if _, diff, err = lookup(source[j:], longWeekNames, 'A'); err != nil {
 					return
 				}
 				j += diff
 			case 'a':
-				var week int
-				if week, diff = lookup(source[j:], shortWeekNames); week == 0 {
-					err = errors.New("cannot parse %a")
+				if _, diff, err = lookup(source[j:], shortWeekNames, 'a'); err != nil {
 					return
 				}
 				j += diff
@@ -101,8 +95,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				j += diff
 			case 'p':
 				var ampm int
-				if ampm, diff = lookup(source[j:], []string{"AM", "PM"}); ampm == 0 {
-					err = errors.New("cannot parse %p")
+				if ampm, diff, err = lookup(source[j:], []string{"AM", "PM"}, 'p'); err != nil {
 					return
 				}
 				j += diff
@@ -170,7 +163,7 @@ func parseNumber(source string, max int, format byte) (int, int, error) {
 	return 0, 0, fmt.Errorf("cannot parse %%%c", format)
 }
 
-func lookup(source string, candidates []string) (int, int) {
+func lookup(source string, candidates []string, format byte) (int, int, error) {
 L:
 	for i, xs := range candidates {
 		for j, x := range []byte(xs) {
@@ -181,7 +174,7 @@ L:
 				continue L
 			}
 		}
-		return i + 1, len(xs)
+		return i + 1, len(xs), nil
 	}
-	return 0, 0
+	return 0, 0, fmt.Errorf("cannot parse %%%c", format)
 }
