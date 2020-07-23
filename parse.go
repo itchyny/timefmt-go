@@ -47,7 +47,11 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
-				year += (time.Now().Year() / 100) * 100
+				if year < 69 {
+					year += 2000
+				} else {
+					year += 1900
+				}
 			case 'C':
 				if century, diff, err = parseNumber(source[j:], 2, 'y'); err != nil {
 					return

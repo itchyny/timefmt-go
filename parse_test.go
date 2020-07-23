@@ -56,6 +56,16 @@ var parseTestCases = []struct {
 		t:      time.Date(1758, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "68",
+		format: "%y",
+		t:      time.Date(2068, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "69",
+		format: "%y",
+		t:      time.Date(1969, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "2020-05",
 		format: "%Y-%m",
 		t:      time.Date(2020, time.May, 1, 0, 0, 0, 0, time.UTC),
