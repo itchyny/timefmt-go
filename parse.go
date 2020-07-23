@@ -18,7 +18,7 @@ func (err *parseError) Error() string {
 
 // Parse time string using the format.
 func Parse(source, format string) (t time.Time, err error) {
-	year, month, day, hour, min, sec, nsec, loc := 0, 1, 1, 0, 0, 0, 0, time.UTC
+	year, month, day, hour, min, sec, nsec, loc := 1900, 1, 1, 0, 0, 0, 0, time.UTC
 	defer func() {
 		if err != nil {
 			err = &parseError{source, format, err}

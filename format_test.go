@@ -62,32 +62,32 @@ var formatTestCases = []struct {
 	},
 	{
 		format:   "%B",
-		t:        time.Date(0, time.October, 1, 0, 0, 0, 0, time.UTC),
+		t:        time.Date(2020, time.October, 1, 0, 0, 0, 0, time.UTC),
 		expected: "October",
 	},
 	{
 		format:   "%b",
-		t:        time.Date(0, time.September, 1, 0, 0, 0, 0, time.UTC),
+		t:        time.Date(2020, time.September, 1, 0, 0, 0, 0, time.UTC),
 		expected: "Sep",
 	},
 	{
 		format:   "%A %a %w",
-		t:        time.Date(0, time.January, 3, 0, 0, 0, 0, time.UTC),
-		expected: "Monday Mon 1",
+		t:        time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "Wednesday Wed 3",
 	},
 	{
 		format:   "%A %a %w",
-		t:        time.Date(0, time.January, 4, 0, 0, 0, 0, time.UTC),
-		expected: "Tuesday Tue 2",
+		t:        time.Date(2020, time.January, 2, 0, 0, 0, 0, time.UTC),
+		expected: "Thursday Thu 4",
 	},
 	{
 		format:   "%A %a %w",
-		t:        time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:        time.Date(2020, time.January, 4, 0, 0, 0, 0, time.UTC),
 		expected: "Saturday Sat 6",
 	},
 	{
 		format:   "%A %a %w",
-		t:        time.Date(0, time.January, 2, 0, 0, 0, 0, time.UTC),
+		t:        time.Date(2020, time.January, 5, 0, 0, 0, 0, time.UTC),
 		expected: "Sunday Sun 0",
 	},
 	{
@@ -102,32 +102,32 @@ var formatTestCases = []struct {
 	},
 	{
 		format:   "%H:%M:%S.%f",
-		t:        time.Date(0, time.January, 1, 1, 2, 3, 450000000, time.UTC),
+		t:        time.Date(2020, time.January, 1, 1, 2, 3, 450000000, time.UTC),
 		expected: "01:02:03.450000",
 	},
 	{
 		format:   "%I:%M:%S %p",
-		t:        time.Date(0, time.January, 1, 1, 2, 3, 0, time.UTC),
+		t:        time.Date(2020, time.January, 1, 1, 2, 3, 0, time.UTC),
 		expected: "01:02:03 AM",
 	},
 	{
 		format:   "%I:%M:%S %p",
-		t:        time.Date(0, time.January, 1, 12, 13, 14, 0, time.UTC),
+		t:        time.Date(2020, time.January, 1, 12, 13, 14, 0, time.UTC),
 		expected: "12:13:14 AM",
 	},
 	{
 		format:   "%I:%M:%S %p",
-		t:        time.Date(0, time.January, 1, 13, 14, 15, 0, time.UTC),
+		t:        time.Date(2020, time.January, 1, 13, 14, 15, 0, time.UTC),
 		expected: "01:14:15 PM",
 	},
 	{
 		format:   "%I:%M:%S %p",
-		t:        time.Date(0, time.January, 1, 23, 14, 15, 0, time.UTC),
+		t:        time.Date(2020, time.January, 1, 23, 14, 15, 0, time.UTC),
 		expected: "11:14:15 PM",
 	},
 	{
 		format:   "%-I:%-M:%-S %p",
-		t:        time.Date(0, time.January, 1, 13, 2, 3, 0, time.UTC),
+		t:        time.Date(2020, time.January, 1, 13, 2, 3, 0, time.UTC),
 		expected: "1:2:3 PM",
 	},
 	{

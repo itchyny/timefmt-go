@@ -98,7 +98,7 @@ var parseTestCases = []struct {
 	{
 		source: "Jan",
 		format: "%b",
-		t:      time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "Ja",
@@ -108,32 +108,32 @@ var parseTestCases = []struct {
 	{
 		source: "Jul",
 		format: "%b",
-		t:      time.Date(0, time.July, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1900, time.July, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "Sep",
 		format: "%b",
-		t:      time.Date(0, time.September, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1900, time.September, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "MAY",
 		format: "%b",
-		t:      time.Date(0, time.May, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1900, time.May, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "SATURDAY",
 		format: "%A",
-		t:      time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "[sunday]",
 		format: "[%A]",
-		t:      time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "[Mon]",
 		format: "[%a]",
-		t:      time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "Teu",
@@ -143,7 +143,7 @@ var parseTestCases = []struct {
 	{
 		source: "mondaymon1",
 		format: "%A%a%w",
-		t:      time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "mooday",
@@ -163,27 +163,27 @@ var parseTestCases = []struct {
 	{
 		source: "1:2:3.45",
 		format: "%H:%M:%S.%f",
-		t:      time.Date(0, time.January, 1, 1, 2, 3, 450000000, time.UTC),
+		t:      time.Date(1900, time.January, 1, 1, 2, 3, 450000000, time.UTC),
 	},
 	{
 		source: "1213145678912",
 		format: "%H%M%S%f%d",
-		t:      time.Date(0, time.January, 2, 12, 13, 14, 567891000, time.UTC),
+		t:      time.Date(1900, time.January, 2, 12, 13, 14, 567891000, time.UTC),
 	},
 	{
 		source: "12:13:14 AM",
 		format: "%I:%M:%S %p",
-		t:      time.Date(0, time.January, 1, 12, 13, 14, 0, time.UTC),
+		t:      time.Date(1900, time.January, 1, 12, 13, 14, 0, time.UTC),
 	},
 	{
 		source: "01:14:15pm",
 		format: "%I:%M:%S%p",
-		t:      time.Date(0, time.January, 1, 13, 14, 15, 0, time.UTC),
+		t:      time.Date(1900, time.January, 1, 13, 14, 15, 0, time.UTC),
 	},
 	{
 		source: "PM 11:14:15",
 		format: "%p %I:%M:%S",
-		t:      time.Date(0, time.January, 1, 23, 14, 15, 0, time.UTC),
+		t:      time.Date(1900, time.January, 1, 23, 14, 15, 0, time.UTC),
 	},
 	{
 		source:   "pp",
