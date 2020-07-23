@@ -72,6 +72,26 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 'A':
+				var week, diff int
+				if week, diff = lookup(source[j:], longWeekNames); week == 0 {
+					err = errors.New("cannot parse %A")
+					return
+				}
+				j += diff
+			case 'a':
+				var week, diff int
+				if week, diff = lookup(source[j:], shortWeekNames); week == 0 {
+					err = errors.New("cannot parse %a")
+					return
+				}
+				j += diff
+			case 'w':
+				if j >= l || source[j] < '0' || '6' < source[j] {
+					err = errors.New("cannot parse %w")
+					return
+				}
+				j++
 			case 'd':
 				if j >= l {
 					err = errors.New("cannot parse %d")

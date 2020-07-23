@@ -51,6 +51,12 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteString(longMonthNames[month-1])
 			case 'b':
 				buf.WriteString(shortMonthNames[month-1])
+			case 'A':
+				buf.WriteString(longWeekNames[t.Weekday()])
+			case 'a':
+				buf.WriteString(shortWeekNames[t.Weekday()])
+			case 'w':
+				buf.WriteString(fmt.Sprint(int(t.Weekday())))
 			case 'd':
 				if day < 10 {
 					buf.WriteRune('0')
@@ -109,4 +115,24 @@ var shortMonthNames = []string{
 	"Oct",
 	"Nov",
 	"Dec",
+}
+
+var longWeekNames = []string{
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
+}
+
+var shortWeekNames = []string{
+	"Sun",
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat",
 }
