@@ -86,6 +86,12 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteString(shortWeekNames[t.Weekday()])
 			case 'w':
 				buf.WriteString(fmt.Sprint(int(t.Weekday())))
+			case 'u':
+				w := int(t.Weekday())
+				if w == 0 {
+					w = 7
+				}
+				buf.WriteString(fmt.Sprint(w))
 			case 'd':
 				if day < 10 && padZero {
 					buf.WriteRune('0')

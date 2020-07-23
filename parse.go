@@ -84,6 +84,12 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j++
+			case 'u':
+				if j >= l || source[j] < '1' || '7' < source[j] {
+					err = parseFormatError(b)
+					return
+				}
+				j++
 			case 'd':
 				if day, diff, err = parseNumber(source[j:], 2, 'd'); err != nil {
 					return

@@ -201,9 +201,39 @@ var parseTestCases = []struct {
 		parseErr: errors.New("cannot parse %A"),
 	},
 	{
+		source: "0",
+		format: "%w",
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "6",
+		format: "%w",
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source:   "7",
 		format:   "%w",
 		parseErr: errors.New("cannot parse %w"),
+	},
+	{
+		source:   "0",
+		format:   "%u",
+		parseErr: errors.New("cannot parse %u"),
+	},
+	{
+		source: "1",
+		format: "%u",
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "7",
+		format: "%u",
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "8",
+		format:   "%u",
+		parseErr: errors.New("cannot parse %u"),
 	},
 	{
 		source: "2020-09-08 07:06:05",

@@ -90,24 +90,29 @@ var formatTestCases = []struct {
 		expected: "Sep",
 	},
 	{
-		format:   "%A %a %w",
+		format:   "%A %a %w %u",
 		t:        time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "Wednesday Wed 3",
+		expected: "Wednesday Wed 3 3",
 	},
 	{
-		format:   "%A %a %w",
+		format:   "%A %a %w %u",
 		t:        time.Date(2020, time.January, 2, 0, 0, 0, 0, time.UTC),
-		expected: "Thursday Thu 4",
+		expected: "Thursday Thu 4 4",
 	},
 	{
-		format:   "%A %a %w",
+		format:   "%A %a %w %u",
 		t:        time.Date(2020, time.January, 4, 0, 0, 0, 0, time.UTC),
-		expected: "Saturday Sat 6",
+		expected: "Saturday Sat 6 6",
 	},
 	{
-		format:   "%A %a %w",
+		format:   "%A %a %w %u",
 		t:        time.Date(2020, time.January, 5, 0, 0, 0, 0, time.UTC),
-		expected: "Sunday Sun 0",
+		expected: "Sunday Sun 0 7",
+	},
+	{
+		format:   "%A %a %w %u",
+		t:        time.Date(2020, time.January, 6, 0, 0, 0, 0, time.UTC),
+		expected: "Monday Mon 1 1",
 	},
 	{
 		format:   "%Y-%j-%-j",
