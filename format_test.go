@@ -124,6 +124,10 @@ var formatTestCases = []struct {
 		format:    "%E",
 		formatErr: errors.New(`unexpected format: "%E"`),
 	},
+	{
+		format:   "%",
+		expected: "%",
+	},
 }
 
 func TestFormat(t *testing.T) {

@@ -29,6 +29,10 @@ func Format(t time.Time, format string) (s string, err error) {
 	for i := 0; i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
+			if i == len(format) {
+				buf.WriteByte(b)
+				break
+			}
 			b = format[i]
 			switch b {
 			case 'Y':
