@@ -101,6 +101,26 @@ var formatTestCases = []struct {
 		t:      time.Date(0, time.January, 1, 1, 2, 3, 450000000, time.UTC),
 	},
 	{
+		source: "01:02:03 AM",
+		format: "%I:%M:%S %p",
+		t:      time.Date(0, time.January, 1, 1, 2, 3, 0, time.UTC),
+	},
+	{
+		source: "12:13:14 AM",
+		format: "%I:%M:%S %p",
+		t:      time.Date(0, time.January, 1, 12, 13, 14, 0, time.UTC),
+	},
+	{
+		source: "01:14:15 PM",
+		format: "%I:%M:%S %p",
+		t:      time.Date(0, time.January, 1, 13, 14, 15, 0, time.UTC),
+	},
+	{
+		source: "11:14:15 PM",
+		format: "%I:%M:%S %p",
+		t:      time.Date(0, time.January, 1, 23, 14, 15, 0, time.UTC),
+	},
+	{
 		format:    "%E",
 		formatErr: errors.New(`unexpected format: "%E"`),
 	},

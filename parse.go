@@ -25,6 +25,7 @@ func Parse(source, format string) (t time.Time, err error) {
 		}
 	}()
 	var j, diff int
+	var pm bool
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
@@ -96,6 +97,19 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 'I':
+				if hour, diff, err = parseNumber(source[j:], 2, 'I'); err != nil {
+					return
+				}
+				j += diff
+			case 'p':
+				var ampm int
+				if ampm, diff = lookup(source[j:], []string{"AM", "PM"}); ampm == 0 {
+					err = errors.New("cannot parse %p")
+					return
+				}
+				j += diff
+				pm = ampm == 2
 			case 'M':
 				if min, diff, err = parseNumber(source[j:], 2, 'M'); err != nil {
 					return
@@ -131,6 +145,9 @@ func Parse(source, format string) (t time.Time, err error) {
 	if j < len(source) {
 		err = fmt.Errorf("unconverted string: %q", source[j:])
 		return
+	}
+	if pm {
+		hour += 12
 	}
 	return time.Date(year, time.Month(month), day, hour, min, sec, nsec, loc), nil
 }

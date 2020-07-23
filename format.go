@@ -73,6 +73,21 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(hour))
+			case 'I':
+				h := hour
+				if h > 12 {
+					h -= 12
+				}
+				if h < 10 {
+					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(h))
+			case 'p':
+				if hour <= 12 {
+					buf.WriteString("AM")
+				} else {
+					buf.WriteString("PM")
+				}
 			case 'M':
 				if min < 10 {
 					buf.WriteRune('0')
