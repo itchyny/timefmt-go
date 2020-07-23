@@ -39,6 +39,16 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += 4
+			case 'y':
+				if j+2 > l {
+					err = errors.New("cannot parse %y")
+					return
+				}
+				if year, err = strconv.Atoi(string(source[j : j+2])); err != nil {
+					return
+				}
+				year += (time.Now().Year() / 100) * 100
+				j += 2
 			case 'm':
 				if j >= l {
 					err = errors.New("cannot parse %m")

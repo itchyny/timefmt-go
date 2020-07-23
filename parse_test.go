@@ -91,19 +91,9 @@ var parseTestCases = []struct {
 		parseErr: errors.New("cannot parse %d"),
 	},
 	{
-		source: "APRIL",
-		format: "%B",
-		t:      time.Date(0, time.April, 1, 0, 0, 0, 0, time.UTC),
-	},
-	{
-		source: "October",
-		format: "%B",
-		t:      time.Date(0, time.October, 1, 0, 0, 0, 0, time.UTC),
-	},
-	{
-		source: "December",
-		format: "%B",
-		t:      time.Date(0, time.December, 1, 0, 0, 0, 0, time.UTC),
+		source: "201111",
+		format: "%y%m%d",
+		t:      time.Date(2020, time.November, 11, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "Jan",

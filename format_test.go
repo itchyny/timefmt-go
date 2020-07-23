@@ -36,6 +36,16 @@ var formatTestCases = []struct {
 		t:      time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "20",
+		format: "%y",
+		t:      time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "09",
+		format: "%y",
+		t:      time.Date(2009, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "2020-05",
 		format: "%Y-%m",
 		t:      time.Date(2020, time.May, 1, 0, 0, 0, 0, time.UTC),
