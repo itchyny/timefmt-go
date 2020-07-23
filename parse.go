@@ -152,6 +152,17 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 's':
+				var unix int
+				if unix, diff, err = parseNumber(source[j:], 10, 's'); err != nil {
+					return
+				}
+				t = time.Unix(int64(unix), 0).In(time.UTC)
+				var mon time.Month
+				year, mon, day = t.Date()
+				hour, min, sec = t.Clock()
+				month = int(mon)
+				j += diff
 			case 'R':
 				pending = "H:M"
 			case 'r':

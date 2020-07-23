@@ -185,6 +185,11 @@ var formatTestCases = []struct {
 		expected: " 8 8",
 	},
 	{
+		format:   "%s",
+		t:        time.Date(2020, time.August, 30, 5, 30, 32, 0, time.UTC),
+		expected: "1598765432",
+	},
+	{
 		format:   "%R %r %T %D %x %X",
 		t:        time.Date(2020, time.February, 9, 23, 14, 15, 0, time.UTC),
 		expected: "23:14 11:14:15 PM 23:14:15 02/09/20 02/09/20 23:14:15",

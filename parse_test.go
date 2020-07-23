@@ -286,6 +286,11 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.January, 1, 21, 10, 11, 0, time.UTC),
 	},
 	{
+		source: "1598765432",
+		format: "%s",
+		t:      time.Date(2020, time.August, 30, 5, 30, 32, 0, time.UTC),
+	},
+	{
 		source: "23:14",
 		format: "%R",
 		t:      time.Date(1900, time.January, 1, 23, 14, 0, 0, time.UTC),

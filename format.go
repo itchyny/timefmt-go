@@ -170,6 +170,8 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(sec))
+			case 's':
+				buf.WriteString(fmt.Sprint(t.Unix()))
 			case 'R':
 				padZero = true
 				pending = "H:M"
