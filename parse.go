@@ -170,6 +170,19 @@ func Parse(source, format string) (t time.Time, err error) {
 					nsec *= 10
 					diff++
 				}
+			case 'Z':
+				k := j
+				for ; k < l; k++ {
+					if c := source[k]; c < 'A' || 'Z' < c {
+						break
+					}
+				}
+				t, err = time.Parse("MST", source[j:k])
+				if err != nil {
+					return
+				}
+				loc = t.Location()
+				j = k
 			case 'z':
 				if j+5 > l {
 					err = parseFormatError(b)
