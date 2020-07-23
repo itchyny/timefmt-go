@@ -119,6 +119,11 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(hour))
+			case 'k':
+				if hour < 10 && padZero {
+					buf.WriteRune(' ')
+				}
+				buf.WriteString(fmt.Sprint(hour))
 			case 'I':
 				h := hour
 				if h > 12 {
@@ -126,6 +131,15 @@ func Format(t time.Time, format string) (s string, err error) {
 				}
 				if h < 10 && padZero {
 					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(h))
+			case 'l':
+				h := hour
+				if h > 12 {
+					h -= 12
+				}
+				if h < 10 && padZero {
+					buf.WriteRune(' ')
 				}
 				buf.WriteString(fmt.Sprint(h))
 			case 'p':

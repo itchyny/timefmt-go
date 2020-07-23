@@ -113,8 +113,24 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 'k':
+				if j < l && source[j] == ' ' {
+					j++
+				}
+				if hour, diff, err = parseNumber(source[j:], 2, 'k'); err != nil {
+					return
+				}
+				j += diff
 			case 'I':
 				if hour, diff, err = parseNumber(source[j:], 2, 'I'); err != nil {
+					return
+				}
+				j += diff
+			case 'l':
+				if j < l && source[j] == ' ' {
+					j++
+				}
+				if hour, diff, err = parseNumber(source[j:], 2, 'l'); err != nil {
 					return
 				}
 				j += diff
