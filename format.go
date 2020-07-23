@@ -47,6 +47,10 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(int(month)))
+			case 'B':
+				buf.WriteString(longMonthNames[month-1])
+			case 'b':
+				buf.WriteString(shortMonthNames[month-1])
 			case 'd':
 				if day < 10 {
 					buf.WriteRune('0')
@@ -75,4 +79,34 @@ func Format(t time.Time, format string) (s string, err error) {
 		}
 	}
 	return buf.String(), nil
+}
+
+var longMonthNames = []string{
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
+}
+
+var shortMonthNames = []string{
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec",
 }

@@ -91,6 +91,46 @@ var parseTestCases = []struct {
 		parseErr: errors.New("cannot parse %d"),
 	},
 	{
+		source: "APRIL",
+		format: "%B",
+		t:      time.Date(0, time.April, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "October",
+		format: "%B",
+		t:      time.Date(0, time.October, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "December",
+		format: "%B",
+		t:      time.Date(0, time.December, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Jan",
+		format: "%b",
+		t:      time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "Ja",
+		format:   "%b",
+		parseErr: errors.New("cannot parse %b"),
+	},
+	{
+		source: "Jul",
+		format: "%b",
+		t:      time.Date(0, time.July, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Sep",
+		format: "%b",
+		t:      time.Date(0, time.September, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "MAY",
+		format: "%b",
+		t:      time.Date(0, time.May, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "2020-09-08 07:06:05",
 		format: "%Y-%m-%d %H:%M:%S",
 		t:      time.Date(2020, time.September, 8, 7, 6, 5, 0, time.UTC),

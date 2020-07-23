@@ -58,6 +58,20 @@ func Parse(source, format string) (t time.Time, err error) {
 					err = errors.New("cannot parse %m")
 					return
 				}
+			case 'B':
+				var diff int
+				if month, diff = lookup(source[j:], longMonthNames); month == 0 {
+					err = errors.New("cannot parse %B")
+					return
+				}
+				j += diff
+			case 'b':
+				var diff int
+				if month, diff = lookup(source[j:], shortMonthNames); month == 0 {
+					err = errors.New("cannot parse %b")
+					return
+				}
+				j += diff
 			case 'd':
 				if j >= l {
 					err = errors.New("cannot parse %d")
@@ -124,4 +138,20 @@ func Parse(source, format string) (t time.Time, err error) {
 
 func isDigit(c byte) bool {
 	return '0' <= c && c <= '9'
+}
+
+func lookup(source string, candidates []string) (int, int) {
+L:
+	for i, xs := range candidates {
+		for j, x := range []byte(xs) {
+			if j >= len(source) {
+				continue L
+			}
+			if y := source[j]; x != y && x|('a'-'A') != y|('a'-'A') {
+				continue L
+			}
+		}
+		return i + 1, len(xs)
+	}
+	return 0, 0
 }
