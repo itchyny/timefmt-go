@@ -154,6 +154,12 @@ func Format(t time.Time, format string) (s string, err error) {
 				} else {
 					buf.WriteString("PM")
 				}
+			case 'P':
+				if hour <= 12 {
+					buf.WriteString("am")
+				} else {
+					buf.WriteString("pm")
+				}
 			case 'M':
 				if min < 10 && padZero {
 					buf.WriteRune('0')

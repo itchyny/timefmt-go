@@ -155,9 +155,9 @@ var formatTestCases = []struct {
 		expected: "01:02:03 AM",
 	},
 	{
-		format:   "%I:%M:%S %p",
+		format:   "%I:%M:%S %P",
 		t:        time.Date(2020, time.January, 1, 12, 13, 14, 0, time.UTC),
-		expected: "12:13:14 AM",
+		expected: "12:13:14 am",
 	},
 	{
 		format:   "%I:%M:%S %p",
@@ -165,9 +165,9 @@ var formatTestCases = []struct {
 		expected: "01:14:15 PM",
 	},
 	{
-		format:   "%I:%M:%S %p",
+		format:   "%I:%M:%S %P",
 		t:        time.Date(2020, time.January, 1, 23, 14, 15, 0, time.UTC),
-		expected: "11:14:15 PM",
+		expected: "11:14:15 pm",
 	},
 	{
 		format:   "%-I:%-M:%-S %p",
