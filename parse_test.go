@@ -224,6 +224,10 @@ var parseTestCases = []struct {
 		format:   "%E",
 		parseErr: errors.New(`unexpected format: "%E"`),
 	},
+	{
+		format:   "%",
+		parseErr: errors.New(`stray %`),
+	},
 }
 
 func TestParse(t *testing.T) {

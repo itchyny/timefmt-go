@@ -29,6 +29,10 @@ func Parse(source, format string) (t time.Time, err error) {
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
+			if i == len(format) {
+				err = errors.New(`stray %`)
+				return
+			}
 			b = format[i]
 			switch b {
 			case 'Y':
