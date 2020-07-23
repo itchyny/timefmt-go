@@ -73,7 +73,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				j += diff
 			case 'w':
 				if j >= l || source[j] < '0' || '6' < source[j] {
-					err = errors.New("cannot parse %w")
+					err = parseFormatError(b)
 					return
 				}
 				j++
@@ -153,6 +153,12 @@ func isDigit(c byte) bool {
 	return '0' <= c && c <= '9'
 }
 
+type parseFormatError byte
+
+func (err parseFormatError) Error() string {
+	return fmt.Sprintf("cannot parse %%%c", byte(err))
+}
+
 func parseNumber(source string, max int, format byte) (int, int, error) {
 	if len(source) > 0 && isDigit(source[0]) {
 		for i := 1; i < max; i++ {
@@ -164,7 +170,7 @@ func parseNumber(source string, max int, format byte) (int, int, error) {
 		val, err := strconv.Atoi(string(source[:max]))
 		return val, max, err
 	}
-	return 0, 0, fmt.Errorf("cannot parse %%%c", format)
+	return 0, 0, parseFormatError(format)
 }
 
 func lookup(source string, candidates []string, format byte) (int, int, error) {
@@ -180,5 +186,5 @@ L:
 		}
 		return i + 1, len(xs), nil
 	}
-	return 0, 0, fmt.Errorf("cannot parse %%%c", format)
+	return 0, 0, parseFormatError(format)
 }
