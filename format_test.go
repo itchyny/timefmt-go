@@ -96,6 +96,11 @@ var formatTestCases = []struct {
 		expected: "2020-09-08 07:06:05.043210",
 	},
 	{
+		format:   "%-y-%-m-%-d %-H:%-M:%-S.%-f",
+		t:        time.Date(2002, time.September, 8, 7, 6, 5, 43210000, time.UTC),
+		expected: "2-9-8 7:6:5.043210",
+	},
+	{
 		format:   "%H:%M:%S.%f",
 		t:        time.Date(0, time.January, 1, 1, 2, 3, 450000000, time.UTC),
 		expected: "01:02:03.450000",
@@ -121,12 +126,21 @@ var formatTestCases = []struct {
 		expected: "11:14:15 PM",
 	},
 	{
+		format:   "%-I:%-M:%-S %p",
+		t:        time.Date(0, time.January, 1, 13, 2, 3, 0, time.UTC),
+		expected: "1:2:3 PM",
+	},
+	{
 		format:    "%E",
 		formatErr: errors.New(`unexpected format: "%E"`),
 	},
 	{
 		format:   "%",
 		expected: "%",
+	},
+	{
+		format:   "%-",
+		expected: "-",
 	},
 }
 

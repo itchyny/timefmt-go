@@ -26,6 +26,7 @@ func Format(t time.Time, format string) (s string, err error) {
 		}
 	}()
 	var buf bytes.Buffer
+	var padZero bool
 	for i := 0; i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
@@ -34,9 +35,19 @@ func Format(t time.Time, format string) (s string, err error) {
 				break
 			}
 			b = format[i]
+			padZero = true
+			if b == '-' {
+				i++
+				if i == len(format) {
+					buf.WriteByte(b)
+					break
+				}
+				padZero = false
+				b = format[i]
+			}
 			switch b {
 			case 'Y':
-				if year < 1000 {
+				if year < 1000 && padZero {
 					buf.WriteRune('0')
 					if year < 100 {
 						buf.WriteRune('0')
@@ -48,12 +59,12 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteString(fmt.Sprint(year))
 			case 'y':
 				y := year % 100
-				if y < 10 {
+				if y < 10 && padZero {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(y))
 			case 'm':
-				if month < 10 {
+				if month < 10 && padZero {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(int(month)))
@@ -68,12 +79,12 @@ func Format(t time.Time, format string) (s string, err error) {
 			case 'w':
 				buf.WriteString(fmt.Sprint(int(t.Weekday())))
 			case 'd':
-				if day < 10 {
+				if day < 10 && padZero {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(day))
 			case 'H':
-				if hour < 10 {
+				if hour < 10 && padZero {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(hour))
@@ -82,7 +93,7 @@ func Format(t time.Time, format string) (s string, err error) {
 				if h > 12 {
 					h -= 12
 				}
-				if h < 10 {
+				if h < 10 && padZero {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(h))
@@ -93,12 +104,12 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteString("PM")
 				}
 			case 'M':
-				if min < 10 {
+				if min < 10 && padZero {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(min))
 			case 'S':
-				if sec < 10 {
+				if sec < 10 && padZero {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(sec))
