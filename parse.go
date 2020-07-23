@@ -24,7 +24,7 @@ func Parse(source, format string) (t time.Time, err error) {
 			err = &parseError{source, format, err}
 		}
 	}()
-	var j int
+	var j, diff int
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
@@ -50,47 +50,31 @@ func Parse(source, format string) (t time.Time, err error) {
 				year += (time.Now().Year() / 100) * 100
 				j += 2
 			case 'm':
-				if j >= l {
-					err = errors.New("cannot parse %m")
+				if month, diff, err = parseNumber(source[j:], 2, 'm'); err != nil {
 					return
 				}
-				if c := source[j]; c > '1' || j+1 == l || !isDigit(source[j+1]) {
-					if month, err = strconv.Atoi(string(source[j : j+1])); err != nil {
-						return
-					}
-					j++
-				} else if j+2 <= l {
-					if month, err = strconv.Atoi(string(source[j : j+2])); err != nil {
-						return
-					}
-					j += 2
-				} else {
-					err = errors.New("cannot parse %m")
-					return
-				}
+				j += diff
 			case 'B':
-				var diff int
 				if month, diff = lookup(source[j:], longMonthNames); month == 0 {
 					err = errors.New("cannot parse %B")
 					return
 				}
 				j += diff
 			case 'b':
-				var diff int
 				if month, diff = lookup(source[j:], shortMonthNames); month == 0 {
 					err = errors.New("cannot parse %b")
 					return
 				}
 				j += diff
 			case 'A':
-				var week, diff int
+				var week int
 				if week, diff = lookup(source[j:], longWeekNames); week == 0 {
 					err = errors.New("cannot parse %A")
 					return
 				}
 				j += diff
 			case 'a':
-				var week, diff int
+				var week int
 				if week, diff = lookup(source[j:], shortWeekNames); week == 0 {
 					err = errors.New("cannot parse %a")
 					return
@@ -103,51 +87,25 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 				j++
 			case 'd':
-				if j >= l {
-					err = errors.New("cannot parse %d")
+				if day, diff, err = parseNumber(source[j:], 2, 'd'); err != nil {
 					return
 				}
-				if c := source[j]; c > '1' || j+1 == l || !isDigit(source[j+1]) {
-					if day, err = strconv.Atoi(string(source[j : j+1])); err != nil {
-						return
-					}
-					j++
-				} else if j+2 <= l {
-					if day, err = strconv.Atoi(string(source[j : j+2])); err != nil {
-						return
-					}
-					j += 2
-				} else {
-					err = errors.New("cannot parse %d")
-					return
-				}
+				j += diff
 			case 'H':
-				if j+2 > l {
-					err = errors.New("cannot parse %H")
+				if hour, diff, err = parseNumber(source[j:], 2, 'H'); err != nil {
 					return
 				}
-				if hour, err = strconv.Atoi(string(source[j : j+2])); err != nil {
-					return
-				}
-				j += 2
+				j += diff
 			case 'M':
-				if j+2 > l {
-					err = errors.New("cannot parse %M")
+				if min, diff, err = parseNumber(source[j:], 2, 'M'); err != nil {
 					return
 				}
-				if min, err = strconv.Atoi(string(source[j : j+2])); err != nil {
-					return
-				}
-				j += 2
+				j += diff
 			case 'S':
-				if j+2 > l {
-					err = errors.New("cannot parse %S")
+				if sec, diff, err = parseNumber(source[j:], 2, 'S'); err != nil {
 					return
 				}
-				if sec, err = strconv.Atoi(string(source[j : j+2])); err != nil {
-					return
-				}
-				j += 2
+				j += diff
 			default:
 				err = fmt.Errorf("unexpected format: %q", format[i-1:i+1])
 				return
@@ -168,6 +126,20 @@ func Parse(source, format string) (t time.Time, err error) {
 
 func isDigit(c byte) bool {
 	return '0' <= c && c <= '9'
+}
+
+func parseNumber(source string, max int, format byte) (int, int, error) {
+	if len(source) > 0 && isDigit(source[0]) {
+		for i := 1; i < max; i++ {
+			if i >= len(source) || !isDigit(source[i]) {
+				val, err := strconv.Atoi(string(source[:i]))
+				return val, i, err
+			}
+		}
+		val, err := strconv.Atoi(string(source[:max]))
+		return val, max, err
+	}
+	return 0, 0, fmt.Errorf("cannot parse %%%c", format)
 }
 
 func lookup(source string, candidates []string) (int, int) {
