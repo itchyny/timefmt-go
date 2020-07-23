@@ -116,6 +116,26 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.September, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "100",
+		format: "%j",
+		t:      time.Date(1900, time.April, 10, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "20203",
+		format: "%Y%j",
+		t:      time.Date(2020, time.January, 3, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2020366",
+		format: "%Y%j",
+		t:      time.Date(2020, time.December, 31, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2020-9-33",
+		format: "%Y-%m-%j",
+		t:      time.Date(2020, time.February, 2, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "MAY",
 		format: "%b",
 		t:      time.Date(1900, time.May, 1, 0, 0, 0, 0, time.UTC),

@@ -24,7 +24,7 @@ func Parse(source, format string) (t time.Time, err error) {
 			err = &parseError{source, format, err}
 		}
 	}()
-	var j, diff int
+	var j, diff, yday int
 	var pm bool
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
@@ -92,6 +92,11 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 'j':
+				if yday, diff, err = parseNumber(source[j:], 3, 'd'); err != nil {
+					return
+				}
+				j += diff
 			case 'H':
 				if hour, diff, err = parseNumber(source[j:], 2, 'H'); err != nil {
 					return
@@ -148,6 +153,9 @@ func Parse(source, format string) (t time.Time, err error) {
 	}
 	if pm {
 		hour += 12
+	}
+	if yday > 0 {
+		return time.Date(year, time.January, 1, hour, min, sec, nsec, loc).AddDate(0, 0, yday-1), nil
 	}
 	return time.Date(year, time.Month(month), day, hour, min, sec, nsec, loc), nil
 }
