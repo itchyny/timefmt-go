@@ -99,6 +99,15 @@ func Format(t time.Time, format string) (s string, err error) {
 					}
 				}
 				buf.WriteString(fmt.Sprint(yday))
+			case 'D', 'x':
+				padZero = true
+				pending = "m/d/y"
+			case 'F':
+				padZero = true
+				pending = "Y-m-d"
+			case 'v':
+				padZero = true
+				pending = "e-b-Y"
 			case 'H':
 				if hour < 10 && padZero {
 					buf.WriteRune('0')

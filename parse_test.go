@@ -231,14 +231,24 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.January, 1, 15, 14, 15, 0, time.UTC),
 	},
 	{
-		source: "23:14:15",
-		format: "%T",
-		t:      time.Date(1900, time.January, 1, 23, 14, 15, 0, time.UTC),
+		source: "2/20/21 23:14:15",
+		format: "%D %T",
+		t:      time.Date(2021, time.February, 20, 23, 14, 15, 0, time.UTC),
 	},
 	{
-		source: "23:14:15",
-		format: "%X",
-		t:      time.Date(1900, time.January, 1, 23, 14, 15, 0, time.UTC),
+		source: "02/09/20 23:14:15",
+		format: "%x %X",
+		t:      time.Date(2020, time.February, 9, 23, 14, 15, 0, time.UTC),
+	},
+	{
+		source: "2020-02-09 23:14:15",
+		format: "%F %T",
+		t:      time.Date(2020, time.February, 9, 23, 14, 15, 0, time.UTC),
+	},
+	{
+		source: " 9-Jul-2020 23:14:15",
+		format: "%v %X",
+		t:      time.Date(2020, time.July, 9, 23, 14, 15, 0, time.UTC),
 	},
 	{
 		source: "01%02\t03\n450000",

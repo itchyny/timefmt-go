@@ -97,6 +97,12 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 'D', 'x':
+				pending = "m/d/y"
+			case 'F':
+				pending = "Y-m-d"
+			case 'v':
+				pending = "e-b-Y"
 			case 'H':
 				if hour, diff, err = parseNumber(source[j:], 2, 'H'); err != nil {
 					return
