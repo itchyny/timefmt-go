@@ -27,6 +27,7 @@ func Format(t time.Time, format string) (s string, err error) {
 	}()
 	var buf bytes.Buffer
 	var padZero bool
+	var pending string
 	for i := 0; i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
@@ -45,6 +46,7 @@ func Format(t time.Time, format string) (s string, err error) {
 				padZero = false
 				b = format[i]
 			}
+		L:
 			switch b {
 			case 'Y':
 				if year < 1000 && padZero {
@@ -127,6 +129,15 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(sec))
+			case 'R':
+				padZero = true
+				pending = "H:M"
+			case 'r':
+				padZero = true
+				pending = "I:M:S p"
+			case 'T', 'X':
+				padZero = true
+				pending = "H:M:S"
 			case 'f':
 				buf.WriteString(fmt.Sprintf("%06d", t.Nanosecond()/1000))
 			case 't':
@@ -135,6 +146,10 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteRune('\n')
 			default:
 				buf.WriteByte(b)
+			}
+			if pending != "" {
+				b, pending = pending[0], pending[1:]
+				goto L
 			}
 		} else {
 			buf.WriteByte(b)

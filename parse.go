@@ -26,6 +26,7 @@ func Parse(source, format string) (t time.Time, err error) {
 	}()
 	var j, diff, yday int
 	var pm bool
+	var pending string
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
@@ -34,6 +35,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				return
 			}
 			b = format[i]
+		L:
 			switch b {
 			case 'Y':
 				if year, diff, err = parseNumber(source[j:], 4, 'Y'); err != nil {
@@ -122,6 +124,12 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 'R':
+				pending = "H:M"
+			case 'r':
+				pending = "I:M:S p"
+			case 'T', 'X':
+				pending = "H:M:S"
 			case 'f':
 				var msec int
 				if msec, diff, err = parseNumber(source[j:], 6, 'f'); err != nil {
@@ -152,8 +160,19 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 				j++
 			default:
-				err = fmt.Errorf("unexpected format: %q", format[i-1:i+1])
-				return
+				if pending == "" {
+					err = fmt.Errorf(`unexpected format: "%%%c"`, b)
+					return
+				}
+				if j >= l || source[j] != b {
+					err = fmt.Errorf("expected %q", b)
+					return
+				}
+				j++
+			}
+			if pending != "" {
+				b, pending = pending[0], pending[1:]
+				goto L
 			}
 		} else if j >= len(source) || source[j] != b {
 			err = fmt.Errorf("expected %q", b)
