@@ -32,24 +32,16 @@ func Parse(source, format string) (t time.Time, err error) {
 			b = format[i]
 			switch b {
 			case 'Y':
-				if j+4 > l {
-					err = errors.New("cannot parse %Y")
+				if year, diff, err = parseNumber(source[j:], 4, 'Y'); err != nil {
 					return
 				}
-				if year, err = strconv.Atoi(string(source[j : j+4])); err != nil {
-					return
-				}
-				j += 4
+				j += diff
 			case 'y':
-				if j+2 > l {
-					err = errors.New("cannot parse %y")
+				if year, diff, err = parseNumber(source[j:], 2, 'y'); err != nil {
 					return
 				}
-				if year, err = strconv.Atoi(string(source[j : j+2])); err != nil {
-					return
-				}
+				j += diff
 				year += (time.Now().Year() / 100) * 100
-				j += 2
 			case 'm':
 				if month, diff, err = parseNumber(source[j:], 2, 'm'); err != nil {
 					return

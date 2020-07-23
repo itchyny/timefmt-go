@@ -26,19 +26,24 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
-		source: "2020",
+		source: "20",
 		format: "%Y",
-		t:      time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(20, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
-		source:   "20",
-		format:   "%Y",
-		parseErr: errors.New("cannot parse %Y"),
+		source: "2",
+		format: "%Y",
+		t:      time.Date(2, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "20",
+		format: "%Y",
+		t:      time.Date(20, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "20xxx",
 		format:   "%Y",
-		parseErr: errors.New(`strconv.Atoi: parsing "20xx"`),
+		parseErr: errors.New(`unconverted string: "xxx"`),
 	},
 	{
 		source: "2020-05",
@@ -94,6 +99,11 @@ var parseTestCases = []struct {
 		source: "201111",
 		format: "%y%m%d",
 		t:      time.Date(2020, time.November, 11, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "9-9-9",
+		format: "%y-%m-%d",
+		t:      time.Date(2009, time.September, 9, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "Jan",
