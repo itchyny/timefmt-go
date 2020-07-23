@@ -65,6 +65,12 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(y))
+			case 'C':
+				c := year / 100
+				if c < 10 && padZero {
+					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(c))
 			case 'm':
 				if month < 10 && padZero {
 					buf.WriteRune('0')

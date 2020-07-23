@@ -46,6 +46,16 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`unconverted string: "xxx"`),
 	},
 	{
+		source: "20",
+		format: "%C",
+		t:      time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "1758",
+		format: "%C%y",
+		t:      time.Date(1758, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "2020-05",
 		format: "%Y-%m",
 		t:      time.Date(2020, time.May, 1, 0, 0, 0, 0, time.UTC),
