@@ -1,6 +1,8 @@
 package timefmt_test
 
 import (
+	"fmt"
+	"log"
 	"strings"
 	"testing"
 	"time"
@@ -315,4 +317,14 @@ func TestFormat(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleFormat() {
+	t := time.Date(2020, time.July, 24, 9, 7, 29, 0, time.UTC)
+	str, err := timefmt.Format(t, "%Y-%m-%d %H:%M:%S")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(str)
+	// Output: 2020-07-24 09:07:29
 }

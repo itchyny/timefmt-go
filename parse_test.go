@@ -2,6 +2,8 @@ package timefmt_test
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"strings"
 	"testing"
 	"time"
@@ -406,4 +408,14 @@ func TestParse(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleParse() {
+	str := "2020-07-24 09:07:29"
+	t, err := timefmt.Parse(str, "%Y-%m-%d %H:%M:%S")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(t)
+	// Output: 2020-07-24 09:07:29 +0000 UTC
 }
