@@ -71,6 +71,23 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(c))
+			case 'g', 'G':
+				year, _ := t.ISOWeek()
+				if b == 'g' {
+					year %= 100
+					if year < 10 && padZero {
+						buf.WriteRune('0')
+					}
+				} else if year < 1000 && padZero {
+					buf.WriteRune('0')
+					if year < 100 {
+						buf.WriteRune('0')
+						if year < 10 {
+							buf.WriteRune('0')
+						}
+					}
+				}
+				buf.WriteString(fmt.Sprint(year))
 			case 'm':
 				if month < 10 && padZero {
 					buf.WriteRune('0')
@@ -92,6 +109,12 @@ func Format(t time.Time, format string) (s string, err error) {
 					w = 7
 				}
 				buf.WriteString(fmt.Sprint(w))
+			case 'V':
+				_, week := t.ISOWeek()
+				if week < 10 && padZero {
+					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(week))
 			case 'e':
 				if day < 10 && padZero {
 					buf.WriteRune(' ')

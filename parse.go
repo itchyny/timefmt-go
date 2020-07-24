@@ -57,6 +57,17 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+			case 'g':
+				if year, diff, err = parseNumber(source[j:], 2, b); err != nil {
+					return
+				}
+				j += diff
+				year += 2000
+			case 'G':
+				if year, diff, err = parseNumber(source[j:], 4, b); err != nil {
+					return
+				}
+				j += diff
 			case 'm':
 				if month, diff, err = parseNumber(source[j:], 2, 'm'); err != nil {
 					return
@@ -94,6 +105,11 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j++
+			case 'V':
+				if _, diff, err = parseNumber(source[j:], 2, b); err != nil {
+					return
+				}
+				j += diff
 			case 'e':
 				if j < l && source[j] == ' ' {
 					j++
