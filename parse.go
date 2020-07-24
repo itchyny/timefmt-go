@@ -109,12 +109,6 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
-			case 'D', 'x':
-				pending = "m/d/y"
-			case 'F':
-				pending = "Y-m-d"
-			case 'v':
-				pending = "e-b-Y"
 			case 'k':
 				if j < l && source[j] == ' ' {
 					j++
@@ -163,14 +157,6 @@ func Parse(source, format string) (t time.Time, err error) {
 				hour, min, sec = t.Clock()
 				month = int(mon)
 				j += diff
-			case 'R':
-				pending = "H:M"
-			case 'r':
-				pending = "I:M:S p"
-			case 'T', 'X':
-				pending = "H:M:S"
-			case 'c':
-				pending = "a b e H:M:S Y"
 			case 'f':
 				var msec int
 				if msec, diff, err = parseNumber(source[j:], 6, 'f'); err != nil {
@@ -242,6 +228,10 @@ func Parse(source, format string) (t time.Time, err error) {
 				j++
 			default:
 				if pending == "" {
+					var ok bool
+					if pending, ok = compositions[b]; ok {
+						break
+					}
 					err = fmt.Errorf(`unexpected format: "%%%c"`, b)
 					return
 				}

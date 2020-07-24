@@ -111,15 +111,6 @@ func Format(t time.Time, format string) (s string, err error) {
 					}
 				}
 				buf.WriteString(fmt.Sprint(yday))
-			case 'D', 'x':
-				padZero = true
-				pending = "m/d/y"
-			case 'F':
-				padZero = true
-				pending = "Y-m-d"
-			case 'v':
-				padZero = true
-				pending = "e-b-Y"
 			case 'k':
 				if hour < 10 && padZero {
 					buf.WriteRune(' ')
@@ -172,18 +163,6 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteString(fmt.Sprint(sec))
 			case 's':
 				buf.WriteString(fmt.Sprint(t.Unix()))
-			case 'R':
-				padZero = true
-				pending = "H:M"
-			case 'r':
-				padZero = true
-				pending = "I:M:S p"
-			case 'T', 'X':
-				padZero = true
-				pending = "H:M:S"
-			case 'c':
-				padZero = true
-				pending = "a b e H:M:S Y"
 			case 'f':
 				buf.WriteString(fmt.Sprintf("%06d", t.Nanosecond()/1000))
 			case 'Z', 'z':
@@ -205,6 +184,11 @@ func Format(t time.Time, format string) (s string, err error) {
 			case 'n':
 				buf.WriteRune('\n')
 			default:
+				if pending == "" {
+					if pending, padZero = compositions[b]; padZero {
+						break
+					}
+				}
 				buf.WriteByte(b)
 			}
 			if pending != "" {
@@ -266,4 +250,16 @@ var shortWeekNames = []string{
 	"Thu",
 	"Fri",
 	"Sat",
+}
+
+var compositions = map[byte]string{
+	'c': "a b e H:M:S Y",
+	'F': "Y-m-d",
+	'D': "m/d/y",
+	'x': "m/d/y",
+	'v': "e-b-Y",
+	'T': "H:M:S",
+	'X': "H:M:S",
+	'r': "I:M:S p",
+	'R': "H:M",
 }
