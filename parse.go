@@ -145,6 +145,9 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j += diff
+				if hour == 12 {
+					hour = 0
+				}
 			case 'p', 'P':
 				var ampm int
 				if ampm, diff, err = lookup(source[j:], []string{"AM", "PM"}, 'p'); err != nil {

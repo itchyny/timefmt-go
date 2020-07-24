@@ -203,6 +203,11 @@ var formatTestCases = []struct {
 	},
 	{
 		format:   "%I:%M:%S %p",
+		t:        time.Date(2020, time.January, 1, 0, 1, 2, 0, time.UTC),
+		expected: "12:01:02 AM",
+	},
+	{
+		format:   "%I:%M:%S %p",
 		t:        time.Date(2020, time.January, 1, 1, 2, 3, 0, time.UTC),
 		expected: "01:02:03 AM",
 	},

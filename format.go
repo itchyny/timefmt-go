@@ -177,6 +177,9 @@ func Format(t time.Time, format string) (s string, err error) {
 				if h > 12 {
 					h -= 12
 				}
+				if h == 0 {
+					h = 12
+				}
 				if h < 10 && padding != 0 {
 					buf.WriteByte(padding)
 				}
