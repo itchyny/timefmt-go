@@ -105,7 +105,7 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				j++
-			case 'V':
+			case 'V', 'U', 'W':
 				if _, diff, err = parseNumber(source[j:], 2, b); err != nil {
 					return
 				}

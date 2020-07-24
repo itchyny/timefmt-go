@@ -115,6 +115,22 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('0')
 				}
 				buf.WriteString(fmt.Sprint(week))
+			case 'U':
+				week := (t.YearDay() + 6 - int(t.Weekday())) / 7
+				if week < 10 && padZero {
+					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(week))
+			case 'W':
+				week := t.YearDay()
+				if int(t.Weekday()) > 0 {
+					week -= int(t.Weekday()) - 7
+				}
+				week /= 7
+				if week < 10 && padZero {
+					buf.WriteRune('0')
+				}
+				buf.WriteString(fmt.Sprint(week))
 			case 'e':
 				if day < 10 && padZero {
 					buf.WriteRune(' ')
