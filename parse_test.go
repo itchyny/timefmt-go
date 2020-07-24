@@ -383,7 +383,7 @@ var parseTestCases = []struct {
 	},
 	{
 		format:   "%",
-		parseErr: errors.New(`stray %`),
+		parseErr: errors.New("stray %"),
 	},
 }
 

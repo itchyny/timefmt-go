@@ -31,7 +31,7 @@ func Parse(source, format string) (t time.Time, err error) {
 		if b := format[i]; b == '%' {
 			i++
 			if i == len(format) {
-				err = errors.New(`stray %`)
+				err = errors.New("stray %")
 				return
 			}
 			b = format[i]
