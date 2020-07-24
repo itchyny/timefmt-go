@@ -254,6 +254,7 @@ var shortWeekNames = []string{
 
 var compositions = map[byte]string{
 	'c': "a b e H:M:S Y",
+	'+': "a b e H:M:S Z Y",
 	'F': "Y-m-d",
 	'D': "m/d/y",
 	'x': "m/d/y",
