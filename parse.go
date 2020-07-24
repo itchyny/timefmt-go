@@ -224,18 +224,21 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 				loc = time.FixedZone("", offset)
 				j += 5
-			case 't':
-				if j >= l || source[j] != '\t' {
-					err = fmt.Errorf("expected %q", '\t')
+			case 't', 'n':
+				k := j
+			K:
+				for ; k < l; k++ {
+					switch source[k] {
+					case ' ', '\t', '\n', '\v', '\f', '\r':
+					default:
+						break K
+					}
+				}
+				if k == j {
+					err = errors.New("expected a space")
 					return
 				}
-				j++
-			case 'n':
-				if j >= l || source[j] != '\n' {
-					err = fmt.Errorf("expected %q", '\n')
-					return
-				}
-				j++
+				j = k
 			case '%':
 				if j >= l || source[j] != b {
 					err = fmt.Errorf("expected %q", b)
