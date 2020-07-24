@@ -67,14 +67,24 @@ var formatTestCases = []struct {
 		expected: "2020-09-10",
 	},
 	{
+		format:   "%-Y-%-m-%-d",
+		t:        time.Date(2020, time.September, 8, 0, 0, 0, 0, time.UTC),
+		expected: "2020-9-8",
+	},
+	{
+		format:   "%_Y-%_m-%_d",
+		t:        time.Date(2020, time.September, 8, 0, 0, 0, 0, time.UTC),
+		expected: "2020- 9- 8",
+	},
+	{
 		format:   "%Y/%m/%d",
 		t:        time.Date(2020, time.October, 9, 0, 0, 0, 0, time.UTC),
 		expected: "2020/10/09",
 	},
 	{
-		format:   "%e %-e",
+		format:   "%e %-e %_e",
 		t:        time.Date(2020, time.January, 9, 0, 0, 0, 0, time.UTC),
-		expected: " 9 9",
+		expected: " 9 9  9",
 	},
 	{
 		format:   "%B",
@@ -137,6 +147,11 @@ var formatTestCases = []struct {
 		expected: "20 2020 Mon 02 01 01",
 	},
 	{
+		format:   "%g %G %a %-V %-U %-W %_V %_U %_W",
+		t:        time.Date(2020, time.January, 6, 0, 0, 0, 0, time.UTC),
+		expected: "20 2020 Mon 2 1 1  2  1  1",
+	},
+	{
 		format:   "%g %G %a %V %U %W",
 		t:        time.Date(2009, time.December, 31, 0, 0, 0, 0, time.UTC),
 		expected: "09 2009 Thu 53 52 52",
@@ -174,7 +189,12 @@ var formatTestCases = []struct {
 	{
 		format:   "%-y-%-m-%-d %-H:%-M:%-S.%-f",
 		t:        time.Date(2002, time.September, 8, 7, 6, 5, 43210000, time.UTC),
-		expected: "2-9-8 7:6:5.043210",
+		expected: "02-9-8 7:6:5.043210",
+	},
+	{
+		format:   "%_y-%_m-%_d %_H:%_M:%_S.%_f",
+		t:        time.Date(2002, time.September, 8, 7, 6, 5, 43210000, time.UTC),
+		expected: "02- 9- 8  7: 6: 5.043210",
 	},
 	{
 		format:   "%H:%M:%S.%f",
@@ -207,9 +227,9 @@ var formatTestCases = []struct {
 		expected: "1:2:3 PM",
 	},
 	{
-		format:   "%k %-k",
+		format:   "%k %-k %_k",
 		t:        time.Date(2020, time.January, 1, 9, 0, 0, 0, time.UTC),
-		expected: " 9 9",
+		expected: " 9 9  9",
 	},
 	{
 		format:   "%l %-l",
