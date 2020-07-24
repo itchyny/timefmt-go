@@ -33,6 +33,10 @@ func main() {
 }
 ```
 
+Please refer to [`man 3 strftime`](https://linux.die.net/man/3/strftime) and
+[`man 3 strptime`](https://linux.die.net/man/3/strptime) for formatters.
+Note that `E` and `O` modifier characters are not supported.
+
 ## Bug Tracker
 Report bug at [Issues・itchyny/timefmt-go - GitHub](https://github.com/itchyny/timefmt-go/issues).
 
