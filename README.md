@@ -19,16 +19,10 @@ func main() {
 	}
 	fmt.Println(t) // 2020-07-24 09:07:29 +0000 UTC
 
-	str, err := timefmt.Format(t, "%Y/%m/%d %H:%M:%S")
-	if err != nil {
-		log.Fatal(err)
-	}
+	str := timefmt.Format(t, "%Y/%m/%d %H:%M:%S")
 	fmt.Println(str) // 2020/07/24 09:07:29
 
-	str, err = timefmt.Format(t, "%a, %d %b %Y %T %z")
-	if err != nil {
-		log.Fatal(err)
-	}
+	str = timefmt.Format(t, "%a, %d %b %Y %T %z")
 	fmt.Println(str) // Fri, 24 Jul 2020 09:07:29 +0000
 }
 ```

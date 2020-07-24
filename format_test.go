@@ -2,8 +2,6 @@ package timefmt_test
 
 import (
 	"fmt"
-	"log"
-	"strings"
 	"testing"
 	"time"
 
@@ -11,10 +9,9 @@ import (
 )
 
 var formatTestCases = []struct {
-	format    string
-	t         time.Time
-	expected  string
-	formatErr error
+	format   string
+	t        time.Time
+	expected string
 }{
 	{
 		format:   "%Y",
@@ -324,21 +321,9 @@ var formatTestCases = []struct {
 func TestFormat(t *testing.T) {
 	for _, tc := range formatTestCases {
 		t.Run(tc.expected+"/"+tc.format, func(t *testing.T) {
-			got, err := timefmt.Format(tc.t, tc.format)
-			if tc.formatErr == nil {
-				if err != nil {
-					t.Fatalf("expected no error but got: %v", err)
-				}
-				if got != tc.expected {
-					t.Errorf("expected: %v, got: %v", tc.expected, got)
-				}
-			} else {
-				if err == nil {
-					t.Fatalf("expected error %v but got: %v", tc.formatErr, err)
-				}
-				if !strings.Contains(err.Error(), tc.formatErr.Error()) {
-					t.Errorf("expected: %v, got: %v", tc.formatErr, err)
-				}
+			got := timefmt.Format(tc.t, tc.format)
+			if got != tc.expected {
+				t.Errorf("expected: %v, got: %v", tc.expected, got)
 			}
 		})
 	}
@@ -346,10 +331,7 @@ func TestFormat(t *testing.T) {
 
 func ExampleFormat() {
 	t := time.Date(2020, time.July, 24, 9, 7, 29, 0, time.UTC)
-	str, err := timefmt.Format(t, "%Y-%m-%d %H:%M:%S")
-	if err != nil {
-		log.Fatal(err)
-	}
+	str := timefmt.Format(t, "%Y-%m-%d %H:%M:%S")
 	fmt.Println(str)
 	// Output: 2020-07-24 09:07:29
 }

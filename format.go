@@ -2,30 +2,14 @@ package timefmt
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 	"time"
 )
 
-type formatError struct {
-	t      time.Time
-	format string
-	err    error
-}
-
-func (err *formatError) Error() string {
-	return fmt.Sprintf("failed to format %q with %q: %s", err.t, err.format, err.err)
-}
-
 // Format time to string using the format.
-func Format(t time.Time, format string) (s string, err error) {
+func Format(t time.Time, format string) string {
 	year, month, day := t.Date()
 	hour, min, sec := t.Clock()
-	defer func() {
-		if err != nil {
-			err = &formatError{t, format, err}
-		}
-	}()
 	buf := new(bytes.Buffer)
 	var padding byte
 	var pending string
@@ -187,7 +171,7 @@ func Format(t time.Time, format string) (s string, err error) {
 			buf.WriteByte(b)
 		}
 	}
-	return buf.String(), nil
+	return buf.String()
 }
 
 func appendInt(buf *bytes.Buffer, num, width int, padding byte) {
