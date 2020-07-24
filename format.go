@@ -3,6 +3,7 @@ package timefmt
 import (
 	"bytes"
 	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -75,13 +76,13 @@ func Format(t time.Time, format string) (s string, err error) {
 			case 'a':
 				buf.WriteString(shortWeekNames[t.Weekday()])
 			case 'w':
-				buf.WriteString(fmt.Sprint(int(t.Weekday())))
+				buf.WriteString(strconv.Itoa(int(t.Weekday())))
 			case 'u':
 				w := int(t.Weekday())
 				if w == 0 {
 					w = 7
 				}
-				buf.WriteString(fmt.Sprint(w))
+				buf.WriteString(strconv.Itoa(w))
 			case 'V':
 				_, week := t.ISOWeek()
 				appendInt(buf, week, 2, padding)
@@ -146,7 +147,7 @@ func Format(t time.Time, format string) (s string, err error) {
 			case 'S':
 				appendInt(buf, sec, 2, padding)
 			case 's':
-				buf.WriteString(fmt.Sprint(t.Unix()))
+				buf.WriteString(strconv.FormatInt(t.Unix(), 10))
 			case 'f':
 				appendInt(buf, t.Nanosecond()/1000, 6, '0')
 			case 'Z', 'z':
@@ -207,7 +208,7 @@ func appendInt(buf *bytes.Buffer, num, width int, padding byte) {
 				}
 			}
 		default:
-			str := fmt.Sprint(num)
+			str := strconv.Itoa(num)
 			for width -= len(str); width > 0; width-- {
 				buf.WriteByte(padding)
 			}
@@ -215,7 +216,7 @@ func appendInt(buf *bytes.Buffer, num, width int, padding byte) {
 			return
 		}
 	}
-	buf.WriteString(fmt.Sprint(num))
+	buf.WriteString(strconv.Itoa(num))
 }
 
 var longMonthNames = []string{
