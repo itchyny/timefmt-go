@@ -76,13 +76,13 @@ func Format(t time.Time, format string) (s string, err error) {
 			case 'a':
 				buf.WriteString(shortWeekNames[t.Weekday()])
 			case 'w':
-				buf.WriteString(strconv.Itoa(int(t.Weekday())))
+				buf.WriteByte('0' + byte(t.Weekday()))
 			case 'u':
 				w := int(t.Weekday())
 				if w == 0 {
 					w = 7
 				}
-				buf.WriteString(strconv.Itoa(w))
+				buf.WriteByte('0' + byte(w))
 			case 'V':
 				_, week := t.ISOWeek()
 				appendInt(buf, week, 2, padding)
