@@ -25,7 +25,7 @@ func Format(t time.Time, format string) (s string, err error) {
 			err = &formatError{t, format, err}
 		}
 	}()
-	var buf bytes.Buffer
+	buf := new(bytes.Buffer)
 	var padding byte
 	var pending string
 	for i := 0; i < len(format); i++ {
@@ -52,50 +52,20 @@ func Format(t time.Time, format string) (s string, err error) {
 		L:
 			switch b {
 			case 'Y':
-				if year < 1000 {
-					buf.WriteByte('0')
-					if year < 100 {
-						buf.WriteByte('0')
-						if year < 10 {
-							buf.WriteByte('0')
-						}
-					}
-				}
-				buf.WriteString(fmt.Sprint(year))
+				appendInt(buf, year, 4, '0')
 			case 'y':
-				y := year % 100
-				if y < 10 {
-					buf.WriteByte('0')
-				}
-				buf.WriteString(fmt.Sprint(y))
+				appendInt(buf, year%100, 2, '0')
 			case 'C':
-				c := year / 100
-				if c < 10 && padding != 0 {
-					buf.WriteByte('0')
-				}
-				buf.WriteString(fmt.Sprint(c))
+				appendInt(buf, year/100, 2, '0')
 			case 'g', 'G':
 				year, _ := t.ISOWeek()
 				if b == 'g' {
-					year %= 100
-					if year < 10 {
-						buf.WriteByte('0')
-					}
-				} else if year < 1000 {
-					buf.WriteByte('0')
-					if year < 100 {
-						buf.WriteByte('0')
-						if year < 10 {
-							buf.WriteByte('0')
-						}
-					}
+					appendInt(buf, year%100, 2, '0')
+				} else {
+					appendInt(buf, year, 4, '0')
 				}
-				buf.WriteString(fmt.Sprint(year))
 			case 'm':
-				if month < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(int(month)))
+				appendInt(buf, int(month), 2, padding)
 			case 'B':
 				buf.WriteString(longMonthNames[month-1])
 			case 'b', 'h':
@@ -114,64 +84,42 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteString(fmt.Sprint(w))
 			case 'V':
 				_, week := t.ISOWeek()
-				if week < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(week))
+				appendInt(buf, week, 2, padding)
 			case 'U':
 				week := (t.YearDay() + 6 - int(t.Weekday())) / 7
-				if week < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(week))
+				appendInt(buf, week, 2, padding)
 			case 'W':
 				week := t.YearDay()
 				if int(t.Weekday()) > 0 {
 					week -= int(t.Weekday()) - 7
 				}
 				week /= 7
-				if week < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(week))
+				appendInt(buf, week, 2, padding)
 			case 'e':
-				if day < 10 && padding != 0 {
-					buf.WriteByte(' ')
+				if padding != 0 {
+					padding = ' '
 				}
-				buf.WriteString(fmt.Sprint(day))
+				fallthrough
 			case 'd':
-				if day < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(day))
+				appendInt(buf, day, 2, padding)
 			case 'j':
-				yday := t.YearDay()
-				if yday < 100 && padding != 0 {
-					buf.WriteByte(padding)
-					if yday < 10 {
-						buf.WriteByte(padding)
-					}
-				}
-				buf.WriteString(fmt.Sprint(yday))
+				appendInt(buf, t.YearDay(), 3, padding)
 			case 'k':
-				if hour < 10 && padding != 0 {
-					buf.WriteByte(' ')
+				if padding != 0 {
+					padding = ' '
 				}
-				buf.WriteString(fmt.Sprint(hour))
+				fallthrough
 			case 'H':
-				if hour < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(hour))
+				appendInt(buf, hour, 2, padding)
 			case 'l':
+				if padding != 0 {
+					padding = ' '
+				}
 				h := hour
 				if h > 12 {
 					h -= 12
 				}
-				if h < 10 && padding != 0 {
-					buf.WriteByte(' ')
-				}
-				buf.WriteString(fmt.Sprint(h))
+				appendInt(buf, h, 2, padding)
 			case 'I':
 				h := hour
 				if h > 12 {
@@ -180,10 +128,7 @@ func Format(t time.Time, format string) (s string, err error) {
 				if h == 0 {
 					h = 12
 				}
-				if h < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(h))
+				appendInt(buf, h, 2, padding)
 			case 'p':
 				if hour <= 12 {
 					buf.WriteString("AM")
@@ -197,19 +142,13 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteString("pm")
 				}
 			case 'M':
-				if min < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(min))
+				appendInt(buf, min, 2, padding)
 			case 'S':
-				if sec < 10 && padding != 0 {
-					buf.WriteByte(padding)
-				}
-				buf.WriteString(fmt.Sprint(sec))
+				appendInt(buf, sec, 2, padding)
 			case 's':
 				buf.WriteString(fmt.Sprint(t.Unix()))
 			case 'f':
-				buf.WriteString(fmt.Sprintf("%06d", t.Nanosecond()/1000))
+				appendInt(buf, t.Nanosecond()/1000, 6, '0')
 			case 'Z', 'z':
 				name, offset := t.Zone()
 				if b == 'Z' && name != "" {
@@ -223,7 +162,8 @@ func Format(t time.Time, format string) (s string, err error) {
 					buf.WriteRune('+')
 				}
 				offset /= 60
-				buf.WriteString(fmt.Sprintf("%02d%02d", offset/60, offset%60))
+				appendInt(buf, offset/60, 2, '0')
+				appendInt(buf, offset%60, 2, '0')
 			case 't':
 				buf.WriteRune('\t')
 			case 'n':
@@ -239,7 +179,7 @@ func Format(t time.Time, format string) (s string, err error) {
 				buf.WriteByte(b)
 			}
 			if pending != "" {
-				b, pending = pending[0], pending[1:]
+				b, pending, padding = pending[0], pending[1:], '0'
 				goto L
 			}
 		} else {
@@ -247,6 +187,35 @@ func Format(t time.Time, format string) (s string, err error) {
 		}
 	}
 	return buf.String(), nil
+}
+
+func appendInt(buf *bytes.Buffer, num, width int, padding byte) {
+	if padding != 0 {
+		switch width {
+		case 2:
+			if num < 10 {
+				buf.WriteByte(padding)
+			}
+		case 4:
+			if num < 1000 {
+				buf.WriteByte(padding)
+				if num < 100 {
+					buf.WriteByte(padding)
+					if num < 10 {
+						buf.WriteByte(padding)
+					}
+				}
+			}
+		default:
+			str := fmt.Sprint(num)
+			for width -= len(str); width > 0; width-- {
+				buf.WriteByte(padding)
+			}
+			buf.WriteString(str)
+			return
+		}
+	}
+	buf.WriteString(fmt.Sprint(num))
 }
 
 var longMonthNames = []string{
