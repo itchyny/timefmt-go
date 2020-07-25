@@ -89,19 +89,19 @@ var formatTestCases = []struct {
 		expected: " 9 9  9    9",
 	},
 	{
-		format:   "%B %_B %12B",
+		format:   "%B %_B %^B %12B %^12B",
 		t:        time.Date(2020, time.October, 1, 0, 0, 0, 0, time.UTC),
-		expected: "October October      October",
+		expected: "October October OCTOBER      October      OCTOBER",
 	},
 	{
-		format:   "%b %8b",
+		format:   "%b %^b %8b %^8b",
 		t:        time.Date(2020, time.September, 1, 0, 0, 0, 0, time.UTC),
-		expected: "Sep      Sep",
+		expected: "Sep SEP      Sep      SEP",
 	},
 	{
-		format:   "%h %8b",
-		t:        time.Date(2020, time.September, 1, 0, 0, 0, 0, time.UTC),
-		expected: "Sep      Sep",
+		format:   "%h %^h %8h %^8h",
+		t:        time.Date(2020, time.November, 1, 0, 0, 0, 0, time.UTC),
+		expected: "Nov NOV      Nov      NOV",
 	},
 	{
 		format:   "%A %a %w %u",
@@ -129,9 +129,9 @@ var formatTestCases = []struct {
 		expected: "Monday Mon 1 1",
 	},
 	{
-		format:   "%8A %8a %4w %4u %-4w %-4u %_4w %_4u",
+		format:   "%^A %8A %^8A %^a %8a %^8a %4w %4u %-4w %-4u %_4w %_4u",
 		t:        time.Date(2020, time.January, 6, 0, 0, 0, 0, time.UTC),
-		expected: "  Monday      Mon 0001 0001    1    1    1    1",
+		expected: "MONDAY   Monday   MONDAY MON      Mon      MON 0001 0001    1    1    1    1",
 	},
 	{
 		format:   "%g %G %a %V %U %W",
@@ -309,9 +309,19 @@ var formatTestCases = []struct {
 		expected: "Sun Feb  9 23:04:05 2020",
 	},
 	{
+		format:   "%^c",
+		t:        time.Date(2020, time.February, 9, 23, 4, 5, 0, time.UTC),
+		expected: "SUN FEB  9 23:04:05 2020",
+	},
+	{
 		format:   "%+",
 		t:        time.Date(2020, time.February, 9, 23, 4, 5, 0, time.UTC),
 		expected: "Sun Feb  9 23:04:05 UTC 2020",
+	},
+	{
+		format:   "%^+",
+		t:        time.Date(2020, time.February, 9, 23, 4, 5, 0, time.UTC),
+		expected: "SUN FEB  9 23:04:05 UTC 2020",
 	},
 	{
 		format:   "%F %T %z %-z %_4z",
@@ -376,6 +386,10 @@ var formatTestCases = []struct {
 	{
 		format:   "%!%.%[%]%|%$%-",
 		expected: "!.[]|$-",
+	},
+	{
+		format:   "%^",
+		expected: "^",
 	},
 	{
 		format:   "%",
