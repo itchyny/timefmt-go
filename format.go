@@ -11,6 +11,7 @@ func Format(t time.Time, format string) string {
 	year, month, day := t.Date()
 	hour, min, sec := t.Clock()
 	buf := new(bytes.Buffer)
+	var width int
 	var padding byte
 	var pending string
 	for i := 0; i < len(format); i++ {
@@ -21,7 +22,7 @@ func Format(t time.Time, format string) string {
 				break
 			}
 			b = format[i]
-			padding = '0'
+			width, padding = 0, '0'
 			if b == '-' || b == '_' {
 				i++
 				if i == len(format) {
@@ -34,68 +35,127 @@ func Format(t time.Time, format string) string {
 				}
 				b = format[i]
 			}
+			if b <= '9' && '1' <= b {
+				width = int(b & 0x0F)
+				for i++; i < len(format); i++ {
+					b = format[i]
+					if b <= '9' && '0' <= b {
+						width = width*10 + int(b&0x0F)
+					} else {
+						break
+					}
+				}
+				if i == len(format) {
+					appendString(buf, "%"+strconv.Itoa(width), width)
+					break
+				}
+				if padding == 0 {
+					padding = ' '
+				}
+			}
 		L:
 			switch b {
 			case 'Y':
-				appendInt(buf, year, 4, '0')
-			case 'y':
-				appendInt(buf, year%100, 2, '0')
-			case 'C':
-				appendInt(buf, year/100, 2, '0')
-			case 'g', 'G':
-				year, _ := t.ISOWeek()
-				if b == 'g' {
-					appendInt(buf, year%100, 2, '0')
-				} else {
-					appendInt(buf, year, 4, '0')
+				if width == 0 {
+					width = 4
 				}
+				appendInt(buf, year, width, padding)
+			case 'y':
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, year%100, width, padding)
+			case 'C':
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, year/100, width, padding)
+			case 'g':
+				year, _ := t.ISOWeek()
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, year%100, width, padding)
+			case 'G':
+				year, _ := t.ISOWeek()
+				if width == 0 {
+					width = 4
+				}
+				appendInt(buf, year, width, padding)
 			case 'm':
-				appendInt(buf, int(month), 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, int(month), width, padding)
 			case 'B':
-				buf.WriteString(longMonthNames[month-1])
+				appendString(buf, longMonthNames[month-1], width)
 			case 'b', 'h':
-				buf.WriteString(shortMonthNames[month-1])
+				appendString(buf, shortMonthNames[month-1], width)
 			case 'A':
-				buf.WriteString(longWeekNames[t.Weekday()])
+				appendString(buf, longWeekNames[t.Weekday()], width)
 			case 'a':
-				buf.WriteString(shortWeekNames[t.Weekday()])
+				appendString(buf, shortWeekNames[t.Weekday()], width)
 			case 'w':
+				for ; width > 1; width-- {
+					buf.WriteByte(padding)
+				}
 				buf.WriteByte('0' + byte(t.Weekday()))
 			case 'u':
 				w := int(t.Weekday())
 				if w == 0 {
 					w = 7
 				}
+				for ; width > 1; width-- {
+					buf.WriteByte(padding)
+				}
 				buf.WriteByte('0' + byte(w))
 			case 'V':
 				_, week := t.ISOWeek()
-				appendInt(buf, week, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, week, width, padding)
 			case 'U':
 				week := (t.YearDay() + 6 - int(t.Weekday())) / 7
-				appendInt(buf, week, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, week, width, padding)
 			case 'W':
 				week := t.YearDay()
 				if int(t.Weekday()) > 0 {
 					week -= int(t.Weekday()) - 7
 				}
 				week /= 7
-				appendInt(buf, week, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, week, width, padding)
 			case 'e':
 				if padding != 0 {
 					padding = ' '
 				}
 				fallthrough
 			case 'd':
-				appendInt(buf, day, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, day, width, padding)
 			case 'j':
-				appendInt(buf, t.YearDay(), 3, padding)
+				if width < 3 {
+					width = 3
+				}
+				appendInt(buf, t.YearDay(), width, padding)
 			case 'k':
 				if padding != 0 {
 					padding = ' '
 				}
 				fallthrough
 			case 'H':
-				appendInt(buf, hour, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, hour, width, padding)
 			case 'l':
 				if padding != 0 {
 					padding = ' '
@@ -104,7 +164,10 @@ func Format(t time.Time, format string) string {
 				if h > 12 {
 					h -= 12
 				}
-				appendInt(buf, h, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, h, width, padding)
 			case 'I':
 				h := hour
 				if h > 12 {
@@ -113,31 +176,49 @@ func Format(t time.Time, format string) string {
 				if h == 0 {
 					h = 12
 				}
-				appendInt(buf, h, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, h, width, padding)
 			case 'p':
+				for ; width > 2; width-- {
+					buf.WriteByte(' ')
+				}
 				if hour <= 12 {
 					buf.WriteString("AM")
 				} else {
 					buf.WriteString("PM")
 				}
 			case 'P':
+				for ; width > 2; width-- {
+					buf.WriteByte(' ')
+				}
 				if hour <= 12 {
 					buf.WriteString("am")
 				} else {
 					buf.WriteString("pm")
 				}
 			case 'M':
-				appendInt(buf, min, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, min, width, padding)
 			case 'S':
-				appendInt(buf, sec, 2, padding)
+				if width < 2 {
+					width = 2
+				}
+				appendInt(buf, sec, width, padding)
 			case 's':
-				buf.WriteString(strconv.FormatInt(t.Unix(), 10))
+				appendInt(buf, int(t.Unix()), width, ' ')
 			case 'f':
-				appendInt(buf, t.Nanosecond()/1000, 6, '0')
+				if width == 0 {
+					width = 6
+				}
+				appendInt(buf, t.Nanosecond()/1000, width, padding)
 			case 'Z', 'z':
 				name, offset := t.Zone()
 				if b == 'Z' && name != "" {
-					buf.WriteString(name)
+					appendString(buf, name, width)
 					break
 				}
 				if offset < 0 {
@@ -147,24 +228,25 @@ func Format(t time.Time, format string) string {
 					buf.WriteRune('+')
 				}
 				offset /= 60
-				appendInt(buf, offset/60, 2, '0')
-				appendInt(buf, offset%60, 2, '0')
+				if width < 4 {
+					width = 4
+				}
+				appendInt(buf, (offset/60)*100+offset%60, width, padding)
 			case 't':
-				buf.WriteRune('\t')
+				appendString(buf, "\t", width)
 			case 'n':
-				buf.WriteRune('\n')
+				appendString(buf, "\n", width)
 			default:
 				if pending == "" {
 					var ok bool
 					if pending, ok = compositions[b]; ok {
-						padding = '0'
 						break
 					}
 				}
 				buf.WriteByte(b)
 			}
 			if pending != "" {
-				b, pending, padding = pending[0], pending[1:], '0'
+				b, pending, width, padding = pending[0], pending[1:], 0, '0'
 				goto L
 			}
 		} else {
@@ -201,6 +283,13 @@ func appendInt(buf *bytes.Buffer, num, width int, padding byte) {
 		}
 	}
 	buf.WriteString(strconv.Itoa(num))
+}
+
+func appendString(buf *bytes.Buffer, str string, width int) {
+	for width -= len(str); width > 0; width-- {
+		buf.WriteByte(' ')
+	}
+	buf.WriteString(str)
 }
 
 var longMonthNames = []string{
