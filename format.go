@@ -17,34 +17,42 @@ func Format(t time.Time, format string) string {
 	var upper bool
 	for i := 0; i < len(format); i++ {
 		if b := format[i]; b == '%' {
-			i++
-			if i == len(format) {
+			if i++; i == len(format) {
 				buf.WriteByte(b)
 				break
 			}
-			b = format[i]
-			width, padding, upper = 0, '0', false
-			if b == '-' || b == '_' {
-				i++
-				if i == len(format) {
+			b, width, padding, upper = format[i], 0, '0', false
+		L:
+			switch b {
+			case '-':
+				if pending != "" {
+					buf.WriteByte(b)
+					break
+				}
+				if i++; i == len(format) {
 					buf.WriteByte(b)
 					break
 				}
 				padding = 0
-				if b == '_' {
-					padding = ' '
-				}
 				b = format[i]
-			} else if b == '^' {
-				upper = true
-				i++
-				if i == len(format) {
+				goto L
+			case '_':
+				if i++; i == len(format) {
 					buf.WriteByte(b)
 					break
 				}
+				padding = ' '
 				b = format[i]
-			}
-			if b <= '9' && '1' <= b {
+				goto L
+			case '^':
+				if i++; i == len(format) {
+					buf.WriteByte(b)
+					break
+				}
+				upper = true
+				b = format[i]
+				goto L
+			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				width = int(b & 0x0F)
 				for i++; i < len(format); i++ {
 					b = format[i]
@@ -61,9 +69,7 @@ func Format(t time.Time, format string) string {
 				if padding == 0 {
 					padding = ' '
 				}
-			}
-		L:
-			switch b {
+				goto L
 			case 'Y':
 				if width == 0 {
 					width = 4

@@ -384,8 +384,17 @@ var formatTestCases = []struct {
 		expected: "2009 009 020 009 2009 001 001 000 002 002 003 004 005 006",
 	},
 	{
+		format:   "%1d %2d %3d %4d %5d %6d %7d %8d %9d %10d",
+		t:        time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC),
+		expected: "01 01 001 0001 00001 000001 0000001 00000001 000000001 0000000001",
+	},
+	{
 		format:   "%!%.%[%]%|%$%-",
 		expected: "!.[]|$-",
+	},
+	{
+		format:   "%_",
+		expected: "_",
 	},
 	{
 		format:   "%^",
