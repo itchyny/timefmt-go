@@ -207,9 +207,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 				var offset int
 				switch source[j] {
-				case '+':
-					fallthrough
-				case '-':
+				case '+', '-':
 					var hour, min int
 					if hour, err = strconv.Atoi(source[j+1 : j+3]); err != nil {
 						return
