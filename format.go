@@ -203,8 +203,15 @@ func Format(t time.Time, format string) string {
 				}
 				appendInt(buf, h, width, padding)
 			case 'p':
-				for ; width > 2; width-- {
-					buf.WriteByte(' ')
+				if width > 0 {
+					if padding < ^paddingMask {
+						padding = ' '
+					} else {
+						padding &= paddingMask
+					}
+					for ; width > 2; width-- {
+						buf.WriteByte(padding)
+					}
 				}
 				if hour < 12 {
 					buf.WriteString("AM")
@@ -212,8 +219,15 @@ func Format(t time.Time, format string) string {
 					buf.WriteString("PM")
 				}
 			case 'P':
-				for ; width > 2; width-- {
-					buf.WriteByte(' ')
+				if width > 0 {
+					if padding < ^paddingMask {
+						padding = ' '
+					} else {
+						padding &= paddingMask
+					}
+					for ; width > 2; width-- {
+						buf.WriteByte(padding)
+					}
 				}
 				if hour < 12 {
 					buf.WriteString("am")
