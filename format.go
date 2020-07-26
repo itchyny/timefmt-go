@@ -3,6 +3,7 @@ package timefmt
 import (
 	"bytes"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -30,7 +31,7 @@ func Format(t time.Time, format string) string {
 					break
 				}
 				if i++; i == len(format) {
-					buf.WriteByte(b)
+					appendLast(buf, format, width, padding)
 					break
 				}
 				padding = ^paddingMask
@@ -38,7 +39,7 @@ func Format(t time.Time, format string) string {
 				goto L
 			case '_':
 				if i++; i == len(format) {
-					buf.WriteByte(b)
+					appendLast(buf, format, width, padding)
 					break
 				}
 				padding = ' ' | ^paddingMask
@@ -46,7 +47,7 @@ func Format(t time.Time, format string) string {
 				goto L
 			case '^':
 				if i++; i == len(format) {
-					buf.WriteByte(b)
+					appendLast(buf, format, width, padding)
 					break
 				}
 				upper = true
@@ -54,7 +55,7 @@ func Format(t time.Time, format string) string {
 				goto L
 			case '0':
 				if i++; i == len(format) {
-					buf.WriteByte(b)
+					appendLast(buf, format, width, padding)
 					break
 				}
 				padding = '0' | ^paddingMask
@@ -70,12 +71,12 @@ func Format(t time.Time, format string) string {
 						break
 					}
 				}
-				if i == len(format) {
-					appendString(buf, "%"+strconv.Itoa(width), width, padding, false)
-					break
-				}
 				if padding == ^paddingMask {
 					padding = ' ' | ^paddingMask
+				}
+				if i == len(format) {
+					appendLast(buf, format, width, padding)
+					break
 				}
 				goto L
 			case 'Y':
@@ -255,12 +256,15 @@ func Format(t time.Time, format string) string {
 				appendString(buf, "\t", width, padding, false)
 			case 'n':
 				appendString(buf, "\n", width, padding, false)
+			case '%':
+				appendString(buf, "%", width, padding, false)
 			default:
 				if pending == "" {
 					var ok bool
 					if pending, ok = compositions[b]; ok {
 						break
 					}
+					appendLast(buf, format[:i], width-1, padding)
 				}
 				buf.WriteByte(b)
 			}
@@ -323,6 +327,10 @@ func appendString(buf *bytes.Buffer, str string, width int, padding byte, upper 
 	} else {
 		buf.WriteString(str)
 	}
+}
+
+func appendLast(buf *bytes.Buffer, format string, width int, padding byte) {
+	appendString(buf, format[strings.LastIndexByte(format, '%'):], width, padding, false)
 }
 
 const paddingMask byte = 0x7F

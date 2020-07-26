@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	timefmt "github.com/itchyny/timefmt-go"
+	"github.com/itchyny/timefmt-go"
 )
 
 var formatTestCases = []struct {
@@ -440,19 +440,47 @@ var formatTestCases = []struct {
 	},
 	{
 		format:   "%!%.%[%]%|%$%-",
-		expected: "!.[]|$-",
+		expected: "%!%.%[%]%|%$%-",
 	},
 	{
-		format:   "%_",
-		expected: "_",
+		format:   "%4_",
+		expected: " %4_",
+	},
+	{
+		format:   "%09_",
+		expected: "00000%09_",
 	},
 	{
 		format:   "%^",
-		expected: "^",
+		expected: "%^",
 	},
 	{
 		format:   "%0",
-		expected: "0",
+		expected: "%0",
+	},
+	{
+		format:   "%4",
+		expected: "  %4",
+	},
+	{
+		format:   "%-9",
+		expected: "      %-9",
+	},
+	{
+		format:   "%-9^",
+		expected: "     %-9^",
+	},
+	{
+		format:   "%-09^",
+		expected: "0000%-09^",
+	},
+	{
+		format:   "%06",
+		expected: "000%06",
+	},
+	{
+		format:   "%6J",
+		expected: "   %6J",
 	},
 	{
 		format:   "%",
