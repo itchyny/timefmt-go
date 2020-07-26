@@ -33,7 +33,7 @@ func Format(t time.Time, format string) string {
 					buf.WriteByte(b)
 					break
 				}
-				padding = 0
+				padding = ^paddingMask
 				b = format[i]
 				goto L
 			case '_':
@@ -41,7 +41,7 @@ func Format(t time.Time, format string) string {
 					buf.WriteByte(b)
 					break
 				}
-				padding = ' '
+				padding = ' ' | ^paddingMask
 				b = format[i]
 				goto L
 			case '^':
@@ -50,6 +50,14 @@ func Format(t time.Time, format string) string {
 					break
 				}
 				upper = true
+				b = format[i]
+				goto L
+			case '0':
+				if i++; i == len(format) {
+					buf.WriteByte(b)
+					break
+				}
+				padding = '0' | ^paddingMask
 				b = format[i]
 				goto L
 			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
@@ -66,8 +74,8 @@ func Format(t time.Time, format string) string {
 					appendString(buf, "%"+strconv.Itoa(width), width, false)
 					break
 				}
-				if padding == 0 {
-					padding = ' '
+				if padding == ^paddingMask {
+					padding = ' ' | ^paddingMask
 				}
 				goto L
 			case 'Y':
@@ -112,7 +120,7 @@ func Format(t time.Time, format string) string {
 				appendString(buf, shortWeekNames[t.Weekday()], width, upper)
 			case 'w':
 				for ; width > 1; width-- {
-					buf.WriteByte(padding)
+					buf.WriteByte(padding & paddingMask)
 				}
 				buf.WriteByte('0' + byte(t.Weekday()))
 			case 'u':
@@ -121,7 +129,7 @@ func Format(t time.Time, format string) string {
 					w = 7
 				}
 				for ; width > 1; width-- {
-					buf.WriteByte(padding)
+					buf.WriteByte(padding & paddingMask)
 				}
 				buf.WriteByte('0' + byte(w))
 			case 'V':
@@ -147,7 +155,7 @@ func Format(t time.Time, format string) string {
 				}
 				appendInt(buf, week, width, padding)
 			case 'e':
-				if padding != 0 {
+				if padding < ^paddingMask {
 					padding = ' '
 				}
 				fallthrough
@@ -162,7 +170,7 @@ func Format(t time.Time, format string) string {
 				}
 				appendInt(buf, t.YearDay(), width, padding)
 			case 'k':
-				if padding != 0 {
+				if padding < ^paddingMask {
 					padding = ' '
 				}
 				fallthrough
@@ -172,7 +180,7 @@ func Format(t time.Time, format string) string {
 				}
 				appendInt(buf, hour, width, padding)
 			case 'l':
-				if padding != 0 {
+				if padding < ^paddingMask {
 					padding = ' '
 				}
 				h := hour
@@ -223,7 +231,10 @@ func Format(t time.Time, format string) string {
 				}
 				appendInt(buf, sec, width, padding)
 			case 's':
-				appendInt(buf, int(t.Unix()), width, ' ')
+				if padding < ^paddingMask {
+					padding = ' '
+				}
+				appendInt(buf, int(t.Unix()), width, padding)
 			case 'f':
 				if width == 0 {
 					width = 6
@@ -271,7 +282,8 @@ func Format(t time.Time, format string) string {
 }
 
 func appendInt(buf *bytes.Buffer, num, width int, padding byte) {
-	if padding != 0 {
+	if padding != ^paddingMask {
+		padding &= paddingMask
 		switch width {
 		case 2:
 			if num < 10 {
@@ -311,6 +323,8 @@ func appendString(buf *bytes.Buffer, str string, width int, upper bool) {
 		buf.WriteString(str)
 	}
 }
+
+const paddingMask byte = 0x7F
 
 var longMonthNames = []string{
 	"January",
