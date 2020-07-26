@@ -31,6 +31,22 @@ Please refer to [`man 3 strftime`](https://linux.die.net/man/3/strftime) and
 [`man 3 strptime`](https://linux.die.net/man/3/strptime) for formatters.
 Note that `E` and `O` modifier characters are not supported.
 
+## Comparison to other libraries
+- This library
+  - provides both formatting and parsing functions in pure Go language,
+  - depends only on the Go standard libraries not to grows up the module file.
+- `Format` (`strftime`) implements glibc extensions including
+  - width specifier like `%10A, %10B %2k:%M`,
+  - omitting padding modifier like `%-y-%-m-%-d`,
+  - space padding modifier like `%_y-%_m-%_d`,
+  - upper case modifier like `%^a %^b`,
+  - and its performance is very good.
+- `AppendFormat` is provided for zero-allocations in most formats.
+- `Parse` (`strptime`) allows to parse
+  - composed directives like `%F %T`,
+  - century years like `%C %y`,
+  - week names like `%A` `%a` (parsed results are discarded).
+
 ## Bug Tracker
 Report bug at [Issues・itchyny/timefmt-go - GitHub](https://github.com/itchyny/timefmt-go/issues).
 
