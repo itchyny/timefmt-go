@@ -391,7 +391,6 @@ var compositions = map[byte]string{
 	'F': "Y-m-d",
 	'D': "m/d/y",
 	'x': "m/d/y",
-	'v': "e-b-Y",
 	'T': "H:M:S",
 	'X': "H:M:S",
 	'r': "I:M:S p",
