@@ -71,7 +71,7 @@ func Format(t time.Time, format string) string {
 					}
 				}
 				if i == len(format) {
-					appendString(buf, "%"+strconv.Itoa(width), width, false)
+					appendString(buf, "%"+strconv.Itoa(width), width, padding, false)
 					break
 				}
 				if padding == ^paddingMask {
@@ -111,13 +111,13 @@ func Format(t time.Time, format string) string {
 				}
 				appendInt(buf, int(month), width, padding)
 			case 'B':
-				appendString(buf, longMonthNames[month-1], width, upper)
+				appendString(buf, longMonthNames[month-1], width, padding, upper)
 			case 'b', 'h':
-				appendString(buf, shortMonthNames[month-1], width, upper)
+				appendString(buf, shortMonthNames[month-1], width, padding, upper)
 			case 'A':
-				appendString(buf, longWeekNames[t.Weekday()], width, upper)
+				appendString(buf, longWeekNames[t.Weekday()], width, padding, upper)
 			case 'a':
-				appendString(buf, shortWeekNames[t.Weekday()], width, upper)
+				appendString(buf, shortWeekNames[t.Weekday()], width, padding, upper)
 			case 'w':
 				for ; width > 1; width-- {
 					buf.WriteByte(padding & paddingMask)
@@ -203,36 +203,16 @@ func Format(t time.Time, format string) string {
 				}
 				appendInt(buf, h, width, padding)
 			case 'p':
-				if width > 0 {
-					if padding < ^paddingMask {
-						padding = ' '
-					} else {
-						padding &= paddingMask
-					}
-					for ; width > 2; width-- {
-						buf.WriteByte(padding)
-					}
-				}
 				if hour < 12 {
-					buf.WriteString("AM")
+					appendString(buf, "AM", width, padding, upper)
 				} else {
-					buf.WriteString("PM")
+					appendString(buf, "PM", width, padding, upper)
 				}
 			case 'P':
-				if width > 0 {
-					if padding < ^paddingMask {
-						padding = ' '
-					} else {
-						padding &= paddingMask
-					}
-					for ; width > 2; width-- {
-						buf.WriteByte(padding)
-					}
-				}
 				if hour < 12 {
-					buf.WriteString("am")
+					appendString(buf, "am", width, padding, upper)
 				} else {
-					buf.WriteString("pm")
+					appendString(buf, "pm", width, padding, upper)
 				}
 			case 'M':
 				if width < 2 {
@@ -257,7 +237,7 @@ func Format(t time.Time, format string) string {
 			case 'Z', 'z':
 				name, offset := t.Zone()
 				if b == 'Z' && name != "" {
-					appendString(buf, name, width, false)
+					appendString(buf, name, width, padding, false)
 					break
 				}
 				if offset < 0 {
@@ -272,9 +252,9 @@ func Format(t time.Time, format string) string {
 				}
 				appendInt(buf, (offset/60)*100+offset%60, width, padding)
 			case 't':
-				appendString(buf, "\t", width, false)
+				appendString(buf, "\t", width, padding, false)
 			case 'n':
-				appendString(buf, "\n", width, false)
+				appendString(buf, "\n", width, padding, false)
 			default:
 				if pending == "" {
 					var ok bool
@@ -325,9 +305,16 @@ func appendInt(buf *bytes.Buffer, num, width int, padding byte) {
 	buf.WriteString(strconv.Itoa(num))
 }
 
-func appendString(buf *bytes.Buffer, str string, width int, upper bool) {
-	for width -= len(str); width > 0; width-- {
-		buf.WriteByte(' ')
+func appendString(buf *bytes.Buffer, str string, width int, padding byte, upper bool) {
+	if width > len(str) && padding != ^paddingMask {
+		if padding < ^paddingMask {
+			padding = ' '
+		} else {
+			padding &= paddingMask
+		}
+		for width -= len(str); width > 0; width-- {
+			buf.WriteByte(padding)
+		}
 	}
 	if upper {
 		for _, b := range []byte(str) {
