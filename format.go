@@ -99,16 +99,16 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				}
 				buf = appendInt(buf, year/100, width, padding)
 			case 'g':
-				year, _ := t.ISOWeek()
 				if width < 2 {
 					width = 2
 				}
+				year, _ := t.ISOWeek()
 				buf = appendInt(buf, year%100, width, padding)
 			case 'G':
-				year, _ := t.ISOWeek()
 				if width == 0 {
 					width = 4
 				}
+				year, _ := t.ISOWeek()
 				buf = appendInt(buf, year, width, padding)
 			case 'm':
 				if width < 2 {
@@ -138,26 +138,26 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				}
 				buf = append(buf, '0'+byte(w))
 			case 'V':
-				_, week := t.ISOWeek()
 				if width < 2 {
 					width = 2
 				}
+				_, week := t.ISOWeek()
 				buf = appendInt(buf, week, width, padding)
 			case 'U':
-				week := (t.YearDay() + 6 - int(t.Weekday())) / 7
 				if width < 2 {
 					width = 2
 				}
+				week := (t.YearDay() + 6 - int(t.Weekday())) / 7
 				buf = appendInt(buf, week, width, padding)
 			case 'W':
+				if width < 2 {
+					width = 2
+				}
 				week := t.YearDay()
 				if int(t.Weekday()) > 0 {
 					week -= int(t.Weekday()) - 7
 				}
 				week /= 7
-				if width < 2 {
-					width = 2
-				}
 				buf = appendInt(buf, week, width, padding)
 			case 'e':
 				if padding < ^paddingMask {
@@ -185,6 +185,9 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				}
 				buf = appendInt(buf, hour, width, padding)
 			case 'l':
+				if width < 2 {
+					width = 2
+				}
 				if padding < ^paddingMask {
 					padding = ' '
 				}
@@ -192,19 +195,16 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				if h > 12 {
 					h -= 12
 				}
+				buf = appendInt(buf, h, width, padding)
+			case 'I':
 				if width < 2 {
 					width = 2
 				}
-				buf = appendInt(buf, h, width, padding)
-			case 'I':
 				h := hour
 				if h > 12 {
 					h -= 12
 				} else if h == 0 {
 					h = 12
-				}
-				if width < 2 {
-					width = 2
 				}
 				buf = appendInt(buf, h, width, padding)
 			case 'p':
@@ -245,6 +245,9 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					buf = appendString(buf, name, width, padding, false)
 					break
 				}
+				if width < 4 {
+					width = 4
+				}
 				if offset < 0 {
 					buf = append(buf, '-')
 					offset = -offset
@@ -252,9 +255,6 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					buf = append(buf, '+')
 				}
 				offset /= 60
-				if width < 4 {
-					width = 4
-				}
 				buf = appendInt(buf, (offset/60)*100+offset%60, width, padding)
 			case 't':
 				buf = appendString(buf, "\t", width, padding, false)
