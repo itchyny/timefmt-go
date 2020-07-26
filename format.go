@@ -187,8 +187,7 @@ func Format(t time.Time, format string) string {
 				h := hour
 				if h > 12 {
 					h -= 12
-				}
-				if h == 0 {
+				} else if h == 0 {
 					h = 12
 				}
 				if width < 2 {
@@ -199,7 +198,7 @@ func Format(t time.Time, format string) string {
 				for ; width > 2; width-- {
 					buf.WriteByte(' ')
 				}
-				if hour <= 12 {
+				if hour < 12 {
 					buf.WriteString("AM")
 				} else {
 					buf.WriteString("PM")
@@ -208,7 +207,7 @@ func Format(t time.Time, format string) string {
 				for ; width > 2; width-- {
 					buf.WriteByte(' ')
 				}
-				if hour <= 12 {
+				if hour < 12 {
 					buf.WriteString("am")
 				} else {
 					buf.WriteString("pm")

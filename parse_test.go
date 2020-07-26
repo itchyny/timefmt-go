@@ -288,6 +288,11 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.January, 1, 23, 14, 15, 0, time.UTC),
 	},
 	{
+		source: "12:13:14 PM",
+		format: "%I:%M:%S %p",
+		t:      time.Date(1900, time.January, 1, 12, 13, 14, 0, time.UTC),
+	},
+	{
 		source: "am  9:10:11",
 		format: "%P %k:%M:%S",
 		t:      time.Date(1900, time.January, 1, 9, 10, 11, 0, time.UTC),
