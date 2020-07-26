@@ -494,6 +494,14 @@ func TestFormat(t *testing.T) {
 	}
 }
 
+func TestAppendFormat(t *testing.T) {
+	tm := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
+	buf := timefmt.AppendFormat(make([]byte, 0, 64), tm, "%c")
+	if got, expected := string(buf), "Thu Jan  2 03:04:05 2020"; got != expected {
+		t.Errorf("expected: %q, got: %q", expected, got)
+	}
+}
+
 func ExampleFormat() {
 	t := time.Date(2020, time.July, 24, 9, 7, 29, 0, time.UTC)
 	str := timefmt.Format(t, "%Y-%m-%d %H:%M:%S")
