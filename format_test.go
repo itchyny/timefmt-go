@@ -416,7 +416,7 @@ func TestFormat(t *testing.T) {
 		t.Run(tc.expected+"/"+tc.format, func(t *testing.T) {
 			got := timefmt.Format(tc.t, tc.format)
 			if got != tc.expected {
-				t.Errorf("expected: %v, got: %v", tc.expected, got)
+				t.Errorf("expected: %q, got: %q", tc.expected, got)
 			}
 		})
 	}
