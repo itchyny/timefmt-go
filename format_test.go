@@ -19,14 +19,34 @@ var formatTestCases = []struct {
 		expected: "2020",
 	},
 	{
-		format:   "%Y",
-		t:        time.Date(999, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "0999",
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		t:        time.Date(1000, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "1000 1000 1000 1000 1000 01000",
 	},
 	{
-		format:   "%Y",
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		t:        time.Date(999, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "0999 999 999 999 0999 00999",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		t:        time.Date(100, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "0100 100 100 100 0100 00100",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
 		t:        time.Date(99, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "0099",
+		expected: "0099 99 99 099 0099 00099",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		t:        time.Date(9999, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "9999 9999 9999 9999 9999 09999",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		t:        time.Date(10000, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "10000 10000 10000 10000 10000 10000",
 	},
 	{
 		format:   "[%Y]",
@@ -427,6 +447,11 @@ var formatTestCases = []struct {
 		format:   "%3Y %3y %3C %3g %3G %3m %3V %3U %3d %3j %3H %3M %3S %3f",
 		t:        time.Date(2009, time.January, 2, 3, 4, 5, 6000, time.UTC),
 		expected: "2009 009 020 009 2009 001 001 000 002 002 003 004 005 006",
+	},
+	{
+		format:   "%4Y %4y %4C %4g %4G %4m %4V %4U %4d %4j %4H %4M %4S %4f",
+		t:        time.Date(2009, time.January, 2, 3, 4, 5, 60000000, time.UTC),
+		expected: "2009 0009 0020 0009 2009 0001 0001 0000 0002 0002 0003 0004 0005 60000",
 	},
 	{
 		format:   "%1d %2d %3d %4d %5d %6d %7d %8d %9d %10d",

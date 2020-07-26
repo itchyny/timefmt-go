@@ -290,6 +290,13 @@ func appendInt(buf []byte, num, width int, padding byte) []byte {
 		case 2:
 			if num < 10 {
 				buf = append(buf, padding)
+				goto L1
+			} else if num < 100 {
+				goto L2
+			} else if num < 1000 {
+				goto L3
+			} else if num < 10000 {
+				goto L4
 			}
 		case 4:
 			if num < 1000 {
@@ -298,8 +305,13 @@ func appendInt(buf []byte, num, width int, padding byte) []byte {
 					buf = append(buf, padding)
 					if num < 10 {
 						buf = append(buf, padding)
+						goto L1
 					}
+					goto L2
 				}
+				goto L3
+			} else if num < 10000 {
+				goto L4
 			}
 		default:
 			str := strconv.Itoa(num)
@@ -310,6 +322,17 @@ func appendInt(buf []byte, num, width int, padding byte) []byte {
 		}
 	}
 	return strconv.AppendInt(buf, int64(num), 10)
+L4:
+	buf = append(buf, byte(num/1000)|'0')
+	num %= 1000
+L3:
+	buf = append(buf, byte(num/100)|'0')
+	num %= 100
+L2:
+	buf = append(buf, byte(num/10)|'0')
+	num %= 10
+L1:
+	return append(buf, byte(num)|'0')
 }
 
 func appendString(buf []byte, str string, width int, padding byte, upper bool) []byte {
