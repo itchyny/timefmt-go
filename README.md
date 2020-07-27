@@ -1,5 +1,5 @@
 # timefmt-go [![CI Status](https://github.com/itchyny/timefmt-go/workflows/CI/badge.svg)](https://github.com/itchyny/timefmt-go/actions) [![Go Report Card](https://goreportcard.com/badge/github.com/itchyny/timefmt-go)](https://goreportcard.com/report/github.com/itchyny/timefmt-go) [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/itchyny/timefmt-go/blob/master/LICENSE) [![PkgGoDev](https://pkg.go.dev/badge/github.com/itchyny/timefmt-go)](https://pkg.go.dev/github.com/itchyny/timefmt-go)
-### ― Simple time formatting library (strftime, strptime) for Golang ―
+### ― Efficient time formatting library (strftime, strptime) for Golang ―
 
 ## Usage
 ```go
@@ -46,6 +46,8 @@ Note that `E` and `O` modifier characters are not supported.
   - composed directives like `%F %T`,
   - century years like `%C %y`,
   - week names like `%A` `%a` (parsed results are discarded).
+
+![](https://user-images.githubusercontent.com/375258/88606920-de475c80-d0b8-11ea-8d40-cbfee9e35c2e.jpg)
 
 ## Bug Tracker
 Report bug at [Issues・itchyny/timefmt-go - GitHub](https://github.com/itchyny/timefmt-go/issues).
