@@ -314,11 +314,25 @@ func appendInt(buf []byte, num, width int, padding byte) []byte {
 				goto L4
 			}
 		default:
-			str := strconv.Itoa(num)
-			for width -= len(str); width > 0; width-- {
+			i := len(buf)
+			for ; width > 1; width-- {
 				buf = append(buf, padding)
 			}
-			return append(buf, str...)
+			j := len(buf)
+			buf = strconv.AppendInt(buf, int64(num), 10)
+			l := len(buf)
+			if j+1 == l || i == j {
+				return buf
+			}
+			k := j + 1 - (l - j)
+			if k < i {
+				l = j + 1 + i - k
+				k = i
+			} else {
+				l = j + 1
+			}
+			copy(buf[k:], buf[j:])
+			return buf[:l]
 		}
 	}
 	return strconv.AppendInt(buf, int64(num), 10)
