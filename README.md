@@ -1,7 +1,13 @@
-# timefmt-go [![CI Status][ci-badge]][ci-url] [![Go Report Card][goreportcard-badge]][goreportcard-url] [![MIT License][license-badge]][license-url] [![PkgGoDev][pkggodev-badge]][pkggodev-url]
-### ― Efficient time formatting library (strftime, strptime) for Golang ―
+# timefmt-go
+[![CI Status](https://github.com/itchyny/timefmt-go/workflows/CI/badge.svg)](https://github.com/itchyny/timefmt-go/actions)
+[![Go Report Card](https://goreportcard.com/badge/github.com/itchyny/timefmt-go)](https://goreportcard.com/report/github.com/itchyny/timefmt-go)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/itchyny/timefmt-go/blob/master/LICENSE)
+[![release](https://img.shields.io/github/release/itchyny/timefmt-go/all.svg)](https://github.com/itchyny/timefmt-go/releases)
+[![pkg.go.dev](https://pkg.go.dev/badge/github.com/itchyny/timefmt-go)](https://pkg.go.dev/github.com/itchyny/timefmt-go)
 
-## Usage
+### Efficient time formatting library (strftime, strptime) for Golang
+This is a Go language package for formatting and parsing date time strings.
+
 ```go
 package main
 
@@ -57,12 +63,3 @@ itchyny (https://github.com/itchyny)
 
 ## License
 This software is released under the MIT License, see LICENSE.
-
-[ci-url]: https://github.com/itchyny/timefmt-go/actions
-[ci-badge]: https://github.com/itchyny/timefmt-go/workflows/CI/badge.svg
-[goreportcard-url]: https://goreportcard.com/report/github.com/itchyny/timefmt-go
-[goreportcard-badge]: https://goreportcard.com/badge/github.com/itchyny/timefmt-go
-[license-url]: https://github.com/itchyny/timefmt-go/blob/master/LICENSE
-[license-badge]: http://img.shields.io/badge/license-MIT-blue.svg
-[pkggodev-url]: https://pkg.go.dev/github.com/itchyny/timefmt-go
-[pkggodev-badge]: https://pkg.go.dev/badge/github.com/itchyny/timefmt-go
