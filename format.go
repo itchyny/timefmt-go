@@ -335,6 +335,17 @@ func appendInt(buf []byte, num, width int, padding byte) []byte {
 			return buf[:l]
 		}
 	}
+	if num < 100 {
+		if num < 10 {
+			goto L1
+		}
+		goto L2
+	} else if num < 10000 {
+		if num < 1000 {
+			goto L3
+		}
+		goto L4
+	}
 	return strconv.AppendInt(buf, int64(num), 10)
 L4:
 	buf = append(buf, byte(num/1000)|'0')

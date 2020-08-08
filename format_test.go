@@ -19,34 +19,34 @@ var formatTestCases = []struct {
 		expected: "2020",
 	},
 	{
-		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
 		t:        time.Date(1000, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "1000 1000 1000 1000 1000 01000",
+		expected: "1000 1000 1000 1000 1000 01000 1000",
 	},
 	{
-		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
 		t:        time.Date(999, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "0999 999 999 999 0999 00999",
+		expected: "0999 999 999 999 0999 00999 999",
 	},
 	{
-		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
 		t:        time.Date(100, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "0100 100 100 100 0100 00100",
+		expected: "0100 100 100 100 0100 00100 100",
 	},
 	{
-		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
 		t:        time.Date(99, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "0099 99 99 099 0099 00099",
+		expected: "0099 99 99 099 0099 00099 99",
 	},
 	{
-		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
 		t:        time.Date(9999, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "9999 9999 9999 9999 9999 09999",
+		expected: "9999 9999 9999 9999 9999 09999 9999",
 	},
 	{
-		format:   "%Y %1Y %2Y %3Y %4Y %5Y",
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
 		t:        time.Date(10000, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "10000 10000 10000 10000 10000 10000",
+		expected: "10000 10000 10000 10000 10000 10000 10000",
 	},
 	{
 		format:   "[%Y]",
@@ -220,8 +220,28 @@ var formatTestCases = []struct {
 	},
 	{
 		format:   "%Y-%j-%-j",
+		t:        time.Date(2020, time.January, 10, 0, 0, 0, 0, time.UTC),
+		expected: "2020-010-10",
+	},
+	{
+		format:   "%Y-%j-%-j",
 		t:        time.Date(2020, time.February, 2, 0, 0, 0, 0, time.UTC),
 		expected: "2020-033-33",
+	},
+	{
+		format:   "%Y-%j-%-j",
+		t:        time.Date(2020, time.April, 8, 0, 0, 0, 0, time.UTC),
+		expected: "2020-099-99",
+	},
+	{
+		format:   "%Y-%j-%-j",
+		t:        time.Date(2020, time.April, 9, 0, 0, 0, 0, time.UTC),
+		expected: "2020-100-100",
+	},
+	{
+		format:   "%Y-%j-%-j",
+		t:        time.Date(2020, time.April, 10, 0, 0, 0, 0, time.UTC),
+		expected: "2020-101-101",
 	},
 	{
 		format:   "%Y-%j-%-j",
