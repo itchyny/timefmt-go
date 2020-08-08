@@ -19,14 +19,14 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 	var width int
 	var padding byte
 	var pending string
-	var upper bool
+	var upper, swap bool
 	for i := 0; i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			if i++; i == len(format) {
 				buf = append(buf, '%')
 				break
 			}
-			b, width, padding, upper = format[i], 0, '0', false
+			b, width, padding, upper, swap = format[i], 0, '0', false, false
 		L:
 			switch b {
 			case '-':
@@ -55,6 +55,14 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					break
 				}
 				upper = true
+				b = format[i]
+				goto L
+			case '#':
+				if i++; i == len(format) {
+					buf = appendLast(buf, format, width, padding)
+					break
+				}
+				swap = true
 				b = format[i]
 				goto L
 			case '0':
@@ -116,13 +124,13 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				}
 				buf = appendInt(buf, int(month), width, padding)
 			case 'B':
-				buf = appendString(buf, longMonthNames[month-1], width, padding, upper)
+				buf = appendString(buf, longMonthNames[month-1], width, padding, upper, swap)
 			case 'b', 'h':
-				buf = appendString(buf, shortMonthNames[month-1], width, padding, upper)
+				buf = appendString(buf, shortMonthNames[month-1], width, padding, upper, swap)
 			case 'A':
-				buf = appendString(buf, longWeekNames[t.Weekday()], width, padding, upper)
+				buf = appendString(buf, longWeekNames[t.Weekday()], width, padding, upper, swap)
 			case 'a':
-				buf = appendString(buf, shortWeekNames[t.Weekday()], width, padding, upper)
+				buf = appendString(buf, shortWeekNames[t.Weekday()], width, padding, upper, swap)
 			case 'w':
 				for ; width > 1; width-- {
 					buf = append(buf, padding&paddingMask)
@@ -209,15 +217,15 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				buf = appendInt(buf, h, width, padding)
 			case 'p':
 				if hour < 12 {
-					buf = appendString(buf, "AM", width, padding, upper)
+					buf = appendString(buf, "AM", width, padding, upper, swap)
 				} else {
-					buf = appendString(buf, "PM", width, padding, upper)
+					buf = appendString(buf, "PM", width, padding, upper, swap)
 				}
 			case 'P':
 				if hour < 12 {
-					buf = appendString(buf, "am", width, padding, upper)
+					buf = appendString(buf, "am", width, padding, upper, swap)
 				} else {
-					buf = appendString(buf, "pm", width, padding, upper)
+					buf = appendString(buf, "pm", width, padding, upper, swap)
 				}
 			case 'M':
 				if width < 2 {
@@ -242,7 +250,7 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 			case 'Z', 'z':
 				name, offset := t.Zone()
 				if b == 'Z' && name != "" {
-					buf = appendString(buf, name, width, padding, false)
+					buf = appendString(buf, name, width, padding, upper, swap)
 					break
 				}
 				if width < 4 {
@@ -257,15 +265,16 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				offset /= 60
 				buf = appendInt(buf, (offset/60)*100+offset%60, width, padding)
 			case 't':
-				buf = appendString(buf, "\t", width, padding, false)
+				buf = appendString(buf, "\t", width, padding, false, false)
 			case 'n':
-				buf = appendString(buf, "\n", width, padding, false)
+				buf = appendString(buf, "\n", width, padding, false, false)
 			case '%':
-				buf = appendString(buf, "%", width, padding, false)
+				buf = appendString(buf, "%", width, padding, false, false)
 			default:
 				if pending == "" {
 					var ok bool
 					if pending, ok = compositions[b]; ok {
+						swap = false
 						break
 					}
 					buf = appendLast(buf, format[:i], width-1, padding)
@@ -360,7 +369,7 @@ L1:
 	return append(buf, byte(num)|'0')
 }
 
-func appendString(buf []byte, str string, width int, padding byte, upper bool) []byte {
+func appendString(buf []byte, str string, width int, padding byte, upper, swap bool) []byte {
 	if width > len(str) && padding != ^paddingMask {
 		if padding < ^paddingMask {
 			padding = ' '
@@ -371,18 +380,27 @@ func appendString(buf []byte, str string, width int, padding byte, upper bool) [
 			buf = append(buf, padding)
 		}
 	}
-	if upper {
+	switch {
+	case swap:
+		if str[len(str)-1] < 'a' {
+			for _, b := range []byte(str) {
+				buf = append(buf, b|0x20)
+			}
+			break
+		}
+		fallthrough
+	case upper:
 		for _, b := range []byte(str) {
 			buf = append(buf, b&0x5F)
 		}
-	} else {
+	default:
 		buf = append(buf, str...)
 	}
 	return buf
 }
 
 func appendLast(buf []byte, format string, width int, padding byte) []byte {
-	return appendString(buf, format[strings.LastIndexByte(format, '%'):], width, padding, false)
+	return appendString(buf, format[strings.LastIndexByte(format, '%'):], width, padding, false, false)
 }
 
 const paddingMask byte = 0x7F
