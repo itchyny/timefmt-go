@@ -502,11 +502,22 @@ var formatTestCases = []struct {
 	{
 		format:   "%10000Y",
 		t:        time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC),
-		expected: strings.Repeat("0", 1020) + "2020",
+		expected: fmt.Sprintf("%01024d", 2020),
 	},
 	{
-		format:   "%01000000000000000000000000000000000000000000000000000000000000000L",
-		expected: strings.Repeat("0", 957) + "%01000000000000000000000000000000000000000000000000000000000000000L",
+		format:   "%922337203685477580Y",
+		t:        time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC),
+		expected: fmt.Sprintf("%01024d", 2020),
+	},
+	{
+		format:   "%9223372036854775809Y",
+		t:        time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC),
+		expected: fmt.Sprintf("%01024d", 2020),
+	},
+	{
+		format:   "%18446744073709551630Y",
+		t:        time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC),
+		expected: fmt.Sprintf("%01024d", 2020),
 	},
 	{
 		format:   "%!%.%[%]%|%$%-",

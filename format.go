@@ -75,16 +75,19 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				goto L
 			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				width = int(b & 0x0F)
+				const maxWidth = 1024
 				for i++; i < len(format); i++ {
 					b = format[i]
 					if b <= '9' && '0' <= b {
 						width = width*10 + int(b&0x0F)
+						if width >= 0xCCCCCCCCCCCCCCC {
+							width = maxWidth
+						}
 					} else {
 						break
 					}
 				}
-				const maxWidth = 1024
-				if width > maxWidth || width < 0 {
+				if width > maxWidth {
 					width = maxWidth
 				}
 				if padding == ^paddingMask {
