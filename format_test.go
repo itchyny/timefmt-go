@@ -2,6 +2,7 @@ package timefmt_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -499,6 +500,15 @@ var formatTestCases = []struct {
 		expected: "01 01 001 0001 00001 000001 0000001 00000001 000000001 0000000001",
 	},
 	{
+		format:   "%10000Y",
+		t:        time.Date(2020, time.January, 1, 1, 1, 1, 0, time.UTC),
+		expected: strings.Repeat("0", 1020) + "2020",
+	},
+	{
+		format:   "%01000000000000000000000000000000000000000000000000000000000000000L",
+		expected: strings.Repeat("0", 957) + "%01000000000000000000000000000000000000000000000000000000000000000L",
+	},
+	{
 		format:   "%!%.%[%]%|%$%-",
 		expected: "%!%.%[%]%|%$%-",
 	},
@@ -554,7 +564,13 @@ var formatTestCases = []struct {
 
 func TestFormat(t *testing.T) {
 	for _, tc := range formatTestCases {
-		t.Run(tc.expected+"/"+tc.format, func(t *testing.T) {
+		var name string
+		if len(tc.expected) < 1000 {
+			name = tc.expected + "/" + tc.format
+		} else {
+			name = strings.Replace(tc.expected+"/"+tc.format, strings.Repeat("0", 30), "0.", -1)
+		}
+		t.Run(name, func(t *testing.T) {
 			got := timefmt.Format(tc.t, tc.format)
 			if got != tc.expected {
 				t.Errorf("expected: %q, got: %q", tc.expected, got)

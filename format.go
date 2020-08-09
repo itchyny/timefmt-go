@@ -83,6 +83,10 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 						break
 					}
 				}
+				const maxWidth = 1024
+				if width > maxWidth || width < 0 {
+					width = maxWidth
+				}
 				if padding == ^paddingMask {
 					padding = ' ' | ^paddingMask
 				}
