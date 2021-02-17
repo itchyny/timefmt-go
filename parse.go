@@ -225,6 +225,74 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 				loc = time.FixedZone("", offset)
 				j += 5
+			case ':':
+				if pending != "" {
+					if j >= l || source[j] != b {
+						err = fmt.Errorf("expected %q", b)
+						return
+					}
+					j++
+				} else {
+					var hms bool
+					if i++; i == len(format) {
+						err = errors.New(`expected 'z' after "%:"`)
+						return
+					} else if b = format[i]; b == 'z' {
+						if j+6 > l {
+							err = errors.New("cannot parse %:z")
+							return
+						}
+					} else {
+						if b != ':' {
+							err = errors.New(`expected 'z' after "%:"`)
+							return
+						}
+						if i++; i == len(format) || format[i] != 'z' {
+							err = errors.New(`expected 'z' after "%::"`)
+							return
+						}
+						b, hms = 'z', true
+						if j+9 > l {
+							err = errors.New("cannot parse %::z")
+							return
+						}
+					}
+					offset := 1
+					switch source[j] {
+					case '-':
+						offset = -1
+						fallthrough
+					case '+':
+						var hour, min, sec int
+						if hour, err = strconv.Atoi(source[j+1 : j+3]); err != nil {
+							return
+						}
+						if source[j+3] != ':' {
+							err = errors.New("expected ':' for %:z")
+							return
+						}
+						if min, err = strconv.Atoi(source[j+4 : j+6]); err != nil {
+							return
+						}
+						if hms {
+							if source[j+6] != ':' {
+								err = errors.New("expected ':' for %::z")
+								return
+							}
+							if sec, err = strconv.Atoi(source[j+7 : j+9]); err != nil {
+								return
+							}
+							j += 9
+						} else {
+							j += 6
+						}
+						offset *= (hour*60+min)*60 + sec
+					default:
+						err = parseFormatError(b)
+						return
+					}
+					loc = time.FixedZone("", offset)
+				}
 			case 't', 'n':
 				k := j
 			K:

@@ -368,6 +368,71 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60)),
 	},
 	{
+		source: "2020-07-24 23:14:15 +05:30%",
+		format: "%F %T %:z%%",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60)),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +05-30",
+		format:   "%F %T %:z",
+		parseErr: errors.New("expected ':' for %:z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0530",
+		format:   "%F %T %:z",
+		parseErr: errors.New("cannot parse %:z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 ",
+		format:   "%F %T %:",
+		parseErr: errors.New(`expected 'z' after "%:"`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 ",
+		format:   "%F %T %:H",
+		parseErr: errors.New(`expected 'z' after "%:"`),
+	},
+	{
+		source: "2020-07-24 23:14:15 +05:30:10",
+		format: "%F %T %::z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60+10)),
+	},
+	{
+		source: "2020-07-24 23:14:15 -05:30:10",
+		format: "%F %T %::z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", -((5*60+30)*60+10))),
+	},
+	{
+		source: "2020-07-24 23:14:15 ::-05:30::",
+		format: "%F %T ::%:z::",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", -(5*60+30)*60)),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +05:30:0",
+		format:   "%F %T %::z",
+		parseErr: errors.New("cannot parse %::z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 /05:30:00",
+		format:   "%F %T %::z",
+		parseErr: errors.New("cannot parse %z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +05:30-00",
+		format:   "%F %T %::z",
+		parseErr: errors.New("expected ':' for %::z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 ",
+		format:   "%F %T %::",
+		parseErr: errors.New(`expected 'z' after "%::"`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 ",
+		format:   "%F %T %::Z",
+		parseErr: errors.New(`expected 'z' after "%::"`),
+	},
+	{
 		source: "2020-07-24 23:14:15 UTC",
 		format: "%F %T %Z",
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC", 0)),
