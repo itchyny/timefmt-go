@@ -262,6 +262,8 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				}
 				if width < 4 {
 					width = 4
+				} else if width > 4 {
+					width--
 				}
 				if offset < 0 {
 					buf = append(buf, '-')
@@ -269,8 +271,12 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				} else {
 					buf = append(buf, '+')
 				}
+				j := len(buf)
 				offset /= 60
 				buf = appendInt(buf, (offset/60)*100+offset%60, width, padding)
+				for ; buf[j] == ' '; j++ {
+					buf[j-1], buf[j] = buf[j], buf[j-1]
+				}
 			case 't':
 				buf = appendString(buf, "\t", width, padding, false, false)
 			case 'n':

@@ -427,21 +427,21 @@ var formatTestCases = []struct {
 	{
 		format:   "%F %T %z %-z %_4z %04z",
 		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.UTC),
-		expected: "2020-07-24 23:14:15 +0000 +0 +   0 +0000",
+		expected: "2020-07-24 23:14:15 +0000 +0    +0 +0000",
 	},
 	{
 		format:   "%F %T %z",
-		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC-8", -8*60*60)),
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", -8*60*60)),
 		expected: "2020-07-24 23:14:15 -0800",
 	},
 	{
 		format:   "%F %T %z",
-		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC+9", 9*60*60)),
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", 9*60*60)),
 		expected: "2020-07-24 23:14:15 +0900",
 	},
 	{
 		format:   "%F %T %z",
-		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC+05:30", (5*60+30)*60)),
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60)),
 		expected: "2020-07-24 23:14:15 +0530",
 	},
 	{
@@ -460,9 +460,24 @@ var formatTestCases = []struct {
 		expected: "JST JST jst jst jst",
 	},
 	{
-		format:   "%8Z %08Z %8z %_8z %-z %08z",
+		format:   "%8Z %08Z %8z %_8z %-z %08z %2z %3z %4z %5z %6z",
 		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("JST", 9*60*60)),
-		expected: "     JST 00000JST +00000900 +     900 +900 +00000900",
+		expected: "     JST 00000JST +0000900     +900 +900 +0000900 +0900 +0900 +0900 +0900 +00900",
+	},
+	{
+		format:   "%8Z %08Z %8z %_8z %-z %08z %4z %5z %6z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("HAST", -10*60*60)),
+		expected: "    HAST 0000HAST -0001000    -1000 -1000 -0001000 -1000 -1000 -01000",
+	},
+	{
+		format:   "%8z %_8z %-z %08z %4z %5z %6z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", -(5*60+30)*60)),
+		expected: "-0000530     -530 -530 -0000530 -0530 -0530 -00530",
+	},
+	{
+		format:   "%8z %_8z %-z %08z %4z %5z %6z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", 30*60)),
+		expected: "+0000030      +30 +30 +0000030 +0030 +0030 +00030",
 	},
 	{
 		format:   "%H%%%M%t%S%n%f",
