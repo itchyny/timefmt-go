@@ -277,6 +277,78 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				for ; buf[j] == ' '; j++ {
 					buf[j-1], buf[j] = buf[j], buf[j-1]
 				}
+			case ':':
+				if pending != "" {
+					buf = append(buf, ':')
+				} else {
+					var count int
+				M:
+					for ; i < len(format); i++ {
+						switch format[i] {
+						case ':':
+							count++
+						case 'z':
+							if count > 3 {
+								i++
+								break M
+							}
+							i := len(buf)
+							if padding != ^paddingMask {
+								for ; width > 1; width-- {
+									buf = append(buf, padding&paddingMask)
+								}
+							}
+							j := len(buf)
+							_, offset := t.Zone()
+							if offset < 0 {
+								buf = append(buf, '-')
+								offset = -offset
+							} else {
+								buf = append(buf, '+')
+							}
+							k := len(buf)
+							buf = appendInt(buf, offset/3600, 2, padding)
+							if buf[k] == ' ' {
+								buf[k-1], buf[k] = buf[k], buf[k-1]
+							}
+							if k = offset % 3600; count <= 2 || k != 0 {
+								buf = append(buf, ':')
+								buf = appendInt(buf, k/60, 2, '0')
+								if k %= 60; count == 2 || count == 3 && k != 0 {
+									buf = append(buf, ':')
+									buf = appendInt(buf, k, 2, '0')
+								}
+							}
+							count = 0
+							l := len(buf)
+							if j+1 == l || i == j {
+								break M
+							}
+							k = j + 1 - (l - j)
+							if k < i {
+								l = j + 1 + i - k
+								k = i
+							} else {
+								l = j + 1
+							}
+							copy(buf[k:], buf[j:])
+							buf = buf[:l]
+							if padding&paddingMask == '0' {
+								for ; k > i; k-- {
+									buf[k-1], buf[k] = buf[k], buf[k-1]
+								}
+							}
+							break M
+						default:
+							i++
+							break M
+						}
+					}
+					if count > 0 {
+						buf = appendLast(buf, format[:i], width-1, padding)
+						i--
+					}
+				}
 			case 't':
 				buf = appendString(buf, "\t", width, padding, false, false)
 			case 'n':
