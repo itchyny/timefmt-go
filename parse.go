@@ -196,6 +196,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 				t, err = time.Parse("MST", source[j:k])
 				if err != nil {
+					err = fmt.Errorf(`cannot parse %q with "%%Z"`, source[j:k])
 					return
 				}
 				loc = t.Location()

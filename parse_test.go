@@ -438,6 +438,11 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC", 0)),
 	},
 	{
+		source:   "X",
+		format:   "%Z",
+		parseErr: errors.New(`cannot parse "X" with "%Z"`),
+	},
+	{
 		source: "01%02\t03\n450000",
 		format: "%H%%%M%t%S%n%f",
 		t:      time.Date(1900, time.January, 1, 1, 2, 3, 450000000, time.UTC),
