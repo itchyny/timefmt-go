@@ -624,7 +624,7 @@ func TestFormat(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			got := timefmt.Format(tc.t, tc.format)
 			if got != tc.expected {
-				t.Errorf("expected: %q, got: %q", tc.expected, got)
+				t.Error(diff(tc.expected, got))
 			}
 		})
 	}
