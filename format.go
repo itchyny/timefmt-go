@@ -281,9 +281,9 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				if pending != "" {
 					buf = append(buf, ':')
 				} else {
-					var count int
+					count := 1
 				M:
-					for ; i < len(format); i++ {
+					for i++; i < len(format); i++ {
 						switch format[i] {
 						case ':':
 							count++
@@ -320,10 +320,10 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 								}
 							}
 							count = 0
-							l := len(buf)
-							if j+1 == l || i == j {
+							if i == j {
 								break M
 							}
+							l := len(buf)
 							k = j + 1 - (l - j)
 							if k < i {
 								l = j + 1 + i - k
