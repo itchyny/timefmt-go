@@ -333,6 +333,11 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.February, 9, 23, 14, 15, 0, time.UTC),
 	},
 	{
+		source:   "2020-02-0923:14:15",
+		format:   "%F%t%T",
+		parseErr: errors.New("expected a space for %t"),
+	},
+	{
 		source: " 9-Jul-2020 23:14:15",
 		format: "%v %X",
 		t:      time.Date(2020, time.July, 9, 23, 14, 15, 0, time.UTC),

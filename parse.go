@@ -305,7 +305,7 @@ func Parse(source, format string) (t time.Time, err error) {
 					}
 				}
 				if k == j {
-					err = errors.New("expected a space")
+					err = fmt.Errorf("expected a space for %%%c", b)
 					return
 				}
 				j = k
