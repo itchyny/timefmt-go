@@ -47,9 +47,9 @@ Note that `E` and `O` modifier characters are not supported.
   - space padding modifier like `%_y-%_m-%_d`,
   - upper case modifier like `%^a %^b`,
   - swapping case modifier like `%#Z`,
-  - time zone modifier like `%:z %::z %:::z`,
+  - time zone offset modifier like `%:z %::z %:::z`,
   - and its performance is very good.
-- `AppendFormat` is provided for zero-allocations in most formats.
+- `AppendFormat` is provided for reducing allocations.
 - `Parse` (`strptime`) allows to parse
   - composed directives like `%F %T`,
   - century years like `%C %y`,
