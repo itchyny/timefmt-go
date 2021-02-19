@@ -10,13 +10,16 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [1.16.x, 1.15.x, 1.14.x]
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Setup Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.x
+        go-version: ${{ matrix.go }}
     - name: Test
       run: make test
     - name: Test with GOARCH=386
