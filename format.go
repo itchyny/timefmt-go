@@ -340,7 +340,6 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 							}
 							break M
 						default:
-							i++
 							break M
 						}
 					}
