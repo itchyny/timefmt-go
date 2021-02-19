@@ -48,6 +48,11 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`unconverted string: "xxx"`),
 	},
 	{
+		source:   "a",
+		format:   "%Y",
+		parseErr: errors.New("cannot parse %Y"),
+	},
+	{
 		source: "20",
 		format: "%C",
 		t:      time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC),
@@ -58,6 +63,11 @@ var parseTestCases = []struct {
 		t:      time.Date(1758, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source:   "xx",
+		format:   "%C",
+		parseErr: errors.New("cannot parse %C"),
+	},
+	{
 		source: "68",
 		format: "%y",
 		t:      time.Date(2068, time.January, 1, 0, 0, 0, 0, time.UTC),
@@ -66,6 +76,11 @@ var parseTestCases = []struct {
 		source: "69",
 		format: "%y",
 		t:      time.Date(1969, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "xx",
+		format:   "%y",
+		parseErr: errors.New("cannot parse %y"),
 	},
 	{
 		source: "2020-05",
@@ -153,6 +168,16 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.September, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "September",
+		format: "%B",
+		t:      time.Date(1900, time.September, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "Sep",
+		format:   "%B",
+		parseErr: errors.New("cannot parse %B"),
+	},
+	{
 		source: "Sep",
 		format: "%h",
 		t:      time.Date(1900, time.September, 1, 0, 0, 0, 0, time.UTC),
@@ -161,6 +186,11 @@ var parseTestCases = []struct {
 		source: "100",
 		format: "%j",
 		t:      time.Date(1900, time.April, 10, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   ".10",
+		format:   "%j",
+		parseErr: errors.New("cannot parse %j"),
 	},
 	{
 		source: "20203",
@@ -253,9 +283,24 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source:   "xx",
+		format:   "%g",
+		parseErr: errors.New("cannot parse %g"),
+	},
+	{
+		source:   "xx",
+		format:   "%V",
+		parseErr: errors.New("cannot parse %V"),
+	},
+	{
 		source: "2009 01 00 00",
 		format: "%G %V %U %W",
 		t:      time.Date(2009, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "xxxx",
+		format:   "%G",
+		parseErr: errors.New("cannot parse %G"),
 	},
 	{
 		source: "2020-09-08 07:06:05",
@@ -271,6 +316,26 @@ var parseTestCases = []struct {
 		source: "1213145678912",
 		format: "%H%M%S%f%d",
 		t:      time.Date(1900, time.January, 2, 12, 13, 14, 567891000, time.UTC),
+	},
+	{
+		source:   "xx",
+		format:   "%H",
+		parseErr: errors.New("cannot parse %H"),
+	},
+	{
+		source:   "xx",
+		format:   "%M",
+		parseErr: errors.New("cannot parse %M"),
+	},
+	{
+		source:   "xx",
+		format:   "%S",
+		parseErr: errors.New("cannot parse %S"),
+	},
+	{
+		source:   "1:2:3.",
+		format:   "%H:%M:%S.%f",
+		parseErr: errors.New("cannot parse %f"),
 	},
 	{
 		source: "12:13:14 AM",
@@ -293,6 +358,11 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.January, 1, 12, 13, 14, 0, time.UTC),
 	},
 	{
+		source:   "xx",
+		format:   "%I",
+		parseErr: errors.New("cannot parse %I"),
+	},
+	{
 		source: "am  9:10:11",
 		format: "%P %k:%M:%S",
 		t:      time.Date(1900, time.January, 1, 9, 10, 11, 0, time.UTC),
@@ -308,14 +378,34 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.August, 30, 5, 30, 32, 0, time.UTC),
 	},
 	{
+		source:   ".",
+		format:   "%s",
+		parseErr: errors.New("cannot parse %s"),
+	},
+	{
 		source: "23:14",
 		format: "%R",
 		t:      time.Date(1900, time.January, 1, 23, 14, 0, 0, time.UTC),
 	},
 	{
+		source:   "23:",
+		format:   "%R",
+		parseErr: errors.New("cannot parse %M"),
+	},
+	{
 		source: "3:14:15 PM",
 		format: "%r",
 		t:      time.Date(1900, time.January, 1, 15, 14, 15, 0, time.UTC),
+	},
+	{
+		source:   "3:1415 PM",
+		format:   "%r",
+		parseErr: errors.New("expected ':'"),
+	},
+	{
+		source:   "3:14:15PM",
+		format:   "%r",
+		parseErr: errors.New("expected ' '"),
 	},
 	{
 		source: "2/20/21 23:14:15",
@@ -373,6 +463,26 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60)),
 	},
 	{
+		source:   "2020-07-24 23:14:15 +053",
+		format:   "%F %T %z",
+		parseErr: errors.New("cannot parse %z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0:30",
+		format:   "%F %T %z",
+		parseErr: errors.New(`parsing "0:": invalid syntax`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +003a",
+		format:   "%F %T %z",
+		parseErr: errors.New(`parsing "3a": invalid syntax`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 $0000",
+		format:   "%F %T %z",
+		parseErr: errors.New("cannot parse %z"),
+	},
+	{
 		source: "2020-07-24 23:14:15 +05:30%",
 		format: "%F %T %:z%%",
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60)),
@@ -386,6 +496,16 @@ var parseTestCases = []struct {
 		source:   "2020-07-24 23:14:15 +0530",
 		format:   "%F %T %:z",
 		parseErr: errors.New("cannot parse %:z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0x:30",
+		format:   "%F %T %:z",
+		parseErr: errors.New(`parsing "0x": invalid syntax`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +00:3x",
+		format:   "%F %T %:z",
+		parseErr: errors.New(`parsing "3x": invalid syntax`),
 	},
 	{
 		source:   "2020-07-24 23:14:15 ",
@@ -416,6 +536,11 @@ var parseTestCases = []struct {
 		source:   "2020-07-24 23:14:15 +05:30:0",
 		format:   "%F %T %::z",
 		parseErr: errors.New("cannot parse %::z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +05:30:0x",
+		format:   "%F %T %::z",
+		parseErr: errors.New(`parsing "0x": invalid syntax`),
 	},
 	{
 		source:   "2020-07-24 23:14:15 /05:30:00",
@@ -464,6 +589,16 @@ var parseTestCases = []struct {
 	{
 		format:   "%",
 		parseErr: errors.New("stray %"),
+	},
+	{
+		source:   "",
+		format:   "%%",
+		parseErr: errors.New("expected '%'"),
+	},
+	{
+		source:   "",
+		format:   "x",
+		parseErr: errors.New("expected 'x'"),
 	},
 }
 
