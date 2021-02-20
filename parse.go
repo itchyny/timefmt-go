@@ -24,7 +24,7 @@ func Parse(source, format string) (t time.Time, err error) {
 			err = &parseError{source, format, err}
 		}
 	}()
-	var j, diff, century, yday int
+	var j, century, yday int
 	var pm bool
 	var pending string
 	for i, l := 0, len(source); i < len(format); i++ {
@@ -68,25 +68,21 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 			case 'B':
-				if month, diff, err = lookup(source[j:], longMonthNames, 'B'); err != nil {
+				if month, j, err = lookup(source, j, longMonthNames, 'B'); err != nil {
 					return
 				}
-				j += diff
 			case 'b', 'h':
-				if month, diff, err = lookup(source[j:], shortMonthNames, b); err != nil {
+				if month, j, err = lookup(source, j, shortMonthNames, b); err != nil {
 					return
 				}
-				j += diff
 			case 'A':
-				if _, diff, err = lookup(source[j:], longWeekNames, 'A'); err != nil {
+				if _, j, err = lookup(source, j, longWeekNames, 'A'); err != nil {
 					return
 				}
-				j += diff
 			case 'a':
-				if _, diff, err = lookup(source[j:], shortWeekNames, 'a'); err != nil {
+				if _, j, err = lookup(source, j, shortWeekNames, 'a'); err != nil {
 					return
 				}
-				j += diff
 			case 'w':
 				if j >= l || source[j] < '0' || '6' < source[j] {
 					err = parseFormatError(b)
@@ -139,10 +135,9 @@ func Parse(source, format string) (t time.Time, err error) {
 				}
 			case 'p', 'P':
 				var ampm int
-				if ampm, diff, err = lookup(source[j:], []string{"AM", "PM"}, 'p'); err != nil {
+				if ampm, j, err = lookup(source, j, []string{"AM", "PM"}, 'p'); err != nil {
 					return
 				}
-				j += diff
 				pm = ampm == 2
 			case 'M':
 				if min, j, err = parseNumber(source, j, 2, 'M'); err != nil {
@@ -368,18 +363,19 @@ func parseNumber(source string, min, size int, format byte) (int, int, error) {
 	return val, i, nil
 }
 
-func lookup(source string, candidates []string, format byte) (int, int, error) {
+func lookup(source string, min int, candidates []string, format byte) (int, int, error) {
 L:
 	for i, xs := range candidates {
-		for j, x := range []byte(xs) {
+		j := min
+		for k := 0; k < len(xs); k, j = k+1, j+1 {
 			if j >= len(source) {
 				continue L
 			}
-			if y := source[j]; x != y && x|('a'-'A') != y|('a'-'A') {
+			if x, y := xs[k], source[j]; x != y && x|('a'-'A') != y|('a'-'A') {
 				continue L
 			}
 		}
-		return i + 1, len(xs), nil
+		return i + 1, j, nil
 	}
 	return 0, 0, parseFormatError(format)
 }
