@@ -357,10 +357,6 @@ func Parse(source, format string) (t time.Time, err error) {
 	return time.Date(year, time.Month(month), day, hour, min, sec, nsec, loc), nil
 }
 
-func isDigit(c byte) bool {
-	return '0' <= c && c <= '9'
-}
-
 type parseFormatError byte
 
 func (err parseFormatError) Error() string {
@@ -368,17 +364,22 @@ func (err parseFormatError) Error() string {
 }
 
 func parseNumber(source string, max int, format byte) (int, int, error) {
-	if len(source) > 0 && isDigit(source[0]) {
-		for i := 1; i < max; i++ {
-			if i >= len(source) || !isDigit(source[i]) {
-				val, err := strconv.Atoi(string(source[:i]))
-				return val, i, err
-			}
-		}
-		val, err := strconv.Atoi(string(source[:max]))
-		return val, max, err
+	var val int
+	if l := len(source); max > l {
+		max = l
 	}
-	return 0, 0, parseFormatError(format)
+	var i int
+	for ; i < max; i++ {
+		if b := source[i]; '0' <= b && b <= '9' {
+			val = val*10 + int(b&0x0F)
+		} else {
+			break
+		}
+	}
+	if i == 0 {
+		return 0, 0, parseFormatError(format)
+	}
+	return val, i, nil
 }
 
 func lookup(source string, candidates []string, format byte) (int, int, error) {
