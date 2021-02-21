@@ -238,7 +238,7 @@ func Parse(source, format string) (t time.Time, err error) {
 			case ':':
 				if pending != "" {
 					if j >= l || source[j] != b {
-						err = fmt.Errorf("expected %q", b)
+						err = expectedFormatError(b)
 						return
 					}
 					j++
@@ -279,7 +279,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				j = k
 			case '%':
 				if j >= l || source[j] != b {
-					err = fmt.Errorf("expected %q", b)
+					err = expectedFormatError(b)
 					return
 				}
 				j++
@@ -293,7 +293,7 @@ func Parse(source, format string) (t time.Time, err error) {
 					return
 				}
 				if j >= l || source[j] != b {
-					err = fmt.Errorf("expected %q", b)
+					err = expectedFormatError(b)
 					return
 				}
 				j++
@@ -303,7 +303,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				goto L
 			}
 		} else if j >= len(source) || source[j] != b {
-			err = fmt.Errorf("expected %q", b)
+			err = expectedFormatError(b)
 			return
 		} else {
 			j++
@@ -329,6 +329,12 @@ type parseFormatError byte
 
 func (err parseFormatError) Error() string {
 	return fmt.Sprintf("cannot parse %%%c", byte(err))
+}
+
+type expectedFormatError byte
+
+func (err expectedFormatError) Error() string {
+	return fmt.Sprintf("expected %q", byte(err))
 }
 
 type parseZFormatError int
