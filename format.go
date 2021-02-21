@@ -281,14 +281,14 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				if pending != "" {
 					buf = append(buf, ':')
 				} else {
-					count := 1
+					colons := 1
 				M:
 					for i++; i < len(format); i++ {
 						switch format[i] {
 						case ':':
-							count++
+							colons++
 						case 'z':
-							if count > 3 {
+							if colons > 3 {
 								i++
 								break M
 							}
@@ -311,15 +311,15 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 							if buf[k] == ' ' {
 								buf[k-1], buf[k] = buf[k], buf[k-1]
 							}
-							if k = offset % 3600; count <= 2 || k != 0 {
+							if k = offset % 3600; colons <= 2 || k != 0 {
 								buf = append(buf, ':')
 								buf = appendInt(buf, k/60, 2, '0')
-								if k %= 60; count == 2 || count == 3 && k != 0 {
+								if k %= 60; colons == 2 || colons == 3 && k != 0 {
 									buf = append(buf, ':')
 									buf = appendInt(buf, k, 2, '0')
 								}
 							}
-							count = 0
+							colons = 0
 							if i == j {
 								break M
 							}
@@ -343,7 +343,7 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 							break M
 						}
 					}
-					if count > 0 {
+					if colons > 0 {
 						buf = appendLast(buf, format[:i], width-1, padding)
 						i--
 					}
