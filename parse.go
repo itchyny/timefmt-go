@@ -199,8 +199,12 @@ func Parse(source, format string) (t time.Time, err error) {
 						colons = 4
 					}
 					if min, k, _ = parseNumber(source, j, 2, 'z'); k != j+2 {
-						err = parseZFormatError(colons & 3)
-						return
+						if colons == 0 {
+							k = j
+						} else {
+							err = parseZFormatError(colons & 3)
+							return
+						}
 					}
 					if j = k; colons > 1 {
 						if j >= l || source[j] != ':' {
