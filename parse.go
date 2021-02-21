@@ -175,10 +175,10 @@ func Parse(source, format string) (t time.Time, err error) {
 					err = parseZFormatError(colons)
 					return
 				}
-				offset := 1
+				sign := 1
 				switch source[j] {
 				case '-':
-					offset = -1
+					sign = -1
 					fallthrough
 				case '+':
 					var hour, min, sec, k int
@@ -221,12 +221,13 @@ func Parse(source, format string) (t time.Time, err error) {
 							j = k
 						}
 					}
-					offset *= (hour*60+min)*60 + sec
+					loc, colons = time.FixedZone("", sign*((hour*60+min)*60+sec)), 0
+				case 'Z':
+					loc, colons, j = time.UTC, 0, j+1
 				default:
 					err = parseZFormatError(colons)
 					return
 				}
-				loc, colons = time.FixedZone("", offset), 0
 			case ':':
 				if pending != "" {
 					if j >= l || source[j] != b {
