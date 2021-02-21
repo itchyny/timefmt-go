@@ -498,6 +498,11 @@ var parseTestCases = []struct {
 		parseErr: errors.New("cannot parse %:z"),
 	},
 	{
+		source:   "2020-07-24 23:14:15 *05:30",
+		format:   "%F %T %:z",
+		parseErr: errors.New("cannot parse %:z"),
+	},
+	{
 		source:   "2020-07-24 23:14:15 +0x:30",
 		format:   "%F %T %:z",
 		parseErr: errors.New(`parsing "0x": invalid syntax`),
@@ -533,6 +538,11 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", -(5*60+30)*60)),
 	},
 	{
+		source: "2020-07-24 23:14:15 -05:30:10 -04:20 +0300",
+		format: "%F %T %::z %:z %z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", 3*60*60)),
+	},
+	{
 		source:   "2020-07-24 23:14:15 +05:30:0",
 		format:   "%F %T %::z",
 		parseErr: errors.New("cannot parse %::z"),
@@ -545,7 +555,12 @@ var parseTestCases = []struct {
 	{
 		source:   "2020-07-24 23:14:15 /05:30:00",
 		format:   "%F %T %::z",
-		parseErr: errors.New("cannot parse %z"),
+		parseErr: errors.New("cannot parse %::z"),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +05300000",
+		format:   "%F %T %::z",
+		parseErr: errors.New("expected ':' for %::z"),
 	},
 	{
 		source:   "2020-07-24 23:14:15 +05:30-00",

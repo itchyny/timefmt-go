@@ -24,7 +24,7 @@ func Parse(source, format string) (t time.Time, err error) {
 			err = &parseError{source, format, err}
 		}
 	}()
-	var j, century, yday int
+	var j, century, yday, colons int
 	var pm bool
 	var pending string
 	for i, l := 0, len(source); i < len(format); i++ {
@@ -181,30 +181,60 @@ func Parse(source, format string) (t time.Time, err error) {
 				loc = t.Location()
 				j = k
 			case 'z':
-				if j+5 > l {
-					err = parseFormatError(b)
+				var k int
+				switch colons {
+				case 0:
+					k = 5
+				case 1:
+					k = 6
+				default:
+					k = 9
+				}
+				if j+k > l {
+					err = parseZFormatError(colons)
 					return
 				}
-				var offset int
+				offset := 1
 				switch source[j] {
-				case '+', '-':
-					var hour, min int
+				case '-':
+					offset = -1
+					fallthrough
+				case '+':
+					var hour, min, sec int
 					if hour, err = strconv.Atoi(source[j+1 : j+3]); err != nil {
 						return
 					}
-					if min, err = strconv.Atoi(source[j+3 : j+5]); err != nil {
+					if colons == 0 {
+						j += 3
+					} else if source[j+3] != ':' {
+						if colons == 1 {
+							err = errors.New("expected ':' for %:z")
+						} else {
+							err = errors.New("expected ':' for %::z")
+						}
+						return
+					} else {
+						j += 4
+					}
+					if min, err = strconv.Atoi(source[j : j+2]); err != nil {
 						return
 					}
-					offset = (hour*60 + min) * 60
-					if source[j] == '-' {
-						offset = -offset
+					if colons < 2 {
+						j += 2
+					} else if source[j+2] != ':' {
+						err = errors.New("expected ':' for %::z")
+						return
+					} else if sec, err = strconv.Atoi(source[j+3 : j+5]); err != nil {
+						return
+					} else {
+						j += 5
 					}
+					offset *= (hour*60+min)*60 + sec
 				default:
-					err = parseFormatError(b)
+					err = parseZFormatError(colons)
 					return
 				}
-				loc = time.FixedZone("", offset)
-				j += 5
+				loc, colons = time.FixedZone("", offset), 0
 			case ':':
 				if pending != "" {
 					if j >= l || source[j] != b {
@@ -213,65 +243,24 @@ func Parse(source, format string) (t time.Time, err error) {
 					}
 					j++
 				} else {
-					var hms bool
 					if i++; i == len(format) {
 						err = errors.New(`expected 'z' after "%:"`)
 						return
 					} else if b = format[i]; b == 'z' {
-						if j+6 > l {
-							err = errors.New("cannot parse %:z")
-							return
-						}
+						colons = 1
+					} else if b != ':' {
+						err = errors.New(`expected 'z' after "%:"`)
+						return
+					} else if i++; i == len(format) {
+						err = errors.New(`expected 'z' after "%::"`)
+						return
+					} else if b = format[i]; b == 'z' {
+						colons = 2
 					} else {
-						if b != ':' {
-							err = errors.New(`expected 'z' after "%:"`)
-							return
-						}
-						if i++; i == len(format) || format[i] != 'z' {
-							err = errors.New(`expected 'z' after "%::"`)
-							return
-						}
-						b, hms = 'z', true
-						if j+9 > l {
-							err = errors.New("cannot parse %::z")
-							return
-						}
-					}
-					offset := 1
-					switch source[j] {
-					case '-':
-						offset = -1
-						fallthrough
-					case '+':
-						var hour, min, sec int
-						if hour, err = strconv.Atoi(source[j+1 : j+3]); err != nil {
-							return
-						}
-						if source[j+3] != ':' {
-							err = errors.New("expected ':' for %:z")
-							return
-						}
-						if min, err = strconv.Atoi(source[j+4 : j+6]); err != nil {
-							return
-						}
-						if hms {
-							if source[j+6] != ':' {
-								err = errors.New("expected ':' for %::z")
-								return
-							}
-							if sec, err = strconv.Atoi(source[j+7 : j+9]); err != nil {
-								return
-							}
-							j += 9
-						} else {
-							j += 6
-						}
-						offset *= (hour*60+min)*60 + sec
-					default:
-						err = parseFormatError(b)
+						err = errors.New(`expected 'z' after "%::"`)
 						return
 					}
-					loc = time.FixedZone("", offset)
+					goto L
 				}
 			case 't', 'n':
 				k := j
@@ -340,6 +329,19 @@ type parseFormatError byte
 
 func (err parseFormatError) Error() string {
 	return fmt.Sprintf("cannot parse %%%c", byte(err))
+}
+
+type parseZFormatError int
+
+func (err parseZFormatError) Error() string {
+	switch int(err) {
+	case 0:
+		return "cannot parse %z"
+	case 1:
+		return "cannot parse %:z"
+	default:
+		return "cannot parse %::z"
+	}
 }
 
 func parseNumber(source string, min, size int, format byte) (int, int, error) {
