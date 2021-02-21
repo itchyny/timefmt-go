@@ -46,6 +46,8 @@ func diff(expected, got string) string {
 		}
 		if i > 0 {
 			sbx.WriteByte(' ')
+		}
+		if j > 0 {
 			sby.WriteByte(' ')
 		}
 		if xs[i] == ys[j] {
