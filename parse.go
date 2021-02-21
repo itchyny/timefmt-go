@@ -3,7 +3,6 @@ package timefmt
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 )
 
@@ -172,16 +171,7 @@ func Parse(source, format string) (t time.Time, err error) {
 				loc = t.Location()
 				j = k
 			case 'z':
-				var k int
-				switch colons {
-				case 0:
-					k = 5
-				case 1:
-					k = 6
-				default:
-					k = 9
-				}
-				if j+k > l {
+				if j >= l {
 					err = parseZFormatError(colons)
 					return
 				}
@@ -191,34 +181,41 @@ func Parse(source, format string) (t time.Time, err error) {
 					offset = -1
 					fallthrough
 				case '+':
-					var hour, min, sec int
-					if hour, err = strconv.Atoi(source[j+1 : j+3]); err != nil {
+					var hour, min, sec, k int
+					if hour, k, _ = parseNumber(source, j+1, 2, 'z'); k != j+3 {
+						err = parseZFormatError(colons)
 						return
 					}
-					if colons == 0 {
-						j += 3
-					} else if source[j+3] != ':' {
-						if colons == 1 {
+					if j = k; j >= l || source[j] != ':' {
+						switch colons {
+						case 1:
 							err = errors.New("expected ':' for %:z")
-						} else {
+							return
+						case 2:
 							err = errors.New("expected ':' for %::z")
+							return
 						}
-						return
-					} else {
-						j += 4
+					} else if j++; colons == 0 {
+						colons = 4
 					}
-					if min, err = strconv.Atoi(source[j : j+2]); err != nil {
+					if min, k, _ = parseNumber(source, j, 2, 'z'); k != j+2 {
+						err = parseZFormatError(colons & 3)
 						return
 					}
-					if colons < 2 {
-						j += 2
-					} else if source[j+2] != ':' {
-						err = errors.New("expected ':' for %::z")
-						return
-					} else if sec, err = strconv.Atoi(source[j+3 : j+5]); err != nil {
-						return
-					} else {
-						j += 5
+					if j = k; colons > 1 {
+						if j >= l || source[j] != ':' {
+							if colons == 2 {
+								err = errors.New("expected ':' for %::z")
+								return
+							}
+						} else if sec, k, _ = parseNumber(source, j+1, 2, 'z'); k != j+3 {
+							if colons == 2 {
+								err = parseZFormatError(colons)
+								return
+							}
+						} else {
+							j = k
+						}
 					}
 					offset *= (hour*60+min)*60 + sec
 				default:
