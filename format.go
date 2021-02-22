@@ -327,7 +327,7 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 							break M
 						}
 					}
-					buf = appendLast(buf, format[:i], width-1, padding)
+					buf = appendLast(buf, format[:i], width, padding)
 					i--
 					colons = 0
 				}
