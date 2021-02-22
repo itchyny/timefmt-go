@@ -35,40 +35,35 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					break
 				}
 				if i++; i == len(format) {
-					buf = appendLast(buf, format, width, padding)
-					break
+					goto K
 				}
 				padding = ^paddingMask
 				b = format[i]
 				goto L
 			case '_':
 				if i++; i == len(format) {
-					buf = appendLast(buf, format, width, padding)
-					break
+					goto K
 				}
 				padding = ' ' | ^paddingMask
 				b = format[i]
 				goto L
 			case '^':
 				if i++; i == len(format) {
-					buf = appendLast(buf, format, width, padding)
-					break
+					goto K
 				}
 				upper = true
 				b = format[i]
 				goto L
 			case '#':
 				if i++; i == len(format) {
-					buf = appendLast(buf, format, width, padding)
-					break
+					goto K
 				}
 				swap = true
 				b = format[i]
 				goto L
 			case '0':
 				if i++; i == len(format) {
-					buf = appendLast(buf, format, width, padding)
-					break
+					goto K
 				}
 				padding = '0' | ^paddingMask
 				b = format[i]
@@ -94,8 +89,7 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					padding = ' ' | ^paddingMask
 				}
 				if i == len(format) {
-					buf = appendLast(buf, format, width, padding)
-					break
+					goto K
 				}
 				goto L
 			case 'Y':
@@ -357,6 +351,8 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 		}
 	}
 	return buf
+K:
+	return appendLast(buf, format, width, padding)
 }
 
 func appendInt(buf []byte, num, width int, padding byte) []byte {
