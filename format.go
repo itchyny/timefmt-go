@@ -329,6 +329,7 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					}
 					buf = appendLast(buf, format[:i], width-1, padding)
 					i--
+					colons = 0
 				}
 			case 't':
 				buf = appendString(buf, "\t", width, padding, false, false)

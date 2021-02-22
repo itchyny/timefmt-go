@@ -505,6 +505,11 @@ var formatTestCases = []struct {
 		expected: "-09:01 -09:01:02 -09:01:02 %::::z %:Z -9:01  -9:01:02 -0000901 -0009:01    -9:01  -9:01:02 -09:01:02 -9:01:02 %:-z %:",
 	},
 	{
+		format:   "%:: %z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", 9*60*60)),
+		expected: "%:: +0900",
+	},
+	{
 		format:   "%H%%%M%t%S%n%f",
 		t:        time.Date(2020, time.January, 1, 1, 2, 3, 450000000, time.UTC),
 		expected: "01%02\t03\n450000",
