@@ -2,7 +2,6 @@ package timefmt
 
 import (
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -463,7 +462,13 @@ func appendString(buf []byte, str string, width int, padding byte, upper, swap b
 }
 
 func appendLast(buf []byte, format string, width int, padding byte) []byte {
-	return appendString(buf, format[strings.LastIndexByte(format, '%'):], width, padding, false, false)
+	for i := len(format) - 1; i >= 0; i-- {
+		if format[i] == '%' {
+			buf = appendString(buf, format[i:], width, padding, false, false)
+			break
+		}
+	}
+	return buf
 }
 
 const paddingMask byte = 0x7F
