@@ -427,7 +427,7 @@ var formatTestCases = []struct {
 	{
 		format:   "%F %T %z %-z %_4z %04z",
 		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.UTC),
-		expected: "2020-07-24 23:14:15 +0000 +0    +0 +0000",
+		expected: "2020-07-24 23:14:15 +0000 +000  +000 +0000",
 	},
 	{
 		format:   "%F %T %z",
@@ -477,7 +477,7 @@ var formatTestCases = []struct {
 	{
 		format:   "%8z %_8z %-z %08z %4z %5z %6z %6:z %7:z",
 		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", 30*60)),
-		expected: "+0000030      +30 +30 +0000030 +0030 +0030 +00030 +00:30 +000:30",
+		expected: "+0000030     +030 +030 +0000030 +0030 +0030 +00030 +00:30 +000:30",
 	},
 	{
 		format:   "%:z %::z %:::z %::::z %:Z %-:z %_::z %8z %08:z %_8:z %_8::z %8:::z %-:::z %:-z %:",

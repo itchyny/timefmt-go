@@ -16,7 +16,7 @@ func Format(t time.Time, format string) string {
 func AppendFormat(buf []byte, t time.Time, format string) []byte {
 	year, month, day := t.Date()
 	hour, min, sec := t.Clock()
-	var width int
+	var width, colons int
 	var padding byte
 	var pending string
 	var upper, swap bool
@@ -260,28 +260,57 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					buf = appendString(buf, name, width, padding, upper, swap)
 					break
 				}
-				if width < 4 {
-					width = 4
-				} else if width > 4 {
-					width--
+				i := len(buf)
+				if padding != ^paddingMask {
+					for ; width > 1; width-- {
+						buf = append(buf, padding&paddingMask)
+					}
 				}
+				j := len(buf)
 				if offset < 0 {
 					buf = append(buf, '-')
 					offset = -offset
 				} else {
 					buf = append(buf, '+')
 				}
-				j := len(buf)
-				offset /= 60
-				buf = appendInt(buf, (offset/60)*100+offset%60, width, padding)
-				for ; buf[j] == ' '; j++ {
-					buf[j-1], buf[j] = buf[j], buf[j-1]
+				k := len(buf)
+				buf = appendInt(buf, offset/3600, 2, padding)
+				if buf[k] == ' ' {
+					buf[k-1], buf[k] = buf[k], buf[k-1]
+				}
+				if k = offset % 3600; colons <= 2 || k != 0 {
+					if colons != 0 {
+						buf = append(buf, ':')
+					}
+					buf = appendInt(buf, k/60, 2, '0')
+					if k %= 60; colons == 2 || colons == 3 && k != 0 {
+						buf = append(buf, ':')
+						buf = appendInt(buf, k, 2, '0')
+					}
+				}
+				colons = 0
+				if i != j {
+					l := len(buf)
+					k = j + 1 - (l - j)
+					if k < i {
+						l = j + 1 + i - k
+						k = i
+					} else {
+						l = j + 1
+					}
+					copy(buf[k:], buf[j:])
+					buf = buf[:l]
+					if padding&paddingMask == '0' {
+						for ; k > i; k-- {
+							buf[k-1], buf[k] = buf[k], buf[k-1]
+						}
+					}
 				}
 			case ':':
 				if pending != "" {
 					buf = append(buf, ':')
 				} else {
-					colons := 1
+					colons = 1
 				M:
 					for i++; i < len(format); i++ {
 						switch format[i] {
@@ -292,61 +321,14 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 								i++
 								break M
 							}
-							i := len(buf)
-							if padding != ^paddingMask {
-								for ; width > 1; width-- {
-									buf = append(buf, padding&paddingMask)
-								}
-							}
-							j := len(buf)
-							_, offset := t.Zone()
-							if offset < 0 {
-								buf = append(buf, '-')
-								offset = -offset
-							} else {
-								buf = append(buf, '+')
-							}
-							k := len(buf)
-							buf = appendInt(buf, offset/3600, 2, padding)
-							if buf[k] == ' ' {
-								buf[k-1], buf[k] = buf[k], buf[k-1]
-							}
-							if k = offset % 3600; colons <= 2 || k != 0 {
-								buf = append(buf, ':')
-								buf = appendInt(buf, k/60, 2, '0')
-								if k %= 60; colons == 2 || colons == 3 && k != 0 {
-									buf = append(buf, ':')
-									buf = appendInt(buf, k, 2, '0')
-								}
-							}
-							colons = 0
-							if i == j {
-								break M
-							}
-							l := len(buf)
-							k = j + 1 - (l - j)
-							if k < i {
-								l = j + 1 + i - k
-								k = i
-							} else {
-								l = j + 1
-							}
-							copy(buf[k:], buf[j:])
-							buf = buf[:l]
-							if padding&paddingMask == '0' {
-								for ; k > i; k-- {
-									buf[k-1], buf[k] = buf[k], buf[k-1]
-								}
-							}
-							break M
+							b = 'z'
+							goto L
 						default:
 							break M
 						}
 					}
-					if colons > 0 {
-						buf = appendLast(buf, format[:i], width-1, padding)
-						i--
-					}
+					buf = appendLast(buf, format[:i], width-1, padding)
+					i--
 				}
 			case 't':
 				buf = appendString(buf, "\t", width, padding, false, false)
