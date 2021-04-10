@@ -8,15 +8,16 @@ import (
 
 // Parse time string using the format.
 func Parse(source, format string) (t time.Time, err error) {
-	return parse(source, format, time.UTC)
+	return parse(source, format, time.UTC, time.Local)
 }
 
 // ParseInLocation parses time string with the default location.
+// The location is also used to parse the time zone name (%Z).
 func ParseInLocation(source, format string, loc *time.Location) (t time.Time, err error) {
-	return parse(source, format, loc)
+	return parse(source, format, loc, loc)
 }
 
-func parse(source, format string, loc *time.Location) (t time.Time, err error) {
+func parse(source, format string, loc, base *time.Location) (t time.Time, err error) {
 	year, month, day, hour, min, sec, nsec := 1900, 1, 1, 0, 0, 0, 0
 	defer func() {
 		if err != nil {
@@ -172,7 +173,7 @@ func parse(source, format string, loc *time.Location) (t time.Time, err error) {
 						break
 					}
 				}
-				t, err = time.Parse("MST", source[j:k])
+				t, err = time.ParseInLocation("MST", source[j:k], base)
 				if err != nil {
 					err = fmt.Errorf(`cannot parse %q with "%%Z"`, source[j:k])
 					return
