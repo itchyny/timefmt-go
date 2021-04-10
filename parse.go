@@ -8,7 +8,16 @@ import (
 
 // Parse time string using the format.
 func Parse(source, format string) (t time.Time, err error) {
-	year, month, day, hour, min, sec, nsec, loc := 1900, 1, 1, 0, 0, 0, 0, time.UTC
+	return parse(source, format, time.UTC)
+}
+
+// ParseInLocation parses time string with the default location.
+func ParseInLocation(source, format string, loc *time.Location) (t time.Time, err error) {
+	return parse(source, format, loc)
+}
+
+func parse(source, format string, loc *time.Location) (t time.Time, err error) {
+	year, month, day, hour, min, sec, nsec := 1900, 1, 1, 0, 0, 0, 0
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("failed to parse %q with %q: %w", source, format, err)

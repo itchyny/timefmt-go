@@ -764,3 +764,14 @@ func ExampleParse() {
 	fmt.Println(t)
 	// Output: 2020-07-24 09:07:29 +0000 UTC
 }
+
+func ExampleParseInLocation() {
+	loc := time.FixedZone("JST", 9*60*60)
+	str := "2020-07-24 09:07:29"
+	t, err := timefmt.ParseInLocation(str, "%Y-%m-%d %H:%M:%S", loc)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(t)
+	// Output: 2020-07-24 09:07:29 +0900 JST
+}
