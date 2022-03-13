@@ -1,20 +1,19 @@
 GOBIN ?= $(shell go env GOPATH)/bin
-export GO111MODULE=on
 
 .PHONY: all
 all: test
 
 .PHONY: test
 test:
-	go test -v ./...
+	go test -v ./... # do not add -race for test with GOARCH=386
 
 .PHONY: lint
-lint: $(GOBIN)/golint
+lint: $(GOBIN)/staticcheck
 	go vet ./...
-	golint -set_exit_status ./...
+	staticcheck -checks all,-ST1000 ./...
 
-$(GOBIN)/golint:
-	cd && go get golang.org/x/lint/golint
+$(GOBIN)/staticcheck:
+	cd && go get honnef.co/go/tools/cmd/staticcheck
 
 .PHONY: clean
 clean:
