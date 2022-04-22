@@ -40,7 +40,7 @@ Note that `E` and `O` modifier characters are not supported.
 ## Comparison to other libraries
 - This library
   - provides both formatting and parsing functions in pure Go language,
-  - depends only on the Go standard libraries not to grows up the module file.
+  - depends only on the Go standard libraries not to grow up dependency.
 - `Format` (`strftime`) implements glibc extensions including
   - width specifier like `%10A, %10B %2k:%M`,
   - omitting padding modifier like `%-y-%-m-%-d`,
