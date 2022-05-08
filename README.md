@@ -35,6 +35,7 @@ func main() {
 
 Please refer to [`man 3 strftime`](https://linux.die.net/man/3/strftime) and
 [`man 3 strptime`](https://linux.die.net/man/3/strptime) for formatters.
+As an extension, `%f` directive is supported for zero-padded microseconds, which originates from Python.
 Note that `E` and `O` modifier characters are not supported.
 
 ## Comparison to other libraries
