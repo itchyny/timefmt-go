@@ -11,8 +11,7 @@ func Format(t time.Time, format string) string {
 	return string(AppendFormat(make([]byte, 0, 64), t, format))
 }
 
-// AppendFormat appends formatted time to the bytes.
-// You can use this method to reduce allocations.
+// AppendFormat appends formatted time string to the buffer.
 func AppendFormat(buf []byte, t time.Time, format string) []byte {
 	year, month, day := t.Date()
 	hour, min, sec := t.Clock()
