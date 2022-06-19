@@ -1,6 +1,7 @@
 package timefmt
 
 import (
+	"math"
 	"strconv"
 	"time"
 )
@@ -74,7 +75,7 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					b = format[i]
 					if b <= '9' && '0' <= b {
 						width = width*10 + int(b&0x0F)
-						if width >= int((^uint(0)>>1)/10) {
+						if width >= math.MaxInt/10 {
 							width = maxWidth
 						}
 					} else {
