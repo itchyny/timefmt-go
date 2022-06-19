@@ -5,7 +5,7 @@ all: test
 
 .PHONY: test
 test:
-	go test -v ./... # do not add -race for test with GOARCH=386
+	go test -v -race ./...
 
 .PHONY: lint
 lint: $(GOBIN)/staticcheck
