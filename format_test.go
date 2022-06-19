@@ -649,3 +649,13 @@ func ExampleFormat() {
 	fmt.Println(str)
 	// Output: 2020-07-24 09:07:29
 }
+
+func ExampleAppendFormat() {
+	t := time.Date(2020, time.July, 24, 9, 7, 29, 0, time.UTC)
+	buf := make([]byte, 0, 64)
+	buf = append(buf, '(')
+	buf = timefmt.AppendFormat(buf, t, "%Y-%m-%d %H:%M:%S")
+	buf = append(buf, ')')
+	fmt.Println(string(buf))
+	// Output: (2020-07-24 09:07:29)
+}
