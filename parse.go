@@ -27,6 +27,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 	var j, century, yday, colons int
 	var pm bool
 	var pending string
+	var hasZoneName, hasOffset bool
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
@@ -178,7 +179,14 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					err = fmt.Errorf(`cannot parse %q with "%%Z"`, source[j:k])
 					return
 				}
-				loc = t.Location()
+				if hasOffset {
+					name, _ := t.Zone()
+					_, offset := locationZone(loc)
+					loc = time.FixedZone(name, offset)
+				} else {
+					loc = t.Location()
+				}
+				hasZoneName = true
 				j = k
 			case 'z':
 				if j >= l {
@@ -231,7 +239,12 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 							j = k
 						}
 					}
-					loc, colons = time.FixedZone("", sign*((hour*60+min)*60+sec)), 0
+					var name string
+					if hasZoneName {
+						name, _ = locationZone(loc)
+					}
+					loc, colons = time.FixedZone(name, sign*((hour*60+min)*60+sec)), 0
+					hasOffset = true
 				case 'Z':
 					loc, colons, j = time.UTC, 0, j+1
 				default:
@@ -326,6 +339,10 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 		return time.Date(year, time.January, 1, hour, min, sec, nsec, loc).AddDate(0, 0, yday-1), nil
 	}
 	return time.Date(year, time.Month(month), day, hour, min, sec, nsec, loc), nil
+}
+
+func locationZone(loc *time.Location) (name string, offset int) {
+	return time.Date(2000, time.January, 1, 0, 0, 0, 0, loc).Zone()
 }
 
 type parseFormatError byte
