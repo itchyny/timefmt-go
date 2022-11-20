@@ -445,7 +445,7 @@ var parseTestCases = []struct {
 	{
 		source: "2020-07-24 23:14:15 +0000",
 		format: "%F %T %z",
-		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.UTC),
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", 0)),
 	},
 	{
 		source: "2020-07-24T23:14:15Z",
@@ -742,6 +742,14 @@ func TestParse(t *testing.T) {
 				}
 				if !got.Equal(tc.t) {
 					t.Errorf("expected: %v, got: %v", tc.t, got)
+				}
+				name, offset := tc.t.Zone()
+				gotName, gotOffset := got.Zone()
+				if name != gotName || offset != gotOffset {
+					t.Errorf("expected zone: name = %s, offset = %d, got zone: name = %s, offset = %d",
+						name, offset,
+						gotName, gotOffset,
+					)
 				}
 			} else {
 				if err == nil {
