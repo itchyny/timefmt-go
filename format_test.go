@@ -624,7 +624,7 @@ func TestFormat(t *testing.T) {
 		if len(tc.expected) < 1000 {
 			name = tc.expected + "/" + tc.format
 		} else {
-			name = strings.Replace(tc.expected+"/"+tc.format, strings.Repeat("0", 30), "0.", -1)
+			name = strings.ReplaceAll(tc.expected+"/"+tc.format, strings.Repeat("0", 30), "0.")
 		}
 		t.Run(name, func(t *testing.T) {
 			got := timefmt.Format(tc.t, tc.format)
