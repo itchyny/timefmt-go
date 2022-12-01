@@ -25,9 +25,8 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 		}
 	}()
 	var j, century, yday, colons int
-	var pm bool
+	var pm, hasZoneName, hasZoneOffset bool
 	var pending string
-	var hasZoneName, hasOffset bool
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
 			i++
@@ -179,7 +178,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					err = fmt.Errorf(`cannot parse %q with "%%Z"`, source[j:k])
 					return
 				}
-				if hasOffset {
+				if hasZoneOffset {
 					name, _ := t.Zone()
 					_, offset := locationZone(loc)
 					loc = time.FixedZone(name, offset)
@@ -244,7 +243,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 						name, _ = locationZone(loc)
 					}
 					loc, colons = time.FixedZone(name, sign*((hour*60+min)*60+sec)), 0
-					hasOffset = true
+					hasZoneOffset = true
 				case 'Z':
 					loc, colons, j = time.UTC, 0, j+1
 				default:
