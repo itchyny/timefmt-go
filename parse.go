@@ -173,7 +173,11 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 						break
 					}
 				}
-				t, err = time.ParseInLocation("MST", source[j:k], base)
+				zone := source[j:k]
+				if zone == "Z" {
+					zone = time.UTC.String()
+				}
+				t, err = time.ParseInLocation("MST", zone, base)
 				if err != nil {
 					err = fmt.Errorf(`cannot parse %q with "%%Z"`, source[j:k])
 					return
