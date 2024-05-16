@@ -3,8 +3,11 @@ name: CI
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -13,23 +16,24 @@ jobs:
     strategy:
       matrix:
         go: [1.22.x, 1.21.x, 1.20.x]
+      fail-fast: false
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Setup Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: ${{ matrix.go }}
-    - name: Test
-      run: make test
-    - name: Test with GOARCH=386
-      run: env GOARCH=386 go test -v ./...
-    - name: Test Coverage
-      run: |
-        go test -cover ./... | grep -F 100.0% || {
-          go test -cover ./...
-          echo Coverage decreased!
-          exit 1
-        } >&2
-    - name: Lint
-      run: make lint
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Test
+        run: make test
+      - name: Test with GOARCH=386
+        run: env GOARCH=386 go test -v ./...
+      - name: Test Coverage
+        run: |
+          go test -cover ./... | grep -F 100.0% || {
+            go test -cover ./...
+            echo Coverage decreased!
+            exit 1
+          } >&2
+      - name: Lint
+        run: make lint
