@@ -54,7 +54,7 @@ Note that `E` and `O` modifier characters are not supported.
 - `Parse` (`strptime`) allows to parse
   - composed directives like `%F %T`,
   - century years like `%C %y`,
-  - week names like `%A` `%a` (parsed results are discarded).
+  - week directives like `%W %a` and `%G-W%V-%u`.
 - `ParseInLocation` is provided for configuring the default location.
 
 ![](https://user-images.githubusercontent.com/375258/88606920-de475c80-d0b8-11ea-8d40-cbfee9e35c2e.jpg)

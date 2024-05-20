@@ -208,6 +208,11 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.February, 2, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source:   "2024-1",
+		format:   "%G-%j",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year for "%j"`),
+	},
+	{
 		source: "MAY",
 		format: "%b",
 		t:      time.Date(1900, time.May, 1, 0, 0, 0, 0, time.UTC),
@@ -258,6 +263,11 @@ var parseTestCases = []struct {
 		parseErr: errors.New("cannot parse %w"),
 	},
 	{
+		source:   "",
+		format:   "%w",
+		parseErr: errors.New("cannot parse %w"),
+	},
+	{
 		source:   "0",
 		format:   "%u",
 		parseErr: errors.New("cannot parse %u"),
@@ -278,8 +288,13 @@ var parseTestCases = []struct {
 		parseErr: errors.New("cannot parse %u"),
 	},
 	{
-		source: "20 01",
-		format: "%g %V",
+		source:   "",
+		format:   "%u",
+		parseErr: errors.New("cannot parse %u"),
+	},
+	{
+		source: "20",
+		format: "%g",
 		t:      time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
@@ -288,19 +303,234 @@ var parseTestCases = []struct {
 		parseErr: errors.New("cannot parse %g"),
 	},
 	{
-		source:   "xx",
-		format:   "%V",
-		parseErr: errors.New("cannot parse %V"),
-	},
-	{
-		source: "2009 01 00 00",
-		format: "%G %V %U %W",
+		source: "2009",
+		format: "%G",
 		t:      time.Date(2009, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "xxxx",
 		format:   "%G",
 		parseErr: errors.New("cannot parse %G"),
+	},
+	{
+		source: "2017 3",
+		format: "%G %V",
+		t:      time.Date(2017, time.January, 16, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2018 03 Sun",
+		format: "%G %V %a",
+		t:      time.Date(2018, time.January, 21, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2018 10",
+		format: "%G %V",
+		t:      time.Date(2018, time.March, 5, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2019-W01-1",
+		format: "%G-W%V-%u",
+		t:      time.Date(2018, time.December, 31, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2019 20",
+		format: "%G %V",
+		t:      time.Date(2019, time.May, 13, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2020 30 Tuesday",
+		format: "%G %V %A",
+		t:      time.Date(2020, time.July, 21, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Fri 53 20",
+		format: "%a %V %g",
+		t:      time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Sun 50 2021",
+		format: "%a %V %G",
+		t:      time.Date(2021, time.December, 19, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Saturday 53 2021",
+		format: "%A %V %G",
+		t:      time.Date(2022, time.January, 8, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2023 10 Mon",
+		format: "%G %V %a",
+		t:      time.Date(2023, time.March, 6, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2024W107",
+		format: "%GW%V%u",
+		t:      time.Date(2024, time.March, 10, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "2024 20 135",
+		format:   "%G %V %j",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year for "%j"`),
+	},
+	{
+		source:   "2018 50 Sun",
+		format:   "%Y %V %a",
+		parseErr: errors.New(`use "%G" to parse ISO year for "%V"`),
+	},
+	{
+		source:   "xx",
+		format:   "%V",
+		parseErr: errors.New("cannot parse %V"),
+	},
+	{
+		source: "2017 3",
+		format: "%Y %U",
+		t:      time.Date(2017, time.January, 15, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2018 03 Sun",
+		format: "%Y %W %a",
+		t:      time.Date(2018, time.January, 21, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2018 10",
+		format: "%Y %U",
+		t:      time.Date(2018, time.March, 11, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2019 1 0",
+		format: "%Y %U %w",
+		t:      time.Date(2019, time.January, 6, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2019 20",
+		format: "%Y %U",
+		t:      time.Date(2019, time.May, 19, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2020 30 Sat",
+		format: "%Y %U %a",
+		t:      time.Date(2020, time.August, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Fri 53 2020",
+		format: "%a %U %Y",
+		t:      time.Date(2021, time.January, 8, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Fri 00 2021",
+		format: "%a %U %Y",
+		t:      time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Sun 50 2021",
+		format: "%a %U %Y",
+		t:      time.Date(2021, time.December, 12, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Saturday 00 2022",
+		format: "%A %U %Y",
+		t:      time.Date(2022, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2023 10 Mon",
+		format: "%Y %U %a",
+		t:      time.Date(2023, time.March, 6, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2024 10 1",
+		format: "%Y %U %w",
+		t:      time.Date(2024, time.March, 11, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "24 10 Sun",
+		format:   "%g %U %a",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year for "%U" or "%W"`),
+	},
+	{
+		source:   "xx",
+		format:   "%U",
+		parseErr: errors.New("cannot parse %U"),
+	},
+	{
+		source: "2017 3",
+		format: "%Y %W",
+		t:      time.Date(2017, time.January, 16, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2018 03 Sun",
+		format: "%Y %W %a",
+		t:      time.Date(2018, time.January, 21, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2018 10",
+		format: "%Y %W",
+		t:      time.Date(2018, time.March, 5, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2019 1 2",
+		format: "%Y %W %u",
+		t:      time.Date(2019, time.January, 8, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2019 20",
+		format: "%Y %W",
+		t:      time.Date(2019, time.May, 20, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2020 30 Friday",
+		format: "%Y %W %A",
+		t:      time.Date(2020, time.July, 31, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Fri 53 2020",
+		format: "%a %W %Y",
+		t:      time.Date(2021, time.January, 8, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Fri 00 2021",
+		format: "%a %W %Y",
+		t:      time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Sun 50 2021",
+		format: "%a %W %Y",
+		t:      time.Date(2021, time.December, 19, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "Saturday 00 2022",
+		format: "%A %W %Y",
+		t:      time.Date(2022, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2023 10 Mon",
+		format: "%Y %W %a",
+		t:      time.Date(2023, time.March, 6, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2024 10 Tue",
+		format: "%Y %W %a",
+		t:      time.Date(2024, time.March, 5, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2024 20 135",
+		format: "%Y %W %j",
+		t:      time.Date(2024, time.May, 14, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2024-05-19 W20",
+		format: "%F W%W",
+		t:      time.Date(2024, time.May, 19, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "2024 10 Sun",
+		format:   "%G %W %a",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year for "%U" or "%W"`),
+	},
+	{
+		source:   "xx",
+		format:   "%W",
+		parseErr: errors.New("cannot parse %W"),
 	},
 	{
 		source: "2020-09-08 07:06:05",

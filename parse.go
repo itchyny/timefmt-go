@@ -18,14 +18,15 @@ func ParseInLocation(source, format string, loc *time.Location) (t time.Time, er
 }
 
 func parse(source, format string, loc, base *time.Location) (t time.Time, err error) {
-	year, month, day, hour, min, sec, nsec := 1900, 1, 1, 0, 0, 0, 0
+	year, month, day, hour, min, sec, nsec := 1900, 1, 0, 0, 0, 0, 0
 	defer func() {
 		if err != nil {
 			err = fmt.Errorf("failed to parse %q with %q: %w", source, format, err)
 		}
 	}()
-	var j, century, yday, colons int
-	var pm, hasZoneName, hasZoneOffset bool
+	var j, century, week, weekday, yday, colons int
+	weekstart := time.Weekday(-1)
+	var pm, hasISOYear, hasZoneName, hasZoneOffset bool
 	var pending string
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
@@ -59,45 +60,64 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					return
 				}
 				year += 2000
+				hasISOYear = true
 			case 'G':
 				if year, j, err = parseNumber(source, j, 4, b); err != nil {
 					return
 				}
+				hasISOYear = true
 			case 'm':
 				if month, j, err = parseNumber(source, j, 2, 'm'); err != nil {
 					return
 				}
 			case 'B':
-				if month, j, err = lookup(source, j, longMonthNames, 'B'); err != nil {
+				if month, j, err = parseAny(source, j, longMonthNames, 'B'); err != nil {
 					return
 				}
 			case 'b', 'h':
-				if month, j, err = lookup(source, j, shortMonthNames, b); err != nil {
+				if month, j, err = parseAny(source, j, shortMonthNames, b); err != nil {
 					return
 				}
 			case 'A':
-				if _, j, err = lookup(source, j, longWeekNames, 'A'); err != nil {
+				if weekday, j, err = parseAny(source, j, longWeekNames, 'A'); err != nil {
 					return
 				}
 			case 'a':
-				if _, j, err = lookup(source, j, shortWeekNames, 'a'); err != nil {
+				if weekday, j, err = parseAny(source, j, shortWeekNames, 'a'); err != nil {
 					return
 				}
 			case 'w':
-				if j >= l || source[j] < '0' || '6' < source[j] {
-					err = parseFormatError(b)
+				if weekday, j, err = parseByte(source, j, '0', '6', 'w'); err != nil {
 					return
 				}
-				j++
 			case 'u':
-				if j >= l || source[j] < '1' || '7' < source[j] {
-					err = parseFormatError(b)
+				if weekday, j, err = parseByte(source, j, '1', '7', 'u'); err != nil {
 					return
 				}
-				j++
-			case 'V', 'U', 'W':
-				if _, j, err = parseNumber(source, j, 2, b); err != nil {
+				weekday = weekday%7 + 1
+			case 'V':
+				if week, j, err = parseNumber(source, j, 2, b); err != nil {
 					return
+				}
+				weekstart = time.Thursday
+				if weekday == 0 {
+					weekday = 2
+				}
+			case 'U':
+				if week, j, err = parseNumber(source, j, 2, b); err != nil {
+					return
+				}
+				weekstart = time.Sunday
+				if weekday == 0 {
+					weekday = 1
+				}
+			case 'W':
+				if week, j, err = parseNumber(source, j, 2, b); err != nil {
+					return
+				}
+				weekstart = time.Monday
+				if weekday == 0 {
+					weekday = 2
 				}
 			case 'e':
 				if j < l && source[j] == ' ' {
@@ -135,7 +155,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				}
 			case 'p', 'P':
 				var ampm int
-				if ampm, j, err = lookup(source, j, []string{"AM", "PM"}, 'p'); err != nil {
+				if ampm, j, err = parseAny(source, j, []string{"AM", "PM"}, 'p'); err != nil {
 					return
 				}
 				pm = ampm == 2
@@ -334,8 +354,31 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 	if century > 0 {
 		year = century*100 + year%100
 	}
-	if yday > 0 {
-		return time.Date(year, time.January, 1, hour, min, sec, nsec, loc).AddDate(0, 0, yday-1), nil
+	if day == 0 {
+		if yday > 0 {
+			if hasISOYear {
+				err = errors.New(`use "%Y" to parse non-ISO year for "%j"`)
+				return
+			}
+			return time.Date(year, time.January, yday, hour, min, sec, nsec, loc), nil
+		}
+		if weekstart >= time.Sunday {
+			if weekstart == time.Thursday {
+				if !hasISOYear {
+					err = errors.New(`use "%G" to parse ISO year for "%V"`)
+					return
+				}
+			} else if hasISOYear {
+				err = errors.New(`use "%Y" to parse non-ISO year for "%U" or "%W"`)
+				return
+			}
+			if weekstart > time.Sunday && weekday == 1 {
+				week++
+			}
+			t := time.Date(year, time.January, -int(weekstart), hour, min, sec, nsec, loc)
+			return t.AddDate(0, 0, week*7-int(t.Weekday())+weekday-1), nil
+		}
+		day = 1
 	}
 	return time.Date(year, time.Month(month), day, hour, min, sec, nsec, loc), nil
 }
@@ -369,31 +412,31 @@ func (err parseZFormatError) Error() string {
 	}
 }
 
-func parseNumber(source string, min, size int, format byte) (int, int, error) {
-	var val int
-	if l := len(source); min+size > l {
+func parseNumber(source string, index, size int, format byte) (int, int, error) {
+	var value int
+	if l := len(source); index+size > l {
 		size = l
 	} else {
-		size += min
+		size += index
 	}
-	i := min
+	i := index
 	for ; i < size; i++ {
 		if b := source[i]; '0' <= b && b <= '9' {
-			val = val*10 + int(b&0x0F)
+			value = value*10 + int(b&0x0F)
 		} else {
 			break
 		}
 	}
-	if i == min {
+	if i == index {
 		return 0, 0, parseFormatError(format)
 	}
-	return val, i, nil
+	return value, i, nil
 }
 
-func lookup(source string, min int, candidates []string, format byte) (int, int, error) {
+func parseAny(source string, index int, candidates []string, format byte) (int, int, error) {
 L:
 	for i, xs := range candidates {
-		j := min
+		j := index
 		for k := 0; k < len(xs); k, j = k+1, j+1 {
 			if j >= len(source) {
 				continue L
@@ -403,6 +446,16 @@ L:
 			}
 		}
 		return i + 1, j, nil
+	}
+	return 0, 0, parseFormatError(format)
+}
+
+func parseByte(source string, index int, min, max, format byte) (int, int, error) {
+	if index == len(source) {
+		return 0, 0, parseFormatError(format)
+	}
+	if b := source[index]; min <= b && b <= max {
+		return int(b-min) + 1, index + 1, nil
 	}
 	return 0, 0, parseFormatError(format)
 }
