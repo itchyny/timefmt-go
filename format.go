@@ -193,17 +193,10 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				}
 				buf = appendInt(buf, hour, width, padding)
 			case 'l':
-				if width < 2 {
-					width = 2
-				}
 				if padding < ^paddingMask {
 					padding = ' '
 				}
-				h := hour
-				if h > 12 {
-					h -= 12
-				}
-				buf = appendInt(buf, h, width, padding)
+				fallthrough
 			case 'I':
 				if width < 2 {
 					width = 2
