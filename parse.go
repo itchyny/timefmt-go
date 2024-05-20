@@ -32,7 +32,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 		if b := format[i]; b == '%' {
 			i++
 			if i == len(format) {
-				err = errors.New("stray %")
+				err = errors.New(`stray "%"`)
 				return
 			}
 			b = format[i]
@@ -224,12 +224,8 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 						return
 					}
 					if j = k; j >= l || source[j] != ':' {
-						switch colons {
-						case 1:
-							err = errors.New("expected ':' for %:z")
-							return
-						case 2:
-							err = errors.New("expected ':' for %::z")
+						if colons != 0 {
+							err = expectedColonForZFormatError(colons)
 							return
 						}
 					} else if j++; colons == 0 {
@@ -246,7 +242,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					if j = k; colons > 1 {
 						if j >= l || source[j] != ':' {
 							if colons == 2 {
-								err = errors.New("expected ':' for %::z")
+								err = expectedColonForZFormatError(colons)
 								return
 							}
 						} else if sec, k, _ = parseNumber(source, j+1, 2, 0, 59, 'z'); k != j+3 {
@@ -278,24 +274,17 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					}
 					j++
 				} else {
-					if i++; i == len(format) {
-						err = errors.New(`expected 'z' after "%:"`)
-						return
-					} else if b = format[i]; b == 'z' {
-						colons = 1
-					} else if b != ':' {
-						err = errors.New(`expected 'z' after "%:"`)
-						return
-					} else if i++; i == len(format) {
-						err = errors.New(`expected 'z' after "%::"`)
-						return
-					} else if b = format[i]; b == 'z' {
-						colons = 2
-					} else {
-						err = errors.New(`expected 'z' after "%::"`)
-						return
+					for colons = 1; colons <= 2; colons++ {
+						if i++; i == len(format) {
+							break
+						} else if b = format[i]; b == 'z' {
+							goto L
+						} else if b != ':' || colons == 2 {
+							break
+						}
 					}
-					goto L
+					err = expectedZAfterColonError(colons)
+					return
 				}
 			case 't', 'n':
 				k := j
@@ -308,7 +297,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					}
 				}
 				if k == j {
-					err = fmt.Errorf("expected a space for %%%c", b)
+					err = fmt.Errorf(`expected a space for "%%%c"`, b)
 					return
 				}
 				j = k
@@ -324,7 +313,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					if pending, ok = compositions[b]; ok {
 						break
 					}
-					err = fmt.Errorf(`unexpected format: "%%%c"`, b)
+					err = fmt.Errorf(`unexpected format "%%%c"`, b)
 					return
 				}
 				if j >= l || source[j] != b {
@@ -337,7 +326,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				b, pending = pending[0], pending[1:]
 				goto L
 			}
-		} else if j >= len(source) || source[j] != b {
+		} else if j >= l || source[j] != b {
 			err = expectedFormatError(b)
 			return
 		} else {
@@ -345,7 +334,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 		}
 	}
 	if j < len(source) {
-		err = fmt.Errorf("unconverted string: %q", source[j:])
+		err = fmt.Errorf("unparsed string %q", source[j:])
 		return
 	}
 	if pm {
@@ -390,7 +379,7 @@ func locationZone(loc *time.Location) (name string, offset int) {
 type parseFormatError byte
 
 func (err parseFormatError) Error() string {
-	return fmt.Sprintf("cannot parse %%%c", byte(err))
+	return fmt.Sprintf(`cannot parse "%%%c"`, byte(err))
 }
 
 type expectedFormatError byte
@@ -402,14 +391,19 @@ func (err expectedFormatError) Error() string {
 type parseZFormatError int
 
 func (err parseZFormatError) Error() string {
-	switch int(err) {
-	case 0:
-		return "cannot parse %z"
-	case 1:
-		return "cannot parse %:z"
-	default:
-		return "cannot parse %::z"
-	}
+	return `cannot parse "%` + `::z"`[2-err:]
+}
+
+type expectedColonForZFormatError int
+
+func (err expectedColonForZFormatError) Error() string {
+	return `expected ':' for "%` + `::z"`[2-err:]
+}
+
+type expectedZAfterColonError int
+
+func (err expectedZAfterColonError) Error() string {
+	return `expected 'z' after "%` + `::"`[2-err:]
 }
 
 func parseNumber(source string, index, size, min, max int, format byte) (int, int, error) {
