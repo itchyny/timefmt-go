@@ -763,9 +763,9 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.August, 30, 5, 30, 32, 0, time.UTC),
 	},
 	{
-		source: "9999999999Z",
+		source: "2147483647Z",
 		format: "%s%z",
-		t:      time.Date(2286, time.November, 20, 17, 46, 39, 0, time.UTC),
+		t:      time.Date(2038, time.January, 19, 3, 14, 7, 0, time.UTC),
 	},
 	{
 		source:   ".",

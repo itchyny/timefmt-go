@@ -3,6 +3,7 @@ package timefmt
 import (
 	"errors"
 	"fmt"
+	"math"
 	"time"
 )
 
@@ -169,7 +170,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				}
 			case 's':
 				var unix int
-				if unix, j, err = parseNumber(source, j, 10, 0, 9999999999, 's'); err != nil {
+				if unix, j, err = parseNumber(source, j, 10, 0, math.MaxInt, 's'); err != nil {
 					return
 				}
 				t = time.Unix(int64(unix), 0).In(time.UTC)
