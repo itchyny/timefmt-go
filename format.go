@@ -264,14 +264,14 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				if buf[k] == ' ' {
 					buf[k-1], buf[k] = buf[k], buf[k-1]
 				}
-				if k = offset % 3600; colons <= 2 || k != 0 {
+				if offset %= 3600; colons <= 2 || offset != 0 {
 					if colons != 0 {
 						buf = append(buf, ':')
 					}
-					buf = appendInt(buf, k/60, 2, '0')
-					if k %= 60; colons == 2 || colons == 3 && k != 0 {
+					buf = appendInt(buf, offset/60, 2, '0')
+					if offset %= 60; colons == 2 || colons == 3 && offset != 0 {
 						buf = append(buf, ':')
-						buf = appendInt(buf, k, 2, '0')
+						buf = appendInt(buf, offset, 2, '0')
 					}
 				}
 				colons = 0
@@ -287,9 +287,7 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 					copy(buf[k:], buf[j:])
 					buf = buf[:l]
 					if padding&paddingMask == '0' {
-						for ; k > i; k-- {
-							buf[k-1], buf[k] = buf[k], buf[k-1]
-						}
+						buf[i], buf[k] = buf[k], buf[i]
 					}
 				}
 			case ':':
@@ -437,7 +435,7 @@ func appendString(buf []byte, str string, width int, padding byte, upper, swap b
 	}
 	switch {
 	case swap:
-		if str[len(str)-1] < 'a' {
+		if str[1] < 'a' {
 			for _, b := range []byte(str) {
 				buf = append(buf, b|0x20)
 			}
