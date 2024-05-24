@@ -88,11 +88,12 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					return
 				}
 			case 'w':
-				if weekday, j, err = parseByte(source, j, '0', '6', 'w'); err != nil {
+				if weekday, j, err = parseNumber(source, j, 1, 0, 6, 'w'); err != nil {
 					return
 				}
+				weekday++
 			case 'u':
-				if weekday, j, err = parseByte(source, j, '1', '7', 'u'); err != nil {
+				if weekday, j, err = parseNumber(source, j, 1, 1, 7, 'u'); err != nil {
 					return
 				}
 				weekday = weekday%7 + 1
@@ -436,21 +437,11 @@ L:
 			if j >= len(source) {
 				continue L
 			}
-			if x, y := xs[k], source[j]; x != y && x|('a'-'A') != y|('a'-'A') {
+			if x, y := xs[k], source[j]; x != y && x|0x20 != y|0x20 {
 				continue L
 			}
 		}
 		return i + 1, j, nil
-	}
-	return 0, 0, parseFormatError(format)
-}
-
-func parseByte(source string, index int, min, max, format byte) (int, int, error) {
-	if index == len(source) {
-		return 0, 0, parseFormatError(format)
-	}
-	if b := source[index]; min <= b && b <= max {
-		return int(b-min) + 1, index + 1, nil
 	}
 	return 0, 0, parseFormatError(format)
 }

@@ -132,19 +132,13 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 			case 'a':
 				buf = appendString(buf, shortWeekNames[t.Weekday()], width, padding, upper, swap)
 			case 'w':
-				for ; width > 1; width-- {
-					buf = append(buf, padding&paddingMask)
-				}
-				buf = append(buf, '0'+byte(t.Weekday()))
+				buf = appendInt(buf, int(t.Weekday()), width, padding)
 			case 'u':
 				w := int(t.Weekday())
 				if w == 0 {
 					w = 7
 				}
-				for ; width > 1; width-- {
-					buf = append(buf, padding&paddingMask)
-				}
-				buf = append(buf, '0'+byte(w))
+				buf = appendInt(buf, w, width, padding)
 			case 'V':
 				if width < 2 {
 					width = 2
