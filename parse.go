@@ -180,24 +180,24 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				hour, min, sec = t.Clock()
 				month = int(mon)
 			case 'f':
-				var usec, k, d int
-				if usec, k, err = parseNumber(source, j, 6, 0, 999999, 'f'); err != nil {
+				usec, i := 0, j
+				if usec, j, err = parseNumber(source, j, 6, 0, 999999, 'f'); err != nil {
 					return
 				}
-				for j, d = k, k-j; d < 6; d++ {
+				for i = j - i; i < 6; i++ {
 					usec *= 10
 				}
 				nsec = usec * 1000
 			case 'Z':
-				k := j
-				for ; k < l; k++ {
-					if c := source[k]; c < 'A' || 'Z' < c {
+				i := j
+				for ; j < l; j++ {
+					if c := source[j]; c < 'A' || 'Z' < c {
 						break
 					}
 				}
-				t, err = time.ParseInLocation("MST", source[j:k], base)
+				t, err = time.ParseInLocation("MST", source[i:j], base)
 				if err != nil {
-					err = fmt.Errorf(`cannot parse %q with "%%Z"`, source[j:k])
+					err = fmt.Errorf(`cannot parse %q with "%%Z"`, source[i:j])
 					return
 				}
 				if hasZoneOffset {
@@ -208,7 +208,6 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					loc = t.Location()
 				}
 				hasZoneName = true
-				j = k
 			case 'z':
 				if j >= l {
 					err = parseZFormatError(colons)
@@ -220,40 +219,41 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					sign = -1
 					fallthrough
 				case '+':
-					var hour, min, sec, k int
-					if hour, k, _ = parseNumber(source, j+1, 2, 0, 23, 'z'); k != j+3 {
+					hour, min, sec, i := 0, 0, 0, j
+					if hour, j, _ = parseNumber(source, j+1, 2, 0, 23, 'z'); j != i+3 {
 						err = parseZFormatError(colons)
 						return
 					}
-					if j = k; j >= l || source[j] != ':' {
-						if colons != 0 {
+					if j >= l || source[j] != ':' {
+						if colons > 0 {
 							err = expectedColonForZFormatError(colons)
 							return
 						}
 					} else if j++; colons == 0 {
 						colons = 4
 					}
-					if min, k, _ = parseNumber(source, j, 2, 0, 59, 'z'); k != j+2 {
-						if colons == 0 {
-							k = j
-						} else {
+					i = j
+					if min, j, _ = parseNumber(source, j, 2, 0, 59, 'z'); j != i+2 {
+						if colons > 0 {
 							err = parseZFormatError(colons & 3)
 							return
 						}
-					}
-					if j = k; colons > 1 {
+						j = i
+					} else if colons > 1 {
 						if j >= l || source[j] != ':' {
 							if colons == 2 {
 								err = expectedColonForZFormatError(colons)
 								return
 							}
-						} else if sec, k, _ = parseNumber(source, j+1, 2, 0, 59, 'z'); k != j+3 {
-							if colons == 2 {
-								err = parseZFormatError(colons)
-								return
-							}
 						} else {
-							j = k
+							i = j
+							if sec, j, _ = parseNumber(source, j+1, 2, 0, 59, 'z'); j != i+3 {
+								if colons == 2 {
+									err = parseZFormatError(colons)
+									return
+								}
+								j = i
+							}
 						}
 					}
 					var name string
@@ -289,20 +289,19 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					return
 				}
 			case 't', 'n':
-				k := j
+				i := j
 			K:
-				for ; k < l; k++ {
-					switch source[k] {
+				for ; j < l; j++ {
+					switch source[j] {
 					case ' ', '\t', '\n', '\v', '\f', '\r':
 					default:
 						break K
 					}
 				}
-				if k == j {
+				if i == j {
 					err = fmt.Errorf(`expected a space for "%%%c"`, b)
 					return
 				}
-				j = k
 			case '%':
 				if j >= l || source[j] != b {
 					err = expectedFormatError(b)
