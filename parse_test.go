@@ -1143,6 +1143,11 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`cannot parse "%p"`),
 	},
 	{
+		source:   "pp",
+		format:   "%P",
+		parseErr: errors.New(`cannot parse "%P"`),
+	},
+	{
 		format:   "%E",
 		parseErr: errors.New(`unexpected format "%E"`),
 	},

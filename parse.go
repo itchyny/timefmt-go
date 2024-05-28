@@ -155,9 +155,9 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				if hour == 12 {
 					hour = 0
 				}
-			case 'p', 'P':
+			case 'P', 'p':
 				var ampm int
-				if ampm, j, err = parseAny(source, j, []string{"AM", "PM"}, 'p'); err != nil {
+				if ampm, j, err = parseAny(source, j, []string{"AM", "PM"}, b); err != nil {
 					return
 				}
 				pm = ampm == 2
