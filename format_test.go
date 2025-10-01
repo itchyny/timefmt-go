@@ -659,3 +659,10 @@ func ExampleAppendFormat() {
 	fmt.Println(string(buf))
 	// Output: (2020-07-24 09:07:29)
 }
+
+func FuzzFormat(f *testing.F) {
+	now := time.Date(2020, time.July, 24, 9, 7, 29, 0, time.UTC)
+	f.Fuzz(func(_ *testing.T, format string) {
+		timefmt.Format(now, format)
+	})
+}
