@@ -365,7 +365,7 @@ var parseTestCases = []struct {
 	{
 		source: "99",
 		format: "%g",
-		t:      time.Date(2099, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1999, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "xx",

@@ -60,7 +60,11 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				if year, j, err = parseNumber(source, j, 2, 0, 99, b); err != nil {
 					return
 				}
-				year += 2000
+				if year < 69 {
+					year += 2000
+				} else {
+					year += 1900
+				}
 				hasISOYear = true
 			case 'G':
 				if year, j, err = parseNumber(source, j, 4, 0, 9999, b); err != nil {
