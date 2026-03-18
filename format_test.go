@@ -50,6 +50,36 @@ var formatTestCases = []struct {
 		expected: "10000 10000 10000 10000 10000 10000 10000",
 	},
 	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_2Y %-2Y %_3Y %-3Y %_6Y %-6Y",
+		t:        time.Date(-1, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-001 -1 -1 -01 -001 -0001   -1 -1 -1 -1  -1  -1     -1     -1",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_3Y %-3Y %_6Y %-6Y",
+		t:        time.Date(-10, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-010 -10 -10 -10 -010 -0010  -10 -10 -10 -10    -10    -10",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_3Y %-3Y %_5Y %-5Y %_6Y %-6Y",
+		t:        time.Date(-100, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-100 -100 -100 -100 -100 -0100 -100 -100 -100 -100  -100  -100   -100   -100",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_3Y %-3Y %_6Y %-6Y",
+		t:        time.Date(-999, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-999 -999 -999 -999 -999 -0999 -999 -999 -999 -999   -999   -999",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_3Y %-3Y %_6Y %-6Y",
+		t:        time.Date(-1000, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-1000 -1000 -1000 -1000 -1000 -1000 -1000 -1000 -1000 -1000  -1000  -1000",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_3Y %-3Y %_7Y %-7Y",
+		t:        time.Date(-10000, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-10000 -10000 -10000 -10000 -10000 -10000 -10000 -10000 -10000 -10000  -10000  -10000",
+	},
+	{
 		format:   "[%Y]",
 		t:        time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
 		expected: "[2020]",
@@ -65,14 +95,44 @@ var formatTestCases = []struct {
 		expected: "09  9 9 0009    9 0009 0009    9",
 	},
 	{
-		format:   "%C",
+		format:   "%C %y %C%y %4C %_4C %04C %-C %4y %_4y %04y %-y",
 		t:        time.Date(2009, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "20",
+		expected: "20 09 2009 0020   20 0020 20 0009    9 0009 9",
 	},
 	{
-		format:   "%C%y",
+		format:   "%C %y %C%y %4C %_4C %04C %-C %4y %_4y %04y %-y",
 		t:        time.Date(1758, time.January, 1, 0, 0, 0, 0, time.UTC),
-		expected: "1758",
+		expected: "17 58 1758 0017   17 0017 17 0058   58 0058 58",
+	},
+	{
+		format:   "%C %y %C%y %4C %_4C %04C %-C %4y %_4y %04y %-y",
+		t:        time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "00 01 0001 0000    0 0000 0 0001    1 0001 1",
+	},
+	{
+		format:   "%C %y %C%y %4C %_4C %04C %-C %4y %_4y %04y %-y",
+		t:        time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "00 00 0000 0000    0 0000 0 0000    0 0000 0",
+	},
+	{
+		format:   "%C %y %C%y %4C %_4C %04C %-C %4y %_4y %04y %-y",
+		t:        time.Date(-1, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-0 01 -001 -000   -0 -000 -0 0001    1 0001 1",
+	},
+	{
+		format:   "%C %y %C%y %4C %_4C %04C %-C %4y %_4y %04y %-y",
+		t:        time.Date(-27, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-0 27 -027 -000   -0 -000 -0 0027   27 0027 27",
+	},
+	{
+		format:   "%C %y %C%y %4C %_4C %04C %-C %4y %_4y %04y %-y",
+		t:        time.Date(-100, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-1 00 -100 -001   -1 -001 -1 0000    0 0000 0",
+	},
+	{
+		format:   "%C %y %C%y %4C %_4C %04C %-C %4y %_4y %04y %-y",
+		t:        time.Date(-102, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-1 02 -102 -001   -1 -001 -1 0002    2 0002 2",
 	},
 	{
 		format:   "%Y-%m",
@@ -213,6 +273,11 @@ var formatTestCases = []struct {
 		format:   "%g %G %a %V %U %W",
 		t:        time.Date(2010, time.January, 4, 0, 0, 0, 0, time.UTC),
 		expected: "10 2010 Mon 01 01 01",
+	},
+	{
+		format:   "%g %G %a %V %U %W",
+		t:        time.Date(-1, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "02 -002 Fri 53 00 00",
 	},
 	{
 		format:   "%Y-%j-%-j",
@@ -368,6 +433,16 @@ var formatTestCases = []struct {
 		format:   "%s %12s %_12s %012s",
 		t:        time.Date(2020, time.August, 30, 5, 30, 32, 0, time.UTC),
 		expected: "1598765432   1598765432   1598765432 001598765432",
+	},
+	{
+		format:   "%s %4s %12s %_12s %012s %-s",
+		t:        time.Date(1969, time.December, 31, 23, 59, 59, 0, time.UTC),
+		expected: "-1   -1           -1           -1 -00000000001 -1",
+	},
+	{
+		format:   "%s %12s %_12s %012s",
+		t:        time.Date(1960, time.June, 15, 0, 0, 0, 0, time.UTC),
+		expected: "-301276800   -301276800   -301276800 -00301276800",
 	},
 	{
 		format:   "%R %r %T %D %x %X",

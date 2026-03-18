@@ -85,12 +85,20 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 			case 'Y':
 				buf = appendInt(buf, year, or(width, 4), padding)
 			case 'y':
-				buf = appendInt(buf, year%100, max(width, 2), padding)
+				buf = appendInt(buf, abs(year%100), max(width, 2), padding)
 			case 'C':
-				buf = appendInt(buf, year/100, max(width, 2), padding)
+				c := year / 100
+				z := year < 0 && c == 0
+				if z {
+					c = -1
+				}
+				buf = appendInt(buf, c, max(width, 2), padding)
+				if z {
+					buf[len(buf)-1] = '0'
+				}
 			case 'g':
 				year, _ := t.ISOWeek()
-				buf = appendInt(buf, year%100, max(width, 2), padding)
+				buf = appendInt(buf, abs(year%100), max(width, 2), padding)
 			case 'G':
 				year, _ := t.ISOWeek()
 				buf = appendInt(buf, year, or(width, 4), padding)
@@ -262,6 +270,18 @@ K:
 }
 
 func appendInt(buf []byte, num, width int, padding byte) []byte {
+	if num < 0 {
+		if width > 0 {
+			width--
+		}
+		buf = append(buf, '-')
+		num = -num
+		defer func(i int) {
+			for ; buf[i] == ' '; i++ {
+				buf[i], buf[i-1] = buf[i-1], buf[i]
+			}
+		}(len(buf))
+	}
 	if padding != ^paddingMask {
 		padding &= paddingMask
 		switch width {
@@ -316,7 +336,8 @@ func appendInt(buf []byte, num, width int, padding byte) []byte {
 		}
 		goto L4
 	}
-	return strconv.AppendInt(buf, int64(num), 10)
+	buf = strconv.AppendInt(buf, int64(num), 10)
+	return buf
 L4:
 	buf = append(buf, byte(num/1000)|'0')
 	num %= 1000
@@ -327,7 +348,8 @@ L2:
 	buf = append(buf, byte(num/10)|'0')
 	num %= 10
 L1:
-	return append(buf, byte(num)|'0')
+	buf = append(buf, byte(num)|'0')
+	return buf
 }
 
 func appendString(buf []byte, str string, width int, padding byte, upper, swap bool) []byte {
@@ -375,6 +397,13 @@ func or(x, y int) int {
 		return x
 	}
 	return y
+}
+
+func abs(x int) int {
+	if x >= 0 {
+		return x
+	}
+	return -x
 }
 
 const paddingMask byte = 0x7F
