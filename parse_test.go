@@ -53,6 +53,26 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`cannot parse "%Y"`),
 	},
 	{
+		source: "-001-06-15",
+		format: "%Y-%m-%d",
+		t:      time.Date(-1, time.June, 15, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "-100-01-01",
+		format: "%Y-%m-%d",
+		t:      time.Date(-100, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "-1000-12-31",
+		format: "%Y-%m-%d",
+		t:      time.Date(-1000, time.December, 31, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "-",
+		format:   "%Y",
+		parseErr: errors.New(`cannot parse "%Y"`),
+	},
+	{
 		source: "20",
 		format: "%C",
 		t:      time.Date(2000, time.January, 1, 0, 0, 0, 0, time.UTC),
@@ -71,6 +91,11 @@ var parseTestCases = []struct {
 		source: "9999",
 		format: "%C%y",
 		t:      time.Date(9999, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "-027",
+		format:   "%C%y",
+		parseErr: errors.New(`negative century is not supported for "%C"`),
 	},
 	{
 		source:   "xx",
@@ -389,6 +414,16 @@ var parseTestCases = []struct {
 	},
 	{
 		source:   "xxxx",
+		format:   "%G",
+		parseErr: errors.New(`cannot parse "%G"`),
+	},
+	{
+		source: "-002-W53-5",
+		format: "%G-W%V-%u",
+		t:      time.Date(-1, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "-",
 		format:   "%G",
 		parseErr: errors.New(`cannot parse "%G"`),
 	},
@@ -768,7 +803,22 @@ var parseTestCases = []struct {
 		t:      time.Date(2038, time.January, 19, 3, 14, 7, 0, time.UTC),
 	},
 	{
+		source: "-1",
+		format: "%s",
+		t:      time.Date(1969, time.December, 31, 23, 59, 59, 0, time.UTC),
+	},
+	{
+		source: "-301276800",
+		format: "%s",
+		t:      time.Date(1960, time.June, 15, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source:   ".",
+		format:   "%s",
+		parseErr: errors.New(`cannot parse "%s"`),
+	},
+	{
+		source:   "-",
 		format:   "%s",
 		parseErr: errors.New(`cannot parse "%s"`),
 	},

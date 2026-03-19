@@ -25,7 +25,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 			err = fmt.Errorf("failed to parse %q with %q: %w", source, format, err)
 		}
 	}()
-	var j, week, weekday, yday, colons int
+	var j, week, weekday, yday, colons, sign int
 	century, weekstart := -1, time.Weekday(-1)
 	var pm, hasISOYear, hasZoneName, hasZoneOffset bool
 	var pending string
@@ -40,9 +40,11 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 		L:
 			switch b {
 			case 'Y':
+				sign, j = parseSign(source, j, l)
 				if year, j, err = parseNumber(source, j, 4, 0, 9999, 'Y'); err != nil {
 					return
 				}
+				year *= sign
 			case 'y':
 				if year, j, err = parseNumber(source, j, 2, 0, 99, 'y'); err != nil {
 					return
@@ -53,6 +55,11 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					year += 1900
 				}
 			case 'C':
+				sign, j = parseSign(source, j, l)
+				if sign < 0 {
+					err = errors.New(`negative century is not supported for "%C"`)
+					return
+				}
 				if century, j, err = parseNumber(source, j, 2, 0, 99, 'C'); err != nil {
 					return
 				}
@@ -67,9 +74,11 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				}
 				hasISOYear = true
 			case 'G':
+				sign, j = parseSign(source, j, l)
 				if year, j, err = parseNumber(source, j, 4, 0, 9999, b); err != nil {
 					return
 				}
+				year *= sign
 				hasISOYear = true
 			case 'm':
 				if month, j, err = parseNumber(source, j, 2, 1, 12, 'm'); err != nil {
@@ -168,11 +177,12 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					return
 				}
 			case 's':
+				sign, j = parseSign(source, j, l)
 				var unix int
 				if unix, j, err = parseNumber(source, j, 10, 0, math.MaxInt, 's'); err != nil {
 					return
 				}
-				t = time.Unix(int64(unix), 0).In(time.UTC)
+				t = time.Unix(int64(sign*unix), 0).In(time.UTC)
 				var mon time.Month
 				year, mon, day = t.Date()
 				hour, minute, second = t.Clock()
@@ -211,7 +221,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					err = parseZFormatError(colons)
 					return
 				}
-				sign := 1
+				sign = 1
 				switch source[j] {
 				case '-':
 					sign = -1
@@ -403,6 +413,13 @@ type expectedZAfterColonError int
 
 func (err expectedZAfterColonError) Error() string {
 	return `expected 'z' after "%` + `::"`[2-err:]
+}
+
+func parseSign(source string, index, l int) (int, int) {
+	if index < l && source[index] == '-' {
+		return -1, index + 1
+	}
+	return 1, index
 }
 
 func parseNumber(source string, index, size, minimum, maximum int, format byte) (int, int, error) {
