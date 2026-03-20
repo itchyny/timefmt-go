@@ -1269,6 +1269,36 @@ func ExampleParseInLocation() {
 	// Output: 2020-07-24 09:07:29 +0900 JST
 }
 
+func BenchmarkParseDateTime(b *testing.B) {
+	for b.Loop() {
+		timefmt.Parse("2020-09-08 07:06:05", "%Y-%m-%d %H:%M:%S")
+	}
+}
+
+func BenchmarkParseDateOnly(b *testing.B) {
+	for b.Loop() {
+		timefmt.Parse("2020-09-08", "%Y-%m-%d")
+	}
+}
+
+func BenchmarkParseTimeOnly(b *testing.B) {
+	for b.Loop() {
+		timefmt.Parse("07:06:05", "%H:%M:%S")
+	}
+}
+
+func BenchmarkParseComposed(b *testing.B) {
+	for b.Loop() {
+		timefmt.Parse("Tue Sep  8 07:06:05 2020", "%c")
+	}
+}
+
+func BenchmarkParseUnix(b *testing.B) {
+	for b.Loop() {
+		timefmt.Parse("1599548765", "%s")
+	}
+}
+
 func FuzzParse(f *testing.F) {
 	f.Fuzz(func(t *testing.T, source, format string) {
 		_, err := timefmt.Parse(source, format)

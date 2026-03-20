@@ -735,6 +735,38 @@ func ExampleAppendFormat() {
 	// Output: (2020-07-24 09:07:29)
 }
 
+var benchTime = time.Date(2020, time.September, 8, 7, 6, 5, 43210000, time.UTC)
+
+func BenchmarkFormatDateTime(b *testing.B) {
+	for b.Loop() {
+		timefmt.Format(benchTime, "%Y-%m-%d %H:%M:%S")
+	}
+}
+
+func BenchmarkFormatDateOnly(b *testing.B) {
+	for b.Loop() {
+		timefmt.Format(benchTime, "%Y-%m-%d")
+	}
+}
+
+func BenchmarkFormatTimeOnly(b *testing.B) {
+	for b.Loop() {
+		timefmt.Format(benchTime, "%H:%M:%S")
+	}
+}
+
+func BenchmarkFormatComposed(b *testing.B) {
+	for b.Loop() {
+		timefmt.Format(benchTime, "%c")
+	}
+}
+
+func BenchmarkFormatUnix(b *testing.B) {
+	for b.Loop() {
+		timefmt.Format(benchTime, "%s")
+	}
+}
+
 func FuzzFormat(f *testing.F) {
 	now := time.Date(2020, time.July, 24, 9, 7, 29, 0, time.UTC)
 	f.Fuzz(func(_ *testing.T, format string) {
