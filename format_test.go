@@ -36,6 +36,16 @@ var formatTestCases = []struct {
 	},
 	{
 		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
+		t:        time.Date(9, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "0009 9 09 009 0009 00009 9",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
+		t:        time.Date(10, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "0010 10 10 010 0010 00010 10",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %-Y",
 		t:        time.Date(99, time.January, 1, 0, 0, 0, 0, time.UTC),
 		expected: "0099 99 99 099 0099 00099 99",
 	},
@@ -73,6 +83,11 @@ var formatTestCases = []struct {
 		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_3Y %-3Y %_6Y %-6Y",
 		t:        time.Date(-1000, time.January, 1, 0, 0, 0, 0, time.UTC),
 		expected: "-1000 -1000 -1000 -1000 -1000 -1000 -1000 -1000 -1000 -1000  -1000  -1000",
+	},
+	{
+		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_3Y %-3Y %_6Y %-6Y",
+		t:        time.Date(-9999, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-9999 -9999 -9999 -9999 -9999 -9999 -9999 -9999 -9999 -9999  -9999  -9999",
 	},
 	{
 		format:   "%Y %1Y %2Y %3Y %4Y %5Y %_Y %-Y %_3Y %-3Y %_7Y %-7Y",
@@ -430,6 +445,11 @@ var formatTestCases = []struct {
 		expected: " 8 8  8    8 08 0008",
 	},
 	{
+		format:   "%s %4s %_4s %04s",
+		t:        time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "0    0    0 0000",
+	},
+	{
 		format:   "%s %12s %_12s %012s",
 		t:        time.Date(2020, time.August, 30, 5, 30, 32, 0, time.UTC),
 		expected: "1598765432   1598765432   1598765432 001598765432",
@@ -443,6 +463,26 @@ var formatTestCases = []struct {
 		format:   "%s %12s %_12s %012s",
 		t:        time.Date(1960, time.June, 15, 0, 0, 0, 0, time.UTC),
 		expected: "-301276800   -301276800   -301276800 -00301276800",
+	},
+	{
+		format:   "%s",
+		t:        time.Date(2286, time.November, 20, 17, 46, 40, 0, time.UTC),
+		expected: "10000000000",
+	},
+	{
+		format:   "%s %24s",
+		t:        time.Date(2147483647, time.December, 31, 23, 59, 59, 0, time.UTC),
+		expected: "67767976233532799        67767976233532799",
+	},
+	{
+		format:   "%s %20s %_20s %020s",
+		t:        time.Date(1653, time.February, 10, 6, 13, 21, 0, time.UTC),
+		expected: "-9999999999          -9999999999          -9999999999 -0000000009999999999",
+	},
+	{
+		format:   "%s %_24s %024s",
+		t:        time.Date(-2147483648, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "-67768100567971200       -67768100567971200 -00000067768100567971200",
 	},
 	{
 		format:   "%R %r %T %D %x %X",
@@ -733,6 +773,16 @@ func ExampleAppendFormat() {
 	buf = append(buf, ')')
 	fmt.Println(string(buf))
 	// Output: (2020-07-24 09:07:29)
+}
+
+func TestFormatSmalls(t *testing.T) {
+	for i := range 100 {
+		expected := fmt.Sprintf("%02d", i)
+		got := timefmt.Format(time.Date(2000+i, time.January, 1, 0, 0, 0, 0, time.UTC), "%y")
+		if got != expected {
+			t.Errorf("%%y with %d: got %q, want %q", i, got, expected)
+		}
+	}
 }
 
 var benchTime = time.Date(2020, time.September, 8, 7, 6, 5, 43210000, time.UTC)

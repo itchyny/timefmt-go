@@ -58,6 +58,16 @@ var parseTestCases = []struct {
 		t:      time.Date(-1, time.June, 15, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "-009-01-01",
+		format: "%Y-%m-%d",
+		t:      time.Date(-9, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "-010-01-01",
+		format: "%Y-%m-%d",
+		t:      time.Date(-10, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "-100-01-01",
 		format: "%Y-%m-%d",
 		t:      time.Date(-100, time.January, 1, 0, 0, 0, 0, time.UTC),
@@ -68,7 +78,17 @@ var parseTestCases = []struct {
 		t:      time.Date(-1000, time.December, 31, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "-9999-01-01",
+		format: "%Y-%m-%d",
+		t:      time.Date(-9999, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source:   "-",
+		format:   "%Y",
+		parseErr: errors.New(`cannot parse "%Y"`),
+	},
+	{
+		source:   "-abc",
 		format:   "%Y",
 		parseErr: errors.New(`cannot parse "%Y"`),
 	},
@@ -423,7 +443,17 @@ var parseTestCases = []struct {
 		t:      time.Date(-1, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "-100",
+		format: "%G",
+		t:      time.Date(-100, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source:   "-",
+		format:   "%G",
+		parseErr: errors.New(`cannot parse "%G"`),
+	},
+	{
+		source:   "-abc",
 		format:   "%G",
 		parseErr: errors.New(`cannot parse "%G"`),
 	},
@@ -803,14 +833,54 @@ var parseTestCases = []struct {
 		t:      time.Date(2038, time.January, 19, 3, 14, 7, 0, time.UTC),
 	},
 	{
+		source: "0",
+		format: "%s",
+		t:      time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "9999999999",
+		format: "%s",
+		t:      time.Date(2286, time.November, 20, 17, 46, 39, 0, time.UTC),
+	},
+	{
+		source: "10000000000",
+		format: "%s",
+		t:      time.Date(2286, time.November, 20, 17, 46, 40, 0, time.UTC),
+	},
+	{
+		source: "67767976233532799",
+		format: "%s",
+		t:      time.Date(2147483647, time.December, 31, 23, 59, 59, 0, time.UTC),
+	},
+	{
 		source: "-1",
 		format: "%s",
 		t:      time.Date(1969, time.December, 31, 23, 59, 59, 0, time.UTC),
 	},
 	{
+		source: "-10",
+		format: "%s",
+		t:      time.Date(1969, time.December, 31, 23, 59, 50, 0, time.UTC),
+	},
+	{
 		source: "-301276800",
 		format: "%s",
 		t:      time.Date(1960, time.June, 15, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "-9999999999",
+		format: "%s",
+		t:      time.Date(1653, time.February, 10, 6, 13, 21, 0, time.UTC),
+	},
+	{
+		source: "-10000000000",
+		format: "%s",
+		t:      time.Date(1653, time.February, 10, 6, 13, 20, 0, time.UTC),
+	},
+	{
+		source: "-67768100567971200",
+		format: "%s",
+		t:      time.Date(-2147483648, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   ".",
