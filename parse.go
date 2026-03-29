@@ -38,14 +38,20 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 			b = format[i]
 		L:
 			switch b {
+			case 'G':
+				hasISOYear = true
+				fallthrough
 			case 'Y':
 				sign, j = parseSign(source, j, l)
-				if year, j, err = parseInt(source, j, 4, 0, 9999, 'Y'); err != nil {
+				if year, j, err = parseInt(source, j, 4, 0, 9999, b); err != nil {
 					return
 				}
 				year *= sign
+			case 'g':
+				hasISOYear = true
+				fallthrough
 			case 'y':
-				if year, j, err = parseInt(source, j, 2, 0, 99, 'y'); err != nil {
+				if year, j, err = parseInt(source, j, 2, 0, 99, b); err != nil {
 					return
 				}
 				if year < 69 {
@@ -62,23 +68,6 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				if century, j, err = parseInt(source, j, 2, 0, 99, 'C'); err != nil {
 					return
 				}
-			case 'g':
-				if year, j, err = parseInt(source, j, 2, 0, 99, b); err != nil {
-					return
-				}
-				if year < 69 {
-					year += 2000
-				} else {
-					year += 1900
-				}
-				hasISOYear = true
-			case 'G':
-				sign, j = parseSign(source, j, l)
-				if year, j, err = parseInt(source, j, 4, 0, 9999, b); err != nil {
-					return
-				}
-				year *= sign
-				hasISOYear = true
 			case 'm':
 				if month, j, err = parseInt(source, j, 2, 1, 12, 'm'); err != nil {
 					return
