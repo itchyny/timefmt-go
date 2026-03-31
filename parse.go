@@ -30,8 +30,7 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 	var pending string
 	for i, l := 0, len(source); i < len(format); i++ {
 		if b := format[i]; b == '%' {
-			i++
-			if i == len(format) {
+			if i++; i == len(format) {
 				err = errors.New(`stray "%"`)
 				return
 			}
@@ -304,12 +303,24 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					return
 				}
 				j++
+			case 'c':
+				pending = "a b e H:M:S Y"
+			case '+':
+				pending = "a b e H:M:S Z Y"
+			case 'v':
+				pending = "e-b-Y"
+			case 'r':
+				pending = "I:M:S p"
+			case 'F':
+				pending = "Y-m-d"
+			case 'D', 'x':
+				pending = "m/d/y"
+			case 'T', 'X':
+				pending = "H:M:S"
+			case 'R':
+				pending = "H:M"
 			default:
 				if pending == "" {
-					var ok bool
-					if pending, ok = compositions[b]; ok {
-						break
-					}
 					err = fmt.Errorf(`unexpected format "%%%c"`, b)
 					return
 				}

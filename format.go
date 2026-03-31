@@ -245,13 +245,24 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 				buf = appendString(buf, "\n", width, padding, false, false)
 			case '%':
 				buf = appendString(buf, "%", width, padding, false, false)
+			case 'c':
+				pending, swap = "a b e H:M:S Y", false
+			case '+':
+				pending, swap = "a b e H:M:S Z Y", false
+			case 'v':
+				pending, swap = "e-b-Y", false
+			case 'r':
+				pending, swap = "I:M:S p", false
+			case 'F':
+				pending = "Y-m-d"
+			case 'D', 'x':
+				pending = "m/d/y"
+			case 'T', 'X':
+				pending = "H:M:S"
+			case 'R':
+				pending = "H:M"
 			default:
 				if pending == "" {
-					var ok bool
-					if pending, ok = compositions[b]; ok {
-						swap = false
-						break
-					}
 					buf = appendLast(buf, format[:i], width-1, padding)
 				}
 				buf = append(buf, b)
@@ -448,17 +459,4 @@ var shortWeekNames = []string{
 	"Thu",
 	"Fri",
 	"Sat",
-}
-
-var compositions = map[byte]string{
-	'c': "a b e H:M:S Y",
-	'+': "a b e H:M:S Z Y",
-	'F': "Y-m-d",
-	'D': "m/d/y",
-	'x': "m/d/y",
-	'v': "e-b-Y",
-	'T': "H:M:S",
-	'X': "H:M:S",
-	'r': "I:M:S p",
-	'R': "H:M",
 }
