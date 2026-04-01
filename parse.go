@@ -214,13 +214,13 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					sign = -1
 					fallthrough
 				case '+':
-					hour, minute, second, i := 0, 0, 0, j
-					if hour, j, _ = parseInt(source, j+1, 2, 0, 23, 'z'); j != i+3 {
+					hour, minute, second, i := 0, 0, 0, j+1
+					if hour, j, _ = parseInt(source, i, 2, 0, 23, 'z'); j != i+2 {
 						err = parseZFormatError(colons)
 						return
 					}
 					if j >= l || source[j] != ':' {
-						if colons > 0 {
+						if colons > 0 && colons < 3 {
 							err = expectedColonForZFormatError(colons)
 							return
 						}
@@ -228,26 +228,26 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 						colons = 4
 					}
 					i = j
-					if minute, j, _ = parseInt(source, j, 2, 0, 59, 'z'); j != i+2 {
-						if colons > 0 {
+					if minute, j, _ = parseInt(source, i, 2, 0, 59, 'z'); j != i+2 {
+						if colons > 0 && colons != 3 {
 							err = parseZFormatError(colons & 3)
 							return
 						}
 						j = i
 					} else if colons > 1 {
 						if j >= l || source[j] != ':' {
-							if colons == 2 {
+							if colons < 3 {
 								err = expectedColonForZFormatError(colons)
 								return
 							}
 						} else {
-							i = j
-							if second, j, _ = parseInt(source, j+1, 2, 0, 59, 'z'); j != i+3 {
-								if colons == 2 {
+							i = j + 1
+							if second, j, _ = parseInt(source, i, 2, 0, 59, 'z'); j != i+2 {
+								if colons < 3 {
 									err = parseZFormatError(colons)
 									return
 								}
-								j = i
+								j = i - 1
 							}
 						}
 					}
@@ -271,12 +271,12 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 					}
 					j++
 				} else {
-					for colons = 1; colons <= 2; colons++ {
+					for colons = 1; colons <= 3; colons++ {
 						if i++; i == len(format) {
 							break
 						} else if b = format[i]; b == 'z' {
 							goto L
-						} else if b != ':' || colons == 2 {
+						} else if b != ':' || colons == 3 {
 							break
 						}
 					}
@@ -399,19 +399,19 @@ func (err expectedFormatError) Error() string {
 type parseZFormatError int
 
 func (err parseZFormatError) Error() string {
-	return `cannot parse "%` + `::z"`[2-err:]
+	return `cannot parse "%` + `:::z"`[3-err:]
 }
 
 type expectedColonForZFormatError int
 
 func (err expectedColonForZFormatError) Error() string {
-	return `expected ':' for "%` + `::z"`[2-err:]
+	return `expected ':' for "%` + `:::z"`[3-err:]
 }
 
 type expectedZAfterColonError int
 
 func (err expectedZAfterColonError) Error() string {
-	return `expected 'z' after "%` + `::"`[2-err:]
+	return `expected 'z' after "%` + `:::"`[3-err:]
 }
 
 func parseSign(source string, index, l int) (int, int) {

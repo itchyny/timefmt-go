@@ -1230,7 +1230,42 @@ var parseTestCases = []struct {
 	{
 		source:   "2020-07-24 23:14:15 ",
 		format:   "%F %T %:::",
-		parseErr: errors.New(`expected 'z' after "%::"`),
+		parseErr: errors.New(`expected 'z' after "%:::"`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +09",
+		format:   "%F %T %::::z",
+		parseErr: errors.New(`expected 'z' after "%:::"`),
+	},
+	{
+		source: "2020-07-24 23:14:15 +09",
+		format: "%F %T %:::z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", 9*60*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 -05",
+		format: "%F %T %:::z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", -5*60*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 +05:30",
+		format: "%F %T %:::z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 +05:30:10",
+		format: "%F %T %:::z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("", (5*60+30)*60+10)),
+	},
+	{
+		source: "2020-07-24 23:14:15 Z",
+		format: "%F %T %:::z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.UTC),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +24",
+		format:   "%F %T %:::z",
+		parseErr: errors.New(`cannot parse "%:::z"`),
 	},
 	{
 		source: "2020-07-24 23:14:15 UTC",
