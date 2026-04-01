@@ -361,6 +361,16 @@ var formatTestCases = []struct {
 	},
 	{
 		format:   "%H:%M:%S.%f",
+		t:        time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+		expected: "00:00:00.000000",
+	},
+	{
+		format:   "%H:%M:%S.%f",
+		t:        time.Date(2020, time.January, 1, 0, 0, 0, 1000, time.UTC),
+		expected: "00:00:00.000001",
+	},
+	{
+		format:   "%H:%M:%S.%f",
 		t:        time.Date(2020, time.January, 1, 1, 2, 3, 450000000, time.UTC),
 		expected: "01:02:03.450000",
 	},
@@ -465,9 +475,9 @@ var formatTestCases = []struct {
 		expected: "-301276800   -301276800   -301276800 -00301276800",
 	},
 	{
-		format:   "%s",
+		format:   "%s %12s %_12s %012s",
 		t:        time.Date(2286, time.November, 20, 17, 46, 40, 0, time.UTC),
-		expected: "10000000000",
+		expected: "10000000000  10000000000  10000000000 010000000000",
 	},
 	{
 		format:   "%s %24s",

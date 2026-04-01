@@ -703,6 +703,21 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.September, 8, 7, 6, 5, 0, time.UTC),
 	},
 	{
+		source: "00:00:00",
+		format: "%H:%M:%S",
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "0:0:0.1",
+		format: "%H:%M:%S.%f",
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 100000000, time.UTC),
+	},
+	{
+		source: "0:0:0.12",
+		format: "%H:%M:%S.%f",
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 120000000, time.UTC),
+	},
+	{
 		source: "1:2:3.456",
 		format: "%H:%M:%S.%f",
 		t:      time.Date(1900, time.January, 1, 1, 2, 3, 456000000, time.UTC),
@@ -718,9 +733,24 @@ var parseTestCases = []struct {
 		t:      time.Date(1900, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "00:00:00.000001",
+		format: "%H:%M:%S.%f",
+		t:      time.Date(1900, time.January, 1, 0, 0, 0, 1000, time.UTC),
+	},
+	{
+		source: "23:59:59",
+		format: "%H:%M:%S",
+		t:      time.Date(1900, time.January, 1, 23, 59, 59, 0, time.UTC),
+	},
+	{
 		source: "23:59:59.999999",
 		format: "%H:%M:%S.%f",
 		t:      time.Date(1900, time.January, 1, 23, 59, 59, 999999000, time.UTC),
+	},
+	{
+		source: "23:59:60",
+		format: "%H:%M:%S",
+		t:      time.Date(1900, time.January, 2, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "24:00:00",
@@ -733,22 +763,12 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`cannot parse "%H"`),
 	},
 	{
-		source:   "23:60:00",
+		source:   "00:60:00",
 		format:   "%H:%M:%S",
 		parseErr: errors.New(`cannot parse "%M"`),
 	},
 	{
-		source:   "23:99:00",
-		format:   "%H:%M:%S",
-		parseErr: errors.New(`cannot parse "%M"`),
-	},
-	{
-		source:   "23:00:61",
-		format:   "%H:%M:%S",
-		parseErr: errors.New(`cannot parse "%S"`),
-	},
-	{
-		source:   "23:00:99",
+		source:   "00:00:61",
 		format:   "%H:%M:%S",
 		parseErr: errors.New(`cannot parse "%S"`),
 	},
