@@ -1396,31 +1396,31 @@ func ExampleParseInLocation() {
 
 func BenchmarkParseDateTime(b *testing.B) {
 	for b.Loop() {
-		timefmt.Parse("2020-09-08 07:06:05", "%Y-%m-%d %H:%M:%S")
+		_, _ = timefmt.Parse("2020-09-08 07:06:05", "%Y-%m-%d %H:%M:%S")
 	}
 }
 
 func BenchmarkParseDateOnly(b *testing.B) {
 	for b.Loop() {
-		timefmt.Parse("2020-09-08", "%Y-%m-%d")
+		_, _ = timefmt.Parse("2020-09-08", "%Y-%m-%d")
 	}
 }
 
 func BenchmarkParseTimeOnly(b *testing.B) {
 	for b.Loop() {
-		timefmt.Parse("07:06:05", "%H:%M:%S")
+		_, _ = timefmt.Parse("07:06:05", "%H:%M:%S")
 	}
 }
 
 func BenchmarkParseComposed(b *testing.B) {
 	for b.Loop() {
-		timefmt.Parse("Tue Sep  8 07:06:05 2020", "%c")
+		_, _ = timefmt.Parse("Tue Sep  8 07:06:05 2020", "%c")
 	}
 }
 
 func BenchmarkParseUnix(b *testing.B) {
 	for b.Loop() {
-		timefmt.Parse("1599548765", "%s")
+		_, _ = timefmt.Parse("1599548765", "%s")
 	}
 }
 

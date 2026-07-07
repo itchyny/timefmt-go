@@ -153,7 +153,7 @@ func AppendFormat(buf []byte, t time.Time, format string) []byte {
 			case 'I':
 				buf = appendInt(buf, or(hour%12, 12), max(width, 2), padding)
 			case 'P':
-				swap = !(upper || swap)
+				swap = !upper && !swap
 				fallthrough
 			case 'p':
 				if hour < 12 {
