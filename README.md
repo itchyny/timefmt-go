@@ -1,6 +1,5 @@
 # timefmt-go
-[![CI Status](https://github.com/itchyny/timefmt-go/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/itchyny/timefmt-go/actions?query=branch:main)
-[![Go Report Card](https://goreportcard.com/badge/github.com/itchyny/timefmt-go)](https://goreportcard.com/report/github.com/itchyny/timefmt-go)
+[![CI Status](https://github.com/itchyny/timefmt-go/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/itchyny/timefmt-go/actions/workflows/ci.yaml?query=branch%3Amain)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/itchyny/timefmt-go/blob/main/LICENSE)
 [![release](https://img.shields.io/github/release/itchyny/timefmt-go/all.svg)](https://github.com/itchyny/timefmt-go/releases)
 [![pkg.go.dev](https://pkg.go.dev/badge/github.com/itchyny/timefmt-go)](https://pkg.go.dev/github.com/itchyny/timefmt-go)
