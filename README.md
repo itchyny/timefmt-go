@@ -59,7 +59,7 @@ Note that `E` and `O` modifier characters are not supported.
 ![](https://user-images.githubusercontent.com/375258/88606920-de475c80-d0b8-11ea-8d40-cbfee9e35c2e.jpg)
 
 ## Bug Tracker
-Report bug at [Issues・itchyny/timefmt-go - GitHub](https://github.com/itchyny/timefmt-go/issues).
+Report bugs at [Issues - itchyny/timefmt-go - GitHub](https://github.com/itchyny/timefmt-go/issues).
 
 ## Author
 itchyny (<https://github.com/itchyny>)
