@@ -1,8 +1,5 @@
 GOBIN ?= $(shell go env GOPATH)/bin
 
-.PHONY: all
-all: test
-
 .PHONY: test
 test:
 	go test -v -race ./...
