@@ -3,6 +3,7 @@ package timefmt
 import (
 	"errors"
 	"fmt"
+	"math"
 	"time"
 )
 
@@ -445,6 +446,9 @@ func parseInt64(source string, index, size int, format byte) (int64, int, error)
 	i := index
 	for size = min(i+size, len(source)); i < size; i++ {
 		if b := source[i] - '0'; b < 10 {
+			if value > (math.MaxInt64-int64(b))/10 {
+				return 0, 0, parseFormatError(format)
+			}
 			value = value*10 + int64(b)
 		} else {
 			break

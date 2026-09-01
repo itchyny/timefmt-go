@@ -913,6 +913,21 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`cannot parse "%s"`),
 	},
 	{
+		source:   "9223372036854775808",
+		format:   "%s",
+		parseErr: errors.New(`cannot parse "%s"`),
+	},
+	{
+		source:   "9999999999999999999",
+		format:   "%s",
+		parseErr: errors.New(`cannot parse "%s"`),
+	},
+	{
+		source:   "-9999999999999999999",
+		format:   "%s",
+		parseErr: errors.New(`cannot parse "%s"`),
+	},
+	{
 		source: "23:14",
 		format: "%R",
 		t:      time.Date(1900, time.January, 1, 23, 14, 0, 0, time.UTC),
