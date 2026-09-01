@@ -858,6 +858,11 @@ var parseTestCases = []struct {
 		t:      time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "0000000000000000000001",
+		format: "%s",
+		t:      time.Date(1970, time.January, 1, 0, 0, 1, 0, time.UTC),
+	},
+	{
 		source: "9999999999",
 		format: "%s",
 		t:      time.Date(2286, time.November, 20, 17, 46, 39, 0, time.UTC),
@@ -871,6 +876,16 @@ var parseTestCases = []struct {
 		source: "67767976233532799",
 		format: "%s",
 		t:      time.Date(2147483647, time.December, 31, 23, 59, 59, 0, time.UTC),
+	},
+	{
+		source:   "67767976233532800",
+		format:   "%s",
+		parseErr: errors.New(`cannot parse "%s"`),
+	},
+	{
+		source:   "9999999999999999999",
+		format:   "%s",
+		parseErr: errors.New(`cannot parse "%s"`),
 	},
 	{
 		source: "-1",
@@ -901,6 +916,16 @@ var parseTestCases = []struct {
 		source: "-67768100567971200",
 		format: "%s",
 		t:      time.Date(-2147483648, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source:   "-67768100567971201",
+		format:   "%s",
+		parseErr: errors.New(`cannot parse "%s"`),
+	},
+	{
+		source:   "-9999999999999999999",
+		format:   "%s",
+		parseErr: errors.New(`cannot parse "%s"`),
 	},
 	{
 		source:   ".",

@@ -165,8 +165,15 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 				}
 			case 's':
 				sign, j = parseSign(source, j, l)
+				// 2147483647-12-31T23:59:59Z, the last second of the maximum year.
+				maxUnix := int64(67767976233532799)
+				if sign < 0 {
+					// -2147483648-01-01T00:00:00Z, the first second of the
+					// minimum year, negated since the sign is applied below.
+					maxUnix = 67768100567971200
+				}
 				var unix int64
-				if unix, j, err = parseInt64(source, j, 19, 's'); err != nil {
+				if unix, j, err = parseInt64(source, j, maxUnix, 's'); err != nil {
 					return
 				}
 				t = time.Unix(int64(sign)*unix, 0).In(time.UTC)
@@ -425,9 +432,8 @@ func parseSign(source string, index, l int) (int, int) {
 // wrapper of parseInt64 to avoid the overhead of int64 arithmetic and
 // function call indirection in the hot path (~20% slower in benchmarks).
 func parseInt(source string, index, size, minimum, maximum int, format byte) (int, int, error) {
-	var value int
-	i := index
-	for size = min(i+size, len(source)); i < size; i++ {
+	value, i := 0, index
+	for l := min(index+size, len(source)); i < l; i++ {
 		if b := source[i] - '0'; b < 10 {
 			value = value*10 + int(b)
 		} else {
@@ -440,12 +446,18 @@ func parseInt(source string, index, size, minimum, maximum int, format byte) (in
 	return value, i, nil
 }
 
-func parseInt64(source string, index, size int, format byte) (int64, int, error) {
-	var value int64
-	i := index
-	for size = min(i+size, len(source)); i < size; i++ {
+// parseInt64 parses an integer from source. The maximum value is limited so
+// that the year of the parsed time fits in int on 32-bit architectures, and
+// the accumulation never overflows int64. The number of digits needs no limit
+// because the maximum value bounds it.
+func parseInt64(source string, index int, maximum int64, format byte) (int64, int, error) {
+	value, i := int64(0), index
+	for ; i < len(source); i++ {
 		if b := source[i] - '0'; b < 10 {
 			value = value*10 + int64(b)
+			if value > maximum {
+				return 0, 0, parseFormatError(format)
+			}
 		} else {
 			break
 		}
