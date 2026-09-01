@@ -13,50 +13,44 @@ func (sb *stringBuilder) writeDiff(s string) {
 }
 
 func diff(expected, got string) string {
+	xs, ys := split(expected), split(got)
 	var sbx, sby stringBuilder
-	xs := strings.Split(expected, " ")
-	ys := strings.Split(got, " ")
-	for i, j := 0, 0; ; i, j = i+1, j+1 {
-		if i >= len(xs) {
-			if j >= len(ys) {
-				break
-			}
-			if j > 0 {
-				sby.writeDiff(" ")
-			}
-			sby.writeDiff(ys[j])
-			continue
-		} else if j >= len(ys) {
-			if i > 0 {
-				sbx.writeDiff(" ")
-			}
+	for i, j := 0, 0; i < len(xs) || j < len(ys); {
+		switch {
+		case j >= len(ys) || i < len(xs) && isSpaces(xs[i]) && !isSpaces(ys[j]):
 			sbx.writeDiff(xs[i])
-			continue
-		}
-		if xs[i] == "" {
-			if ys[j] != "" {
-				sbx.writeDiff(" ")
-				j--
-				continue
-			}
-		} else if ys[j] == "" {
-			sby.writeDiff(" ")
-			i--
-			continue
-		}
-		if i > 0 {
-			sbx.WriteByte(' ')
-		}
-		if j > 0 {
-			sby.WriteByte(' ')
-		}
-		if xs[i] == ys[j] {
+			i++
+		case i >= len(xs) || isSpaces(ys[j]) && !isSpaces(xs[i]):
+			sby.writeDiff(ys[j])
+			j++
+		case xs[i] == ys[j]:
 			sbx.WriteString(xs[i])
 			sby.WriteString(ys[j])
-		} else {
+			i++
+			j++
+		default:
 			sbx.writeDiff(xs[i])
 			sby.writeDiff(ys[j])
+			i++
+			j++
 		}
 	}
 	return "diff:\nexpected: " + sbx.String() + "\n     got: " + sby.String()
+}
+
+func split(s string) []string {
+	var ss []string
+	for i := 0; i < len(s); {
+		j := i + 1
+		for j < len(s) && (s[j] == ' ') == (s[i] == ' ') {
+			j++
+		}
+		ss = append(ss, s[i:j])
+		i = j
+	}
+	return ss
+}
+
+func isSpaces(s string) bool {
+	return s[0] == ' '
 }
