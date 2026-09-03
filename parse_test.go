@@ -483,6 +483,21 @@ var parseTestCases = []struct {
 		t:      time.Date(2019, time.May, 13, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		source: "2020-W30-5 23:59:60",
+		format: "%G-W%V-%u %H:%M:%S",
+		t:      time.Date(2020, time.July, 25, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2020 30 5 23:59:60",
+		format: "%Y %W %w %H:%M:%S",
+		t:      time.Date(2020, time.August, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "2020 30 5 23:59:60",
+		format: "%Y %U %w %H:%M:%S",
+		t:      time.Date(2020, time.August, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		source: "2020 30 Tuesday",
 		format: "%G %V %A",
 		t:      time.Date(2020, time.July, 21, 0, 0, 0, 0, time.UTC),
@@ -1393,6 +1408,38 @@ func TestParse(t *testing.T) {
 				if !strings.Contains(err.Error(), tc.parseErr.Error()) {
 					t.Errorf("expected: %v, got: %v", tc.parseErr, err)
 				}
+			}
+		})
+	}
+}
+
+func TestParseWeekDateInLocation(t *testing.T) {
+	// The weekday a week date is measured from belongs to the calendar, not
+	// to a location. These zones have no local midnight on the base day, so
+	// looking the weekday up in the location would shift the result by a day.
+	for _, tc := range []struct {
+		zone, source, format string
+		t                    time.Time
+	}{
+		// Pacific/Apia skipped 2011-12-30.
+		{"Pacific/Apia", "2012 01 1", "%Y %W %w",
+			time.Date(2012, time.January, 2, 0, 0, 0, 0, time.UTC)},
+		// Pacific/Kiritimati skipped 1994-12-31.
+		{"Pacific/Kiritimati", "1995 01 0", "%Y %U %w",
+			time.Date(1995, time.January, 1, 0, 0, 0, 0, time.UTC)},
+	} {
+		t.Run(tc.zone+"/"+tc.source, func(t *testing.T) {
+			loc, err := time.LoadLocation(tc.zone)
+			if err != nil {
+				t.Skipf("cannot load %s: %v", tc.zone, err)
+			}
+			got, err := timefmt.ParseInLocation(tc.source, tc.format, loc)
+			if err != nil {
+				t.Fatalf("expected no error but got: %v", err)
+			}
+			if got.Format("2006-01-02") != tc.t.Format("2006-01-02") {
+				t.Errorf("expected: %s, got: %s",
+					tc.t.Format("2006-01-02"), got.Format("2006-01-02 15:04:05 -0700"))
 			}
 		})
 	}

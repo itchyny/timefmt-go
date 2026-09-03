@@ -379,8 +379,10 @@ func parse(source, format string, loc, base *time.Location) (t time.Time, err er
 			if weekstart > time.Sunday && weekday == 1 {
 				week++
 			}
-			t := time.Date(year, time.January, -int(weekstart), hour, minute, second, nanosecond, loc)
-			return t.AddDate(0, 0, week*7-int(t.Weekday())+weekday-1), nil
+			t := time.Date(year, time.January, -int(weekstart), 0, 0, 0, 0, time.UTC)
+			return time.Date(year, time.January,
+				week*7-int(weekstart)-int(t.Weekday())+weekday-1,
+				hour, minute, second, nanosecond, loc), nil
 		}
 		day = 1
 	}
