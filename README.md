@@ -4,7 +4,7 @@
 [![release](https://img.shields.io/github/release/itchyny/timefmt-go/all.svg)](https://github.com/itchyny/timefmt-go/releases)
 [![pkg.go.dev](https://pkg.go.dev/badge/github.com/itchyny/timefmt-go)](https://pkg.go.dev/github.com/itchyny/timefmt-go)
 
-### Efficient time formatting library (strftime, strptime) for Golang
+### Efficient time formatting library (strftime, strptime) for Go
 This is a Go language package for formatting and parsing date time strings.
 
 ```go
@@ -54,7 +54,7 @@ Note that `E` and `O` modifier characters are not supported.
   - composed directives like `%F %T`,
   - century years like `%C %y`,
   - week directives like `%W %a` and `%G-W%V-%u`.
-- `ParseInLocation` is provided for configuring the default location.
+- `ParseInLocation` is provided for configuring the location of a source without a time zone offset.
 
 ![](https://user-images.githubusercontent.com/375258/88606920-de475c80-d0b8-11ea-8d40-cbfee9e35c2e.jpg)
 
