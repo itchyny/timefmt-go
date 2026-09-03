@@ -1450,6 +1450,9 @@ func BenchmarkParseUnix(b *testing.B) {
 }
 
 func FuzzParse(f *testing.F) {
+	for _, tc := range parseTestCases {
+		f.Add(tc.source, tc.format)
+	}
 	f.Fuzz(func(t *testing.T, source, format string) {
 		_, err := timefmt.Parse(source, format)
 		if err != nil {

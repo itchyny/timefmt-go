@@ -828,6 +828,9 @@ func BenchmarkFormatUnix(b *testing.B) {
 }
 
 func FuzzFormat(f *testing.F) {
+	for _, tc := range formatTestCases {
+		f.Add(tc.format)
+	}
 	now := time.Date(2020, time.July, 24, 9, 7, 29, 0, time.UTC)
 	f.Fuzz(func(_ *testing.T, format string) {
 		timefmt.Format(now, format)
