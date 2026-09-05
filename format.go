@@ -368,7 +368,7 @@ func appendString(buf []byte, str string, width int, padding byte, upper, swap b
 	}
 	switch {
 	case swap:
-		if str[1] < 'a' {
+		if str[min(1, len(str)-1)] < 'a' {
 			for _, b := range []byte(str) {
 				buf = append(buf, b|0x20)
 			}

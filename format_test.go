@@ -585,6 +585,16 @@ var formatTestCases = []struct {
 		expected: "JST JST jst jst jst",
 	},
 	{
+		format:   "%Z %^Z %#Z %#^Z %^#Z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("XY", 9*60*60)),
+		expected: "XY XY xy xy xy",
+	},
+	{
+		format:   "%Z %^Z %#Z %#^Z %^#Z",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("X", 9*60*60)),
+		expected: "X X x x x",
+	},
+	{
 		format:   "%8Z %08Z %8z %_8z %-z %08z %2z %3z %4z %5z %6z %6:z %7:z %:%Z",
 		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("JST", 9*60*60)),
 		expected: "     JST 00000JST +0000900     +900 +900 +0000900 +0900 +0900 +0900 +0900 +00900 +09:00 +009:00 %:JST",
