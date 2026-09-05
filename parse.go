@@ -199,12 +199,12 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 						break
 					}
 				}
-				t, err := time.ParseInLocation("MST", source[i:j], base)
+				name := source[i:j]
+				t, err := time.ParseInLocation("MST", name, base)
 				if err != nil {
-					return time.Time{}, fmt.Errorf(`cannot parse %q with "%%Z"`, source[i:j])
+					return time.Time{}, parseFormatError('Z')
 				}
 				if hasZoneOffset {
-					name, _ := t.Zone()
 					_, offset := locationZone(loc)
 					loc = time.FixedZone(name, offset)
 				} else {
@@ -372,7 +372,7 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 	return time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, loc), nil
 }
 
-func locationZone(loc *time.Location) (name string, offset int) {
+func locationZone(loc *time.Location) (string, int) {
 	return time.Date(2000, time.January, 1, 0, 0, 0, 0, loc).Zone()
 }
 

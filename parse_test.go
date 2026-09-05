@@ -1335,7 +1335,7 @@ var parseTestCases = []struct {
 	{
 		source:   "X",
 		format:   "%Z",
-		parseErr: errors.New(`cannot parse "X" with "%Z"`),
+		parseErr: errors.New(`cannot parse "%Z"`),
 	},
 	{
 		source: "2020-07-24 23:14:15 +0530 (AAA)",
@@ -1346,6 +1346,26 @@ var parseTestCases = []struct {
 		source: "2020-07-24 23:14:15 (AAA) +0530",
 		format: "%F %T (%Z) %z",
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("AAA", (5*60+30)*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 +0530 (JST)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("JST", (5*60+30)*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 +0530 (CEST)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("CEST", (5*60+30)*60)),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0530 (AB)",
+		format:   "%F %T %z (%Z)",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0530 (AAAA)",
+		format:   "%F %T %z (%Z)",
+		parseErr: errors.New(`cannot parse "%Z"`),
 	},
 	{
 		source: "01%02\t03\n450000",
