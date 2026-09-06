@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"unicode/utf8"
 )
 
 // Parse time string using the format.
@@ -318,7 +319,8 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 				pending = "H:M"
 			default:
 				if pending == "" {
-					return time.Time{}, fmt.Errorf(`unexpected format "%%%c"`, b)
+					r, _ := utf8.DecodeRuneInString(format[i:])
+					return time.Time{}, unexpectedFormatError(r)
 				}
 				if j >= l || source[j] != b {
 					return time.Time{}, expectedFormatError(b)
@@ -330,7 +332,8 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 				goto L
 			}
 		} else if j >= l || source[j] != b {
-			return time.Time{}, expectedFormatError(b)
+			r, _ := utf8.DecodeRuneInString(format[i:])
+			return time.Time{}, expectedFormatError(r)
 		} else {
 			j++
 		}
@@ -387,10 +390,16 @@ func (err parseFormatError) Error() string {
 	return fmt.Sprintf(`cannot parse "%%%c"`, byte(err))
 }
 
-type expectedFormatError byte
+type expectedFormatError rune
 
 func (err expectedFormatError) Error() string {
-	return fmt.Sprintf("expected %q", byte(err))
+	return fmt.Sprintf("expected %q", rune(err))
+}
+
+type unexpectedFormatError rune
+
+func (err unexpectedFormatError) Error() string {
+	return fmt.Sprintf(`unexpected format "%%%c"`, rune(err))
 }
 
 type parseZFormatError int

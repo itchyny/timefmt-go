@@ -1457,6 +1457,15 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`unexpected format "%E"`),
 	},
 	{
+		format:   "%é",
+		parseErr: errors.New(`unexpected format "%é"`),
+	},
+	{
+		source:   "x",
+		format:   "é",
+		parseErr: errors.New(`expected 'é'`),
+	},
+	{
 		format:   "%",
 		parseErr: errors.New(`stray "%"`),
 	},
