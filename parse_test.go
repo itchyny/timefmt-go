@@ -435,12 +435,12 @@ var parseTestCases = []struct {
 	{
 		source: "20",
 		format: "%g",
-		t:      time.Date(2020, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(2019, time.December, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "99",
 		format: "%g",
-		t:      time.Date(1999, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(1999, time.January, 4, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "xx",
@@ -450,17 +450,17 @@ var parseTestCases = []struct {
 	{
 		source: "2009",
 		format: "%G",
-		t:      time.Date(2009, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(2008, time.December, 29, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "0000",
 		format: "%G",
-		t:      time.Date(0, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(0, time.January, 3, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source: "9999",
 		format: "%G",
-		t:      time.Date(9999, time.January, 1, 0, 0, 0, 0, time.UTC),
+		t:      time.Date(9999, time.January, 4, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		source:   "xxxx",

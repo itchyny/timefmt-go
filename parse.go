@@ -352,6 +352,9 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 			}
 			return time.Date(year, time.January, yday, hour, minute, second, nanosecond, loc), nil
 		}
+		if hasISOYear && weekstart < time.Sunday {
+			weekstart, week, weekday = time.Thursday, 1, or(weekday, 2)
+		}
 		if weekstart >= time.Sunday {
 			if weekstart == time.Thursday {
 				if !hasISOYear {
