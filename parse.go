@@ -29,7 +29,7 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 	year, month, day, hour, minute, second, nanosecond := 1900, 1, 0, 0, 0, 0, 0
 	var j, week, weekday, yday, colons, sign int
 	century, weekstart := -1, time.Weekday(-1)
-	var pm, hasISOYear, hasZoneName, hasZoneOffset bool
+	var pm, hasISOYear, hasUnix, hasZoneName, hasZoneOffset bool
 	var pending string
 	var err error
 	for i, l := 0, len(source); i < len(format); i++ {
@@ -182,7 +182,7 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 				var mon time.Month
 				year, mon, day = t.Date()
 				hour, minute, second = t.Clock()
-				month = int(mon)
+				month, hasUnix = int(mon), true
 			case 'f':
 				microsecond, i := 0, j
 				if microsecond, j, err = parseInt(source, j, 6, 0, 999999, 'f'); err != nil {
@@ -368,6 +368,9 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 				hour, minute, second, nanosecond, loc), nil
 		}
 		day = 1
+	}
+	if hasUnix {
+		return time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, time.UTC).In(loc), nil
 	}
 	return time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, loc), nil
 }

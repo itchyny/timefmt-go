@@ -868,9 +868,49 @@ var parseTestCases = []struct {
 		t:      time.Date(2038, time.January, 19, 3, 14, 7, 0, time.UTC),
 	},
 	{
+		source: "1599548765 12",
+		format: "%s %H",
+		t:      time.Date(2020, time.September, 8, 12, 6, 5, 0, time.UTC),
+	},
+	{
+		source: "1599548765 2021",
+		format: "%s %Y",
+		t:      time.Date(2021, time.September, 8, 7, 6, 5, 0, time.UTC),
+	},
+	{
+		source: "1598765432+0900",
+		format: "%s%z",
+		t:      time.Date(2020, time.August, 30, 14, 30, 32, 0, time.FixedZone("", 9*60*60)),
+	},
+	{
+		source: "1598765432-0530",
+		format: "%s%z",
+		t:      time.Date(2020, time.August, 30, 0, 0, 32, 0, time.FixedZone("", -(5*60+30)*60)),
+	},
+	{
+		source: "1598765432.123456+0900",
+		format: "%s.%f%z",
+		t:      time.Date(2020, time.August, 30, 14, 30, 32, 123456000, time.FixedZone("", 9*60*60)),
+	},
+	{
 		source: "0",
 		format: "%s",
 		t:      time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		source: "1599548765.123456",
+		format: "%s.%f",
+		t:      time.Date(2020, time.September, 8, 7, 6, 5, 123456000, time.UTC),
+	},
+	{
+		source: "1599548765.5",
+		format: "%s.%f",
+		t:      time.Date(2020, time.September, 8, 7, 6, 5, 500000000, time.UTC),
+	},
+	{
+		source: "-7086084.000001",
+		format: "%s.%f",
+		t:      time.Date(1969, time.October, 10, 23, 38, 36, 1000, time.UTC),
 	},
 	{
 		source: "0000000000000000000001",
