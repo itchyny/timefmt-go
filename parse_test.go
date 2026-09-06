@@ -1571,9 +1571,65 @@ func TestParseWeekDateInLocation(t *testing.T) {
 			if err != nil {
 				t.Fatalf("expected no error but got: %v", err)
 			}
-			if got.Format("2006-01-02") != tc.t.Format("2006-01-02") {
-				t.Errorf("expected: %s, got: %s",
-					tc.t.Format("2006-01-02"), got.Format("2006-01-02 15:04:05 -0700"))
+			if want, got := tc.t.Format(time.DateOnly), got.Format(time.DateOnly); got != want {
+				t.Errorf("expected: %s, got: %s", want, got)
+			}
+		})
+	}
+}
+
+func TestRoundTripHour(t *testing.T) {
+	for _, format := range []string{
+		"%Y-%m-%d %H:%M:%S",
+		"%Y-%m-%d %H:%M:%S %p",
+		"%Y-%m-%d %k:%M:%S %p",
+		"%Y-%m-%d %I:%M:%S %p",
+		"%Y-%m-%d %l:%M:%S %P",
+	} {
+		t.Run(format, func(t *testing.T) {
+			for hour := range 24 {
+				expected := time.Date(2020, time.September, 8, hour, 6, 5, 0, time.UTC)
+				source := timefmt.Format(expected, format)
+				got, err := timefmt.Parse(source, format)
+				if err != nil {
+					t.Fatalf("%q: expected no error but got: %v", source, err)
+				}
+				if !got.Equal(expected) {
+					t.Errorf("%q: expected: %v, got: %v", source, expected, got)
+				}
+			}
+		})
+	}
+}
+
+func TestRoundTripDate(t *testing.T) {
+	for _, format := range []string{
+		"%Y-%m-%d", "%Y-%j", "%G-W%V-%u", "%Y %U %w", "%Y %W %u",
+	} {
+		t.Run(format, func(t *testing.T) {
+			for year := 1800; year <= 2200; year++ {
+				for _, md := range []struct {
+					month time.Month
+					day   int
+				}{
+					{time.January, 1}, {time.January, 2}, {time.January, 3}, {time.January, 4},
+					{time.February, 28}, {time.February, 29}, {time.March, 1},
+					{time.June, 15},
+					{time.December, 27}, {time.December, 28}, {time.December, 29},
+					{time.December, 30}, {time.December, 31},
+				} {
+					expected := time.Date(year, md.month, md.day, 0, 0, 0, 0, time.UTC)
+					source := timefmt.Format(expected, format)
+					got, err := timefmt.Parse(source, format)
+					if err != nil {
+						t.Fatalf("%s: %q: expected no error but got: %v",
+							expected.Format(time.DateOnly), source, err)
+					}
+					if !got.Equal(expected) {
+						t.Errorf("%s: %q: expected: %v, got: %v",
+							expected.Format(time.DateOnly), source, expected, got)
+					}
+				}
 			}
 		})
 	}
