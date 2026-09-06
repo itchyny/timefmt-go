@@ -323,6 +323,36 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`use "%Y" to parse non-ISO year for "%j"`),
 	},
 	{
+		source:   "2020-01-01",
+		format:   "%G-%m-%d",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year`),
+	},
+	{
+		source:   "20-01-01",
+		format:   "%g-%m-%d",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year`),
+	},
+	{
+		source:   "2020 1599548765",
+		format:   "%G %s",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year`),
+	},
+	{
+		source:   "1599548765 2020",
+		format:   "%s %G",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year`),
+	},
+	{
+		source:   "2020 2021-01-04",
+		format:   "%G %Y-%m-%d",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year`),
+	},
+	{
+		source:   "2021-01-04 2020",
+		format:   "%Y-%m-%d %G",
+		parseErr: errors.New(`use "%Y" to parse non-ISO year`),
+	},
+	{
 		source: "MAY",
 		format: "%b",
 		t:      time.Date(1900, time.May, 1, 0, 0, 0, 0, time.UTC),

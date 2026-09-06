@@ -368,6 +368,8 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 				hour, minute, second, nanosecond, loc), nil
 		}
 		day = 1
+	} else if hasISOYear {
+		return time.Time{}, errors.New(`use "%Y" to parse non-ISO year`)
 	}
 	if hasUnix {
 		return time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, time.UTC).In(loc), nil
