@@ -868,6 +868,41 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`cannot parse "%I"`),
 	},
 	{
+		source: "12:13:14 PM",
+		format: "%H:%M:%S %p",
+		t:      time.Date(1900, time.January, 1, 12, 13, 14, 0, time.UTC),
+	},
+	{
+		source: "05:13:14 PM",
+		format: "%H:%M:%S %p",
+		t:      time.Date(1900, time.January, 1, 17, 13, 14, 0, time.UTC),
+	},
+	{
+		source: "05:13:14 AM",
+		format: "%H:%M:%S %p",
+		t:      time.Date(1900, time.January, 1, 5, 13, 14, 0, time.UTC),
+	},
+	{
+		source: "23:13:14 PM",
+		format: "%H:%M:%S %p",
+		t:      time.Date(1900, time.January, 1, 23, 13, 14, 0, time.UTC),
+	},
+	{
+		source: "12:13:14 AM",
+		format: "%H:%M:%S %p",
+		t:      time.Date(1900, time.January, 1, 0, 13, 14, 0, time.UTC),
+	},
+	{
+		source: "13:13:14 AM",
+		format: "%H:%M:%S %p",
+		t:      time.Date(1900, time.January, 1, 1, 13, 14, 0, time.UTC),
+	},
+	{
+		source: "23:13:14 AM",
+		format: "%H:%M:%S %p",
+		t:      time.Date(1900, time.January, 1, 11, 13, 14, 0, time.UTC),
+	},
+	{
 		source:   "xx",
 		format:   "%I",
 		parseErr: errors.New(`cannot parse "%I"`),

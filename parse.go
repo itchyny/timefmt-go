@@ -28,9 +28,9 @@ func parse(source, format string, loc, base *time.Location) (time.Time, error) {
 
 func parseTime(source, format string, loc, base *time.Location) (time.Time, error) {
 	year, month, day, hour, minute, second, nanosecond := 1900, 1, 0, 0, 0, 0, 0
-	var j, week, weekday, yday, colons, sign int
+	var j, week, weekday, yday, ampm, colons, sign int
 	century, weekstart := -1, time.Weekday(-1)
-	var pm, hasISOYear, hasUnix, hasZoneName, hasZoneOffset bool
+	var hasISOYear, hasUnix, hasZoneName, hasZoneOffset bool
 	var pending string
 	var err error
 	for i, l := 0, len(source); i < len(format); i++ {
@@ -153,11 +153,9 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 					hour = 0
 				}
 			case 'P', 'p':
-				var ampm int
 				if ampm, j, err = parseAny(source, j, []string{"AM", "PM"}, b); err != nil {
 					return time.Time{}, err
 				}
-				pm = ampm == 2
 			case 'M':
 				if minute, j, err = parseInt(source, j, 2, 0, 59, 'M'); err != nil {
 					return time.Time{}, err
@@ -341,8 +339,8 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 	if j < len(source) {
 		return time.Time{}, fmt.Errorf("unparsed string %q", source[j:])
 	}
-	if pm {
-		hour += 12
+	if ampm > 0 {
+		hour = hour%12 + (ampm-1)*12
 	}
 	if century >= 0 {
 		year = century*100 + year%100
