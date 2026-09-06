@@ -345,40 +345,43 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 	if century >= 0 {
 		year = century*100 + year%100
 	}
-	if day == 0 {
-		if yday > 0 {
-			if hasISOYear {
-				return time.Time{}, errors.New(`use "%Y" to parse non-ISO year for "%j"`)
-			}
-			return time.Date(year, time.January, yday, hour, minute, second, nanosecond, loc), nil
+	switch {
+	default:
+		day = 1
+		fallthrough
+	case day > 0:
+		if hasISOYear {
+			return time.Time{}, errors.New(`use "%Y" to parse non-ISO year`)
 		}
-		if hasISOYear && weekstart < time.Sunday {
+		if hasUnix {
+			return time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, time.UTC).In(loc), nil
+		}
+		return time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, loc), nil
+	case yday > 0:
+		if hasISOYear {
+			return time.Time{}, errors.New(`use "%Y" to parse non-ISO year for "%j"`)
+		}
+		return time.Date(year, time.January, yday, hour, minute, second, nanosecond, loc), nil
+	case hasISOYear:
+		if weekstart < time.Sunday {
 			weekstart, week, weekday = time.Thursday, 1, or(weekday, 2)
 		}
-		if weekstart >= time.Sunday {
-			if weekstart == time.Thursday {
-				if !hasISOYear {
-					return time.Time{}, errors.New(`use "%G" to parse ISO year for "%V"`)
-				}
-			} else if hasISOYear {
+		fallthrough
+	case weekstart >= time.Sunday:
+		if (weekstart == time.Thursday) != hasISOYear {
+			if hasISOYear {
 				return time.Time{}, errors.New(`use "%Y" to parse non-ISO year for "%U" or "%W"`)
 			}
-			if weekstart > time.Sunday && weekday == 1 {
-				week++
-			}
-			t := time.Date(year, time.January, -int(weekstart), 0, 0, 0, 0, time.UTC)
-			return time.Date(year, time.January,
-				week*7-int(weekstart)-int(t.Weekday())+weekday-1,
-				hour, minute, second, nanosecond, loc), nil
+			return time.Time{}, errors.New(`use "%G" to parse ISO year for "%V"`)
 		}
-		day = 1
-	} else if hasISOYear {
-		return time.Time{}, errors.New(`use "%Y" to parse non-ISO year`)
+		if weekstart > time.Sunday && weekday == 1 {
+			week++
+		}
+		t := time.Date(year, time.January, -int(weekstart), 0, 0, 0, 0, time.UTC)
+		return time.Date(year, time.January,
+			week*7-int(weekstart)-int(t.Weekday())+weekday-1,
+			hour, minute, second, nanosecond, loc), nil
 	}
-	if hasUnix {
-		return time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, time.UTC).In(loc), nil
-	}
-	return time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, loc), nil
 }
 
 func locationZone(loc *time.Location) (string, int) {
