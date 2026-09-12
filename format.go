@@ -370,14 +370,20 @@ func appendString(buf []byte, str string, width int, padding byte, upper, swap b
 	case swap:
 		if str[min(1, len(str)-1)] < 'a' {
 			for _, b := range []byte(str) {
-				buf = append(buf, b|0x20)
+				if 'A' <= b && b <= 'Z' {
+					b |= 0x20
+				}
+				buf = append(buf, b)
 			}
 			break
 		}
 		fallthrough
 	case upper:
 		for _, b := range []byte(str) {
-			buf = append(buf, b&0x5F)
+			if 'a' <= b && b <= 'z' {
+				b &= 0x5F
+			}
+			buf = append(buf, b)
 		}
 	default:
 		buf = append(buf, str...)
