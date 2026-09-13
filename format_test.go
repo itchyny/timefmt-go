@@ -601,8 +601,8 @@ var formatTestCases = []struct {
 	},
 	{
 		format:   "%Z %^Z %#Z %#^Z %^#Z",
-		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC[+03]", 3*60*60)),
-		expected: "UTC[+03] UTC[+03] utc[+03] utc[+03] utc[+03]",
+		t:        time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("Asia/Tokyo", 9*60*60)),
+		expected: "Asia/Tokyo ASIA/TOKYO ASIA/TOKYO ASIA/TOKYO ASIA/TOKYO",
 	},
 	{
 		format:   "%8Z %08Z %8z %_8z %-z %08z %2z %3z %4z %5z %6z %6:z %7:z %:%Z",
