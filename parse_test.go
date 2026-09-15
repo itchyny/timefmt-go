@@ -1438,8 +1438,8 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("UTC", 0)),
 	},
 	{
-		source:   "X",
-		format:   "%Z",
+		source:   "2020-07-24 23:14:15 ",
+		format:   "%F %T %Z",
 		parseErr: errors.New(`cannot parse "%Z"`),
 	},
 	{
@@ -1463,12 +1463,62 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("CEST", (5*60+30)*60)),
 	},
 	{
+		source: "2020-07-24 23:14:15 +1200 (NZST)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("NZST", 12*60*60)),
+	},
+	{
 		source:   "2020-07-24 23:14:15 +0530 (AB)",
 		format:   "%F %T %z (%Z)",
 		parseErr: errors.New(`cannot parse "%Z"`),
 	},
 	{
 		source:   "2020-07-24 23:14:15 +0530 (AAAA)",
+		format:   "%F %T %z (%Z)",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source: "2020-07-24 23:14:15 +1000 (ChST)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("ChST", 10*60*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 +0200 MeST",
+		format: "%F %T %z %Z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("MeST", 2*60*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 +0700 (+07)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("+07", 7*60*60)),
+	},
+	{
+		source: "2020-07-24 23:14:15 -0000 (-00)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("-00", 0)),
+	},
+	{
+		source: "2020-07-24 23:14:15 -1200 -12",
+		format: "%F %T %z %Z",
+		t:      time.Date(2020, time.July, 24, 23, 14, 15, 0, time.FixedZone("-12", -12*60*60)),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0530 (+)",
+		format:   "%F %T %z (%Z)",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0530 (+0)",
+		format:   "%F %T %z (%Z)",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0530 (+24)",
+		format:   "%F %T %z (%Z)",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source:   "2020-07-24 23:14:15 +0530 (+075)",
 		format:   "%F %T %z (%Z)",
 		parseErr: errors.New(`cannot parse "%Z"`),
 	},

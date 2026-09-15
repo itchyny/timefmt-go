@@ -192,10 +192,23 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 				}
 				nanosecond = microsecond * 1000
 			case 'Z':
+				if j >= l {
+					return time.Time{}, parseFormatError('Z')
+				}
 				i := j
-				for ; j < l; j++ {
-					if c := source[j]; c < 'A' || 'Z' < c {
-						break
+				if source[j] == '+' || source[j] == '-' {
+					for j++; j < l; j++ {
+						if source[j]-'0' >= 10 {
+							break
+						}
+					}
+				} else if j+4 <= l && (source[j:j+4] == "ChST" || source[j:j+4] == "MeST") {
+					j += 4
+				} else {
+					for ; j < l; j++ {
+						if source[j]-'A' > 'Z'-'A' {
+							break
+						}
 					}
 				}
 				name := source[i:j]
