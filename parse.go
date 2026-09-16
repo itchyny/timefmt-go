@@ -3,6 +3,7 @@ package timefmt
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 	"unicode/utf8"
 )
@@ -21,7 +22,7 @@ func ParseInLocation(source, format string, loc *time.Location) (time.Time, erro
 func parse(source, format string, loc, base *time.Location) (time.Time, error) {
 	t, err := parseTime(source, format, loc, base)
 	if err != nil {
-		err = fmt.Errorf("failed to parse %q with %q: %w", source, format, err)
+		err = fmt.Errorf("failed to parse %q with %q: %w", strings.Clone(source), format, err)
 	}
 	return t, err
 }
@@ -211,7 +212,7 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 						}
 					}
 				}
-				name := source[i:j]
+				name := strings.Clone(source[i:j])
 				t, err := time.ParseInLocation("MST", name, base)
 				if err != nil {
 					return time.Time{}, parseFormatError('Z')
@@ -350,7 +351,7 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 		}
 	}
 	if j < len(source) {
-		return time.Time{}, fmt.Errorf("unparsed string %q", source[j:])
+		return time.Time{}, fmt.Errorf("unparsed string %q", strings.Clone(source[j:]))
 	}
 	if ampm > 0 {
 		hour = hour%12 + (ampm-1)*12
