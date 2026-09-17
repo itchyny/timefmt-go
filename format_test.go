@@ -788,6 +788,26 @@ func TestAppendFormat(t *testing.T) {
 	}
 }
 
+func TestAppendFormatNoAllocation(t *testing.T) {
+	tm := time.Date(2020, time.September, 8, 7, 6, 5, 43210000, time.FixedZone("JST", 9*60*60))
+	for _, format := range []string{
+		"%Y-%m-%d %H:%M:%S",
+		"%Y-%m-%d %H:%M:%S.%f",
+		"%Y-%m-%d %H:%M:%S %z %Z",
+		"%^a %#b %10Y %-m %_d",
+		"%c", "%+", "%FT%T", "%s",
+	} {
+		t.Run(format, func(t *testing.T) {
+			buf := make([]byte, 0, 64)
+			if allocs := testing.AllocsPerRun(100, func() {
+				buf = timefmt.AppendFormat(buf[:0], tm, format)
+			}); allocs > 0 {
+				t.Errorf("expected no allocation but got %.0f", allocs)
+			}
+		})
+	}
+}
+
 func ExampleFormat() {
 	t := time.Date(2020, time.July, 24, 9, 7, 29, 0, time.UTC)
 	str := timefmt.Format(t, "%Y-%m-%d %H:%M:%S")

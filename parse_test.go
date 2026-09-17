@@ -1685,6 +1685,41 @@ func TestRoundTripDate(t *testing.T) {
 	}
 }
 
+func TestParseNoAllocation(t *testing.T) {
+	for _, tc := range []struct{ source, format string }{
+		{"2020-09-08 07:06:05", "%Y-%m-%d %H:%M:%S"},
+		{"2020-09-08 07:06:05 +0900", "%Y-%m-%d %H:%M:%S %z"},
+		{"2020-W30-5 23:59:60", "%G-W%V-%u %H:%M:%S"},
+		{"Tue Sep  8 07:06:05 2020", "%c"},
+		{"2020-09-08", "%Y-%m-%d"},
+		{"07:06:05", "%H:%M:%S"},
+		{"1599548765", "%s"},
+	} {
+		t.Run(tc.source+"/"+tc.format, func(t *testing.T) {
+			if _, err := timefmt.Parse(tc.source, tc.format); err != nil {
+				t.Fatalf("expected no error but got: %v", err)
+			}
+			if allocs := testing.AllocsPerRun(100, func() {
+				timefmt.Parse(tc.source, tc.format)
+			}); allocs > 0 {
+				t.Errorf("expected no allocation but got %.0f", allocs)
+			}
+		})
+	}
+
+	t.Run("byte slice source", func(t *testing.T) {
+		source, format := []byte("2020-09-08 07:06:05"), "%Y-%m-%d %H:%M:%S"
+		if _, err := timefmt.Parse(string(source), format); err != nil {
+			t.Fatalf("expected no error but got: %v", err)
+		}
+		if allocs := testing.AllocsPerRun(100, func() {
+			timefmt.Parse(string(source), format)
+		}); allocs > 0 {
+			t.Errorf("expected no allocation but got %.0f", allocs)
+		}
+	})
+}
+
 func ExampleParse() {
 	str := "2020-07-24 09:07:29"
 	t, err := timefmt.Parse(str, "%Y-%m-%d %H:%M:%S")
