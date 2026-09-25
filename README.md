@@ -56,7 +56,9 @@ Note that `E` and `O` modifier characters are not supported.
   - week directives like `%W %a` and `%G-W%V-%u`.
 - `ParseInLocation` is provided for configuring the location of a source without a time zone offset.
 
-![](https://user-images.githubusercontent.com/375258/88606920-de475c80-d0b8-11ea-8d40-cbfee9e35c2e.jpg)
+![Time formatting and parsing libraries performance comparison](https://raw.githubusercontent.com/itchyny/timefmt-go-bench/main/bench.svg)
+
+The graph above is reproducible by [timefmt-go-bench](https://github.com/itchyny/timefmt-go-bench).
 
 ## Bug Tracker
 Report bugs at [Issues - itchyny/timefmt-go - GitHub](https://github.com/itchyny/timefmt-go/issues).
