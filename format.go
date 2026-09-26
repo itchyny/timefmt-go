@@ -300,7 +300,7 @@ func appendInt(buf []byte, num, width int, padding byte) []byte {
 	case num < 0:
 		return appendInt64(buf, int64(num), width, padding)
 	case num < 100 && width == 2 && padding == '0':
-		return append(buf, smalls[num*2:num*2+2]...)
+		return append(buf, smalls[num*2], smalls[num*2+1])
 	case num < 10:
 		digits = 1
 	case num < 100:
@@ -317,20 +317,16 @@ func appendInt(buf []byte, num, width int, padding byte) []byte {
 		}
 	}
 	switch digits {
-	case 4:
-		buf = append(buf, byte(num/1000)|'0')
-		num %= 1000
-		fallthrough
-	case 3:
-		buf = append(buf, byte(num/100)|'0')
-		num %= 100
-		fallthrough
-	case 2:
-		buf = append(buf, byte(num/10)|'0')
-		num %= 10
-		fallthrough
-	default:
+	case 1:
 		return append(buf, byte(num)|'0')
+	case 2:
+		return append(buf, smalls[num*2], smalls[num*2+1])
+	case 3:
+		j := num % 100 * 2
+		return append(buf, byte(num/100)|'0', smalls[j], smalls[j+1])
+	default:
+		i, j := num/100*2, num%100*2
+		return append(buf, smalls[i], smalls[i+1], smalls[j], smalls[j+1])
 	}
 }
 
