@@ -1523,6 +1523,171 @@ var parseTestCases = []struct {
 		parseErr: errors.New(`cannot parse "%Z"`),
 	},
 	{
+		source: "2024-07-01 12:00:00 GMT+3",
+		format: "%F %T %Z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+3", 3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT+3)",
+		format: "%F %T (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+3", 3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 +0300 (GMT+3)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+3", 3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT+3) +0300",
+		format: "%F %T (%Z) %z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+3", 3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 GMT-3",
+		format: "%F %T %Z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT-3", -3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT-3)",
+		format: "%F %T (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT-3", -3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 -0300 (GMT-3)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT-3", -3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT-3) -0300",
+		format: "%F %T (%Z) %z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT-3", -3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 GMT+03",
+		format: "%F %T %Z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+03", 3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT+03)",
+		format: "%F %T (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+03", 3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 +0300 (GMT+03)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+03", 3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT+03) +0300",
+		format: "%F %T (%Z) %z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+03", 3*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 GMT+23",
+		format: "%F %T %Z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+23", 23*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT+23)",
+		format: "%F %T (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+23", 23*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 +2300 (GMT+23)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+23", 23*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT+23) +2300",
+		format: "%F %T (%Z) %z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+23", 23*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 GMT-23",
+		format: "%F %T %Z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT-23", -23*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT-23)",
+		format: "%F %T (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT-23", -23*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 -2300 (GMT-23)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT-23", -23*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT-23) -2300",
+		format: "%F %T (%Z) %z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT-23", -23*60*60)),
+	},
+	{
+		source: "2024-07-01 12:00:00 GMT+0",
+		format: "%F %T %Z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+0", 0)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT+0)",
+		format: "%F %T (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+0", 0)),
+	},
+	{
+		source: "2024-07-01 12:00:00 +0000 (GMT+0)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+0", 0)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT+0) +0000",
+		format: "%F %T (%Z) %z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT+0", 0)),
+	},
+	{
+		source: "2024-07-01 12:00:00 GMT",
+		format: "%F %T %Z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT", 0)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT)",
+		format: "%F %T (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT", 0)),
+	},
+	{
+		source: "2024-07-01 12:00:00 +0000 (GMT)",
+		format: "%F %T %z (%Z)",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT", 0)),
+	},
+	{
+		source: "2024-07-01 12:00:00 (GMT) +0000",
+		format: "%F %T (%Z) %z",
+		t:      time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone("GMT", 0)),
+	},
+	{
+		source:   "2024-07-01 12:00:00 GMT+",
+		format:   "%F %T %Z",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source:   "2024-07-01 12:00:00 GMT-",
+		format:   "%F %T %Z",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source:   "2024-07-01 12:00:00 GMT+24",
+		format:   "%F %T %Z",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source:   "2024-07-01 12:00:00 GMT-24",
+		format:   "%F %T %Z",
+		parseErr: errors.New(`cannot parse "%Z"`),
+	},
+	{
+		source:   "2024-07-01 12:00:00 GMT+3x",
+		format:   "%F %T %Z",
+		parseErr: errors.New(`unparsed string "x"`),
+	},
+	{
 		source: "01%02\t03\n450000",
 		format: "%H%%%M%t%S%n%f",
 		t:      time.Date(1900, time.January, 1, 1, 2, 3, 450000000, time.UTC),

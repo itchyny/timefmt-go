@@ -211,6 +211,10 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 							break
 						}
 					}
+					if source[i:j] == "GMT" && j < l && (source[j] == '+' || source[j] == '-') {
+						for j++; j < l && source[j]-'0' < 10; j++ {
+						}
+					}
 				}
 				name := strings.Clone(source[i:j])
 				t, err := time.ParseInLocation("MST", name, base)
