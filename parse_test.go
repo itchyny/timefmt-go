@@ -1782,3 +1782,43 @@ func FuzzParse(f *testing.F) {
 		}
 	})
 }
+
+func TestParseGMTOffsetZone(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		offset int
+	}{
+		{"GMT+3", 3 * 60 * 60},
+		{"GMT-3", -3 * 60 * 60},
+		{"GMT+03", 3 * 60 * 60},
+		{"GMT+23", 23 * 60 * 60},
+		{"GMT-23", -23 * 60 * 60},
+		{"GMT+0", 0},
+		{"GMT", 0},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			want := time.Date(2024, time.July, 1, 12, 0, 0, 0, time.FixedZone(tc.name, tc.offset))
+			for _, format := range []string{"%F %T %Z", "%F %T (%Z)", "%F %T %z (%Z)", "%F %T (%Z) %z"} {
+				source := timefmt.Format(want, format)
+				got, err := timefmt.Parse(source, format)
+				if err != nil {
+					t.Errorf("%s: %v", source, err)
+					continue
+				}
+				name, offset := got.Zone()
+				if !got.Equal(want) || name != tc.name || offset != tc.offset {
+					t.Errorf("%s: got %v (%s,%d), want %v", source, got, name, offset, want)
+				}
+			}
+		})
+	}
+}
+
+func TestParseInvalidGMTOffsetZone(t *testing.T) {
+	for _, name := range []string{"GMT+", "GMT-", "GMT+24", "GMT-24", "GMT+3x"} {
+		source := "2024-07-01 12:00:00 " + name
+		if _, err := timefmt.Parse(source, "%F %T %Z"); err == nil {
+			t.Errorf("expected invalid zone %q to fail", name)
+		}
+	}
+}
