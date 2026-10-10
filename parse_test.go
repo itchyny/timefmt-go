@@ -1078,9 +1078,9 @@ var parseTestCases = []struct {
 		parseErr: errors.New("expected ':'"),
 	},
 	{
-		source:   "3:14:15PM",
-		format:   "%r",
-		parseErr: errors.New("expected ' '"),
+		source: "3:14:15PM",
+		format: "%r",
+		t:      time.Date(1900, time.January, 1, 15, 14, 15, 0, time.UTC),
 	},
 	{
 		source: "2/20/21 23:14:15",
@@ -1098,9 +1098,9 @@ var parseTestCases = []struct {
 		t:      time.Date(2020, time.February, 9, 23, 14, 15, 0, time.UTC),
 	},
 	{
-		source:   "2020-02-0923:14:15",
-		format:   "%F%t%T",
-		parseErr: errors.New(`expected a space for "%t"`),
+		source: "2020-02-0923:14:15",
+		format: "%F%t%T",
+		t:      time.Date(2020, time.February, 9, 23, 14, 15, 0, time.UTC),
 	},
 	{
 		source: " 9-Jul-2020 23:14:15",
@@ -1781,4 +1781,42 @@ func FuzzParse(f *testing.F) {
 			t.SkipNow()
 		}
 	})
+}
+
+func TestParseWhitespace(t *testing.T) {
+	gotDay, dayErr := timefmt.Parse(" 9", "%e")
+	if dayErr != nil || gotDay.Day() != 9 {
+		t.Errorf("space-padded day = %v, %v", gotDay, dayErr)
+	}
+	gotHour, hourErr := timefmt.Parse(" 9", "%k")
+	if hourErr != nil || gotHour.Hour() != 9 {
+		t.Errorf("space-padded hour = %v, %v", gotHour, hourErr)
+	}
+	for _, format := range []string{"%F%t%T", "%F%n%T", "%F %T", "%F\t%T", "%F%n %t%T"} {
+		for _, space := range []string{"", " ", "\t\n\v\f\r ", "  "} {
+			t.Run(fmt.Sprintf("%q/%q", format, space), func(t *testing.T) {
+				got, err := timefmt.Parse("2020-02-09"+space+"23:14:15", format)
+				want := time.Date(2020, time.February, 9, 23, 14, 15, 0, time.UTC)
+				if err != nil || !got.Equal(want) {
+					t.Fatalf("Parse = %v, %v; want %v", got, err, want)
+				}
+			})
+		}
+	}
+	for _, format := range []string{"%t%F%n", " \t%F\n", "%n%t%F%t%n"} {
+		got, err := timefmt.Parse("2020-02-09", format)
+		if want := time.Date(2020, time.February, 9, 0, 0, 0, 0, time.UTC); err != nil || !got.Equal(want) {
+			t.Errorf("Parse with %q = %v, %v; want %v", format, got, err, want)
+		}
+	}
+	got, err := timefmt.Parse("3:14:15PM", "%r")
+	if want := time.Date(1900, time.January, 1, 15, 14, 15, 0, time.UTC); err != nil || !got.Equal(want) {
+		t.Errorf("Parse composed whitespace = %v, %v; want %v", got, err, want)
+	}
+	if _, err := timefmt.Parse("2020-02-09x23:14:15", "%F%t%T"); err == nil {
+		t.Error("non-whitespace separator must not be consumed")
+	}
+	if _, err := timefmt.Parse("2020/02-09", "%F"); err == nil {
+		t.Error("ordinary separators in composed formats must still match")
+	}
 }
