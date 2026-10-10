@@ -296,18 +296,7 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 					return time.Time{}, expectedZAfterColonError(colons)
 				}
 			case 't', 'n':
-				i := j
-			K:
-				for ; j < l; j++ {
-					switch source[j] {
-					case ' ', '\t', '\n', '\v', '\f', '\r':
-					default:
-						break K
-					}
-				}
-				if i == j {
-					return time.Time{}, fmt.Errorf(`expected a space for "%%%c"`, b)
-				}
+				j = skipSpace(source, j)
 			case '%':
 				if j >= l || source[j] != b {
 					return time.Time{}, expectedFormatError(b)
@@ -334,15 +323,20 @@ func parseTime(source, format string, loc, base *time.Location) (time.Time, erro
 					r, _ := utf8.DecodeRuneInString(format[i:])
 					return time.Time{}, unexpectedFormatError(r)
 				}
-				if j >= l || source[j] != b {
+				if isSpace(b) {
+					j = skipSpace(source, j)
+				} else if j >= l || source[j] != b {
 					return time.Time{}, expectedFormatError(b)
+				} else {
+					j++
 				}
-				j++
 			}
 			if pending != "" {
 				b, pending = pending[0], pending[1:]
 				goto L
 			}
+		} else if isSpace(b) {
+			j = skipSpace(source, j)
 		} else if j >= l || source[j] != b {
 			r, _ := utf8.DecodeRuneInString(format[i:])
 			return time.Time{}, expectedFormatError(r)
@@ -500,4 +494,15 @@ L:
 		return i + 1, j, nil
 	}
 	return 0, 0, parseFormatError(format)
+}
+
+func isSpace(b byte) bool {
+	return b == ' ' || b >= '\t' && b <= '\r'
+}
+
+func skipSpace(source string, index int) int {
+	for index < len(source) && isSpace(source[index]) {
+		index++
+	}
+	return index
 }
